@@ -1,0 +1,835 @@
+// src/components/pdfs/RefurbPDF.tsx
+
+import React, { useMemo } from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
+import { Job, Room } from "../../interfaces";
+import logo from "../assets/logo.png"; // Adjust the path as necessary
+import windowImage from "../assets/window.png"; // Adjust the path as necessary
+
+const styles = StyleSheet.create({
+  // Global styles
+  page: {
+    padding: 20,
+    fontFamily: "Helvetica",
+  },
+  // Header
+  headerBox: {
+    backgroundColor: "#b3b3b3",
+    padding: 0,
+    paddingLeft: 5,
+    borderWidth: 1,
+    borderColor: "#000",
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerRight: {
+    flex: 1,
+    alignItems: "flex-end",
+  },
+  clientBox: {
+    backgroundColor: "#b3b3b3",
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderTopWidth: 0,
+    borderTopColor: "#fff",
+  },
+  clientRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  headerText: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  logo: {
+    width: 70,
+    height: 70,
+  },
+  section: {
+    marginBottom: 10,
+    marginTop: 15,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  text: {
+    fontSize: 8,
+    marginBottom: 3,
+  },
+  // Table styles
+  tableHeader: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    backgroundColor: "#dbdbdb",
+    alignItems: "center",
+    paddingVertical: 5,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    alignItems: "center",
+    paddingVertical: 5,
+  },
+  tableCell: {
+    fontSize: 10,
+    margin: 5,
+  },
+  tableHeaderCell: {
+    fontSize: 10,
+    fontWeight: "bold",
+    margin: 5,
+  },
+  // Column widths
+  tableColRef: {
+    flex: 0.5,
+  },
+  tableColRoom: {
+    flex: 1,
+  },
+  tableColDescription: {
+    flex: 2,
+  },
+  tableColQuantity: {
+    flex: 1,
+  },
+  tableColCost: {
+    flex: 1,
+  },
+  // Footer
+  footerContainer: {
+    backgroundColor: "#dbdbdb",
+    padding: 10,
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  footerLeft: {
+    flex: 2,
+    paddingRight: 10,
+  },
+  footerRight: {
+    flex: 1,
+    borderLeftWidth: 1,
+    borderLeftColor: "#ccc",
+    paddingLeft: 10,
+  },
+  footerText: {
+    fontSize: 10,
+    marginBottom: 5,
+  },
+  footerRightSection: {
+    marginBottom: 10,
+  },
+  footerRightTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  footerRightRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  footerRightLabel: {
+    fontSize: 10,
+  },
+  footerRightValue: {
+    fontSize: 10,
+  },
+  // Detailed Summary Table styles
+  detailedTableHeader: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    backgroundColor: "#dbdbdb",
+    alignItems: "center",
+    paddingVertical: 5,
+  },
+  detailedTableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  detailedTableCell: {
+    fontSize: 10,
+    margin: 5,
+  },
+  detailedTableHeaderCell: {
+    fontSize: 10,
+    fontWeight: "bold",
+    margin: 5,
+  },
+  // Cells for Details, Rate, Qty, Sum in the image row
+  detailedColDetailsImageRow: {
+    flex: 2,
+    justifyContent: "center",
+  },
+  detailedColRateImageRow: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  detailedColQtyImageRow: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  detailedColSumImageRow: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  // Footer
+  footer: {
+    position: "absolute",
+    bottom: 2,
+    left: 0,
+    right: 0,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  footerBox: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 20,
+    backgroundColor: "#a3a29f",
+  },
+  // Adjusted Column widths for Detailed Summary
+  detailedColRef: {
+    flex: 0.5,
+  },
+  detailedColRoomName: {
+    flex: 1.5,
+  },
+  detailedColDetails: {
+    flex: 6,
+  },
+  detailedColRate: {
+    flex: 1,
+  },
+  detailedColQty: {
+    flex: 1,
+  },
+  detailedColSum: {
+    flex: 1,
+  },
+  // Styles for the image row
+  imageRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  imageCell: {
+    flex: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 2,
+  },
+  imageContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    flex: 1,
+  },
+  imageStyle: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+  },
+  dimensionText: {
+    fontSize: 8,
+  },
+  // Styles for the final summary below the detailed summary
+  finalSummaryContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 10,
+  },
+  finalSummaryBox: {
+    width: "40%",
+    borderWidth: 1,
+    borderColor: "#b3b3b3",
+    padding: 5,
+    backgroundColor: "#dbdbdb",
+  },
+  finalSummaryTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+    paddingBottom: 3,
+  },
+  finalSummaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: "#b3b3b3",
+  },
+  finalSummaryLabel: {
+    fontSize: 10,
+    flex: 1,
+    textAlign: "left",
+    paddingRight: 5,
+  },
+  finalSummaryValue: {
+    fontSize: 10,
+    flex: 1,
+    textAlign: "right",
+    paddingLeft: 5,
+    borderLeftWidth: 1,
+    borderLeftColor: "black",
+  },
+});
+
+
+// Function to parse formation and calculate astrical
+const calculateAstrical = (formation: string): number => {
+  if (!formation) return 0;
+  const parts = formation.split("/");
+  if (parts.length !== 2) return 0;
+  const num1 = parseInt(parts[0], 10);
+  const num2 = parseInt(parts[1], 10);
+  if (isNaN(num1) || isNaN(num2)) return 0;
+  return num1 + num2;
+};
+
+// Calculate the cost for a room
+const calculateRoomCost = (room: Room): {
+  totalCost: number;
+  costBreakdown: { [key: string]: number };
+} => {
+  const costBreakdown: { [key: string]: number } = {};
+  const windowCount = room.count || 1;
+  const panesNumber = room.panesNumber || 0;
+  const stainRepairs = room.stainRepairs || 0;
+  const astrical = calculateAstrical(room.formation || "") || 0;
+
+  // Main cost
+  const mainCost =
+    ((room.width / 1000) * (room.height / 1000) * 150 + 300 + astrical * 30) *
+    1.28 *
+    (1 + room.priceChange / 100) *
+    (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true
+
+  costBreakdown["• Overhaul and draught-proof installation"] = Math.round(mainCost);
+
+  // Additional costs
+  const roomEncapStr = "• Carry out " + `${room.encapsulation}` + " feature glass encapsulation(s)";
+  if (room.encapsulation !=0) costBreakdown[roomEncapStr] = room.encapsulation*560;
+  if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
+  if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
+  if (room.mastic) costBreakdown["• Strip out exterior pointing and replace with new poly sealant"] = 110;
+  if (room.masticPatch) costBreakdown["• Carry out mastic patch repairs"] = 50;
+  if (room.paint) costBreakdown["• Paint on completion of works inside and out"] = 160;
+
+  if (room.bottomRail) costBreakdown["• Repair Rail"] = 160;
+  if (room.pullyWheel) costBreakdown["• Carry out pully Style Repair"] = 70;
+  if (room.easyClean) costBreakdown["• Fit new simplex easy-clean system"] = 80;
+  if (room.outsidePatch) costBreakdown["• Carry out outside facing patch repairs"] = 50;
+  if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
+  if (room.shutters) costBreakdown["• Repair shutters"] = 120;
+
+
+
+  // Cill costs
+  if (room.cill) {
+    switch (room.cill.toLowerCase()) {
+      case "full":
+        costBreakdown["• Strip out and replace one full sill"] = 160;
+        break;
+      case "half":
+        costBreakdown["• Strip out and replace one half sill"] = 90;
+        break;
+      case "repairs":
+        costBreakdown["• Carry out sill repairs"] = 70;
+        break;
+      default:
+    }
+  }
+
+  // Sash costs
+  if (room.sash) {
+    switch (room.sash.toLowerCase()) {
+      case "top":
+        costBreakdown["• Strip out and replace replace top sash"] = 360;
+        break;
+      case "bottom":
+        costBreakdown["• Strip out and replace bottom Sash"] = 360;
+        break;
+      case "both":
+        costBreakdown["• Strip out and replace top and bottom sash"] = 720;
+        break;
+      default:
+    }
+  }
+
+  // New panes
+  if (panesNumber > 0) {
+    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
+    costBreakdown[newPanesStr] = panesNumber * 90;
+  }
+
+  // Stain repairs
+  if (stainRepairs > 0) {
+    const stainRepairsStr = "• Repair " + `${panesNumber}` + " stained glass panes";
+    costBreakdown[stainRepairsStr] = stainRepairs * 45;
+  }
+
+  // Glass type costs
+  if (room.glassType) {
+    const glassTypeCosts: { [key: string]: number } = {
+      Clear: 0,
+      Toughened: 50,
+      Obscured: 100,
+      Laminated: 150,
+      Fineo: 220,
+    };
+    const glassType = room.glassType.toLowerCase();
+    const glassCost = glassTypeCosts[glassType] || 0;
+    if (glassCost > 0){
+    costBreakdown["Glass Type"] = glassCost;
+    }
+  }
+
+  // Sum up all costs per window
+  const totalCostPerWindow = Object.values(costBreakdown).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  // Total cost for the room
+  const totalCost = totalCostPerWindow * windowCount;
+
+  return { totalCost, costBreakdown };
+};
+
+const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
+  const companyName = "Preservation Windows";
+  const companyAddress = "124 Great Western Road";
+  const companyCity = "Glasgow";
+  const stateZip = "G4 9AD";
+
+  // Compute roomRefs
+
+  // Calculate costs
+  const roomCosts = useMemo(() => {
+    return job.rooms.map((room) => {
+      const { totalCost, costBreakdown } = calculateRoomCost(room);
+      return { totalCost, costBreakdown };
+    });
+  }, [job.rooms]);
+
+  const subtotal = roomCosts.reduce((sum, { totalCost }) => sum + totalCost, 0);
+  const vatAmount = subtotal * 0.2;
+  const total = subtotal + vatAmount;
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.headerBox}>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>
+                Date: {job.date} {"\n\n"}{" "}
+              </Text>
+
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.headerText}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
+
+        {/* Client Box */}
+        <View style={styles.clientBox}>
+          <View style={styles.clientRow}>
+            <Text style={styles.text}>Client: {job.customerName}</Text>
+            <Text style={styles.text}>Job ID: {job.quoteId}</Text>
+          </View>
+        </View>
+
+        {/* Client Box with Address/Postcode and Planning Permission */}
+        <View style={styles.clientBox}>
+          <View style={styles.clientRow}>
+            <Text style={styles.text}>
+              Address: {job.address}
+              {"\n"}Postcode: {job.postCode}
+            </Text>
+            <Text style={styles.text}>{job.planningPermission}</Text>
+          </View>
+        </View>
+
+        {/* Rest of the document */}
+        {/* Project Summary */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            Project Summary: Refurbish Windows
+          </Text>
+
+          {/* Table Header */}
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
+              Room
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
+              Description
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
+              Quantity
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
+              Cost (£)
+            </Text>
+          </View>
+
+          {/* Table Rows */}
+          {job.rooms.map((room, index) => {
+            const { totalCost } = roomCosts[index];
+            return (
+              <View key={index} style={styles.tableRow}>
+                <Text style={[styles.tableCell, styles.tableColRef]}>
+                  {room.ref}
+                </Text>
+                <Text style={[styles.tableCell, styles.tableColRoom]}>
+                  {room.roomName}
+                </Text>
+                <Text style={[styles.tableCell, styles.tableColDescription]}>
+                  {room.width} x {room.height} mm Sash and Case
+                </Text>
+                <Text style={[styles.tableCell, styles.tableColQuantity]}>
+                  {room.count || 0}
+                </Text>
+                <Text style={[styles.tableCell, styles.tableColCost]}>
+                  £{totalCost.toFixed(2)}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        <View style={styles.footerContainer}>
+          {/* Left 2/3rds */}
+          <View style={styles.footerLeft}>
+            <Text
+              style={[styles.footerText, { fontWeight: "bold", fontSize: 12 }]}
+            >
+              Notes
+            </Text>
+            <Text style={styles.footerText}>
+              All refurbished windows will be fully finished in a colour of your
+              choice and all exterior mastic pointing is included in the
+              quotation.
+            </Text>
+            <Text style={styles.footerText}>
+              All curtains to be removed by customer prior to the refurbishment.
+            </Text>
+            <Text
+              style={[
+                styles.footerText,
+                { fontWeight: "bold", fontSize: 12, marginTop: 10 },
+              ]}
+            >
+              Payment Terms
+            </Text>
+            <Text style={styles.footerText}>
+              On the first day of refurbishment we require you to pay 50% of the
+              agreed quote. Once refurbishment is complete the remainder of the
+              balance will be required.
+            </Text>
+          </View>
+
+          {/* Right 1/3rd */}
+          <View style={styles.footerRight}>
+            {/* Final Summary Title */}
+            <View style={styles.footerRightSection}>
+              <Text style={styles.footerRightTitle}>Final Summary</Text>
+            </View>
+
+            {/* Subtotal */}
+            <View style={styles.footerRightRow}>
+              <Text style={styles.footerRightLabel}>Subtotal</Text>
+              <Text style={styles.footerRightValue}>£{subtotal.toFixed(2)}</Text>
+            </View>
+
+            {/* VAT */}
+            <View style={styles.footerRightRow}>
+              <Text style={styles.footerRightLabel}>VAT</Text>
+              <Text style={styles.footerRightValue}>£{vatAmount.toFixed(2)}</Text>
+            </View>
+
+            {/* Total */}
+            <View style={styles.footerRightRow}>
+              <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>
+                Total
+              </Text>
+              <Text style={[styles.footerRightValue, { fontWeight: "bold" }]}>
+                £{total.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}></Text>
+          <View style={styles.footerBox} />
+        </View>
+
+        {/* New Page for Detailed Summary */}
+        <View style={styles.headerBox} break>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.text}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
+
+        {/* Detailed Summary */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Detailed Summary</Text>
+
+          {/* Table Header */}
+          <View style={styles.detailedTableHeader}>
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRef]}>
+              Ref
+            </Text>
+            <Text
+              style={[
+                styles.detailedTableHeaderCell,
+                styles.detailedColRoomName,
+              ]}
+            >
+              Room Name
+            </Text>
+            <Text
+              style={[
+                styles.detailedTableHeaderCell,
+                styles.detailedColDetails,
+              ]}
+            >
+              Details
+            </Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColRate]}
+            >
+              Rate (£)
+            </Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColQty]}
+            >
+              Quantity
+            </Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColSum]}
+            >
+              Sum (£)
+            </Text>
+          </View>
+
+          {/* Table Rows */}
+          {job.rooms.map((room, index) => {
+            const { totalCost, costBreakdown } = roomCosts[index];
+            const count = room.count || 1;
+
+            // Prepare details text
+            const detailsText = Object.entries(costBreakdown)
+              .map(([detail, _]) => `${detail}:`)
+              .join("\n");
+
+            const detailsPrices = Object.entries(costBreakdown)
+              .map(([_, cost]) => `£${cost}`)
+              .join("\n");
+
+            return (
+              <React.Fragment key={index}>
+                {/* First Row: Ref and Room Name */}
+                <View style={styles.detailedTableRow}>
+                  <Text style={[styles.detailedTableCell, styles.detailedColRef]}>
+                    {room.ref}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColRoomName,
+                    ]}
+                  >
+                    {room.roomName}
+                  </Text>
+                  {/* Empty cells for Details, Rate, Quantity, Sum */}
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColDetails,
+                    ]}
+                  >
+                    {room.priceChange < 0
+                      ? `Discount of ${Math.abs(room.priceChange)}%: ${
+                          room.priceChangeNotes
+                        }`
+                      : room.priceChange > 0
+                      ? `Additional charge of ${room.priceChange}%: ${room.priceChangeNotes}`
+                      : room.priceChangeNotes}
+                  </Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColRate]}
+                  ></Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColQty]}
+                  ></Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColSum]}
+                  ></Text>
+                </View>
+
+                {/* Second Row: Image, Details, Rate, Quantity, Sum */}
+                <View style={styles.detailedTableRow}>
+                  {/* Image and Dimensions */}
+                  <View style={[styles.imageCell, styles.detailedColRef]}>
+                    {/* Empty Cell */}
+                  </View>
+                  <View style={[styles.imageCell, styles.detailedColRoomName]}>
+                    <View style={styles.imageContainer}>
+                      <Image style={styles.imageStyle} src={windowImage} />
+                      <Text style={styles.dimensionText}>
+                        Width: {room.width} mm
+                      </Text>
+                      <Text style={styles.dimensionText}>
+                        Height: {room.height} mm
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Details */}
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColDetails,
+                    ]}
+                  >
+                    {detailsText}
+                  </Text>
+
+                  {/* Rate */}
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColRate]}
+                  >
+                    {detailsPrices}
+                  </Text>
+
+                  {/* Quantity */}
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColQty]}
+                  >
+                    {count}
+                  </Text>
+
+                  {/* Sum */}
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColSum]}
+                  >
+                    £{totalCost.toFixed(2)}
+                  </Text>
+                </View>
+              </React.Fragment>
+            );
+          })}
+        </View>
+
+        {/* Final Summary Below Detailed Summary */}
+        <View style={styles.finalSummaryContainer}>
+          <View style={styles.finalSummaryBox}>
+            <Text style={styles.finalSummaryTitle}>Final Summary</Text>
+            {/* Subtotal */}
+            <View style={styles.finalSummaryRow}>
+              <Text style={styles.finalSummaryLabel}>Subtotal</Text>
+              <Text style={styles.finalSummaryValue}>£{subtotal.toFixed(2)}</Text>
+            </View>
+
+            {/* VAT */}
+            <View style={styles.finalSummaryRow}>
+              <Text style={styles.finalSummaryLabel}>VAT</Text>
+              <Text style={styles.finalSummaryValue}>£{vatAmount.toFixed(2)}</Text>
+            </View>
+
+            {/* Total */}
+            <View style={styles.finalSummaryRow}>
+              <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>
+                Total
+              </Text>
+              <Text style={[styles.finalSummaryValue, { fontWeight: "bold" }]}>
+                £{total.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Additional content can be added here */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
+            24 | Mob: 07973 820 855
+          </Text>
+          <View style={styles.footerBox} />
+        </View>
+      </Page>
+    </Document>
+  );
+};
+
+export default RefurbPDF;

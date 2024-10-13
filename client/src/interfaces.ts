@@ -1,0 +1,56 @@
+// src/interfaces.ts
+
+export interface Room {
+    ref: string;
+    roomName: string;
+    width: number;
+    height: number;
+    count: number;
+    putty: boolean;
+    mastic: boolean;
+    masticPatch: boolean;
+    paint: boolean;
+    tenon: boolean;
+    eC: boolean;
+    encapsulation: number;
+    bottomRail: boolean;
+    dormer: boolean;
+    easyClean: boolean; // Added field
+    pullyWheel: boolean;
+    panesNumber: number;
+    stainRepairs: number;
+    cill: string;
+    sash: string;
+    notes: string;
+    formation: string;
+    glassType: string; // Added field
+    casement: boolean;
+    outsidePatch: boolean;
+    concealedVent: boolean;
+    shutters: boolean;
+    priceChange: number;
+    priceChangeNotes: string;
+  
+  }
+  
+  export interface Job {
+    _id?: string; // Optional since it will be assigned by MongoDB
+    quoteId?: number; // Changed from string to number
+    completed: boolean;
+    date: string;
+    customerName: string;
+    address: string;
+    email: string;
+    phone: string;
+    postCode: string;
+    rooms: Room[];
+    options: string[];
+    planningPermission: string; // Add this field
+  }
+  
+  export interface Calculations {
+    subtotal: number;
+    vat: number;
+    total: number;
+  }
+  

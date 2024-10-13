@@ -1,0 +1,32 @@
+/* ViewSingle.css */
+
+.pdf-preview-container {
+    left: 30;
+    width: 70%;
+    max-height: 70vh; /* 70% of viewport height */
+    overflow: auto;
+    border: 1px solid #ccc; /* Optional border for visual effect */
+    margin: 20px 0; /* Space around the container */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #f0f0f0; /* Light gray background to distinguish the preview area */
+  }
+  
+  .pdf-content {
+    width: 794px; /* A4 width in pixels at 96 DPI */
+    min-height: 1123px; /* A4 height in pixels at 96 DPI */
+    background-color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    /* Optional shadow to mimic a page */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  

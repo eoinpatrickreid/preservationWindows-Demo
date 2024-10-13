@@ -155,7 +155,7 @@ func main() {
 
     // Set up CORS middleware
     app.Use(cors.New(cors.Config{
-        AllowOrigins:     "http://localhost:5173", // Adjust as needed
+        AllowOrigins:     "*", // Adjust as needed
         AllowMethods:     "GET, POST, PUT, DELETE, PATCH",
         AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
         AllowCredentials: true,
