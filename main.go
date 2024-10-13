@@ -14,7 +14,7 @@ import (
     "github.com/gofiber/fiber/v2"
     "github.com/gofiber/fiber/v2/middleware/cors"
     jwtware "github.com/gofiber/jwt/v3"
-    "github.com/joho/godotenv"
+    // "github.com/joho/godotenv"
     "github.com/golang-jwt/jwt/v4"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
@@ -108,10 +108,10 @@ type Claims struct {
 
 func main() {
     // Load environment variables
-    err := godotenv.Load(".env")
-    if err != nil {
-        log.Fatal("Error loading .env file: ", err)
-    }
+    // err := godotenv.Load(".env")
+    // if err != nil {
+    //     log.Fatal("Error loading .env file: ", err)
+    // }
 
     // Retrieve environment variables
     MONGODB_URI := os.Getenv("MONGODB_URI")
