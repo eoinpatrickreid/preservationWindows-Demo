@@ -121,9 +121,13 @@ func main() {
     }
     jwtSecret = os.Getenv("JWT_SECRET")
     if jwtSecret == "" {
-        log.Fatal("JWT_SECRET not set in .env file")
+        log.Fatal("JWT_SECRET not set")
     }
 
+    allowOrigins := os.Getenv("ALLOW_ORIGINS")
+    if allowOrigins == "" {
+        allowOrigins = "http://localhost:5173" // Default for development
+    }
     // Set MongoDB client options
     clientOptions := options.Client().ApplyURI(MONGODB_URI)
 
@@ -154,10 +158,6 @@ func main() {
     app := fiber.New()
 
     // Set up CORS middleware
-	allowOrigins := os.Getenv("ALLOW_ORIGINS")
-	if allowOrigins == "" {
-		allowOrigins = "http://localhost:5173" // Default for development
-	}
 	
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     allowOrigins, // Specific origins
