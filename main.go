@@ -154,13 +154,17 @@ func main() {
     app := fiber.New()
 
     // Set up CORS middleware
-    app.Use(cors.New(cors.Config{
-        AllowOrigins:     "*", // Adjust as needed
-        AllowMethods:     "GET, POST, PUT, DELETE, PATCH",
-        AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-        AllowCredentials: true,
-    }))
-
+	allowOrigins := os.Getenv("ALLOW_ORIGINS")
+	if allowOrigins == "" {
+		allowOrigins = "http://localhost:5173" // Default for development
+	}
+	
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     allowOrigins, // Specific origins
+		AllowMethods:     "GET, POST, PUT, DELETE, PATCH",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+	}))
     // Serve static files (if any)
     app.Static("/", "./client/dist")
 
