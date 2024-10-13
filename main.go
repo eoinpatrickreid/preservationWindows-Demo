@@ -287,6 +287,7 @@ func loginUser(c *fiber.Ctx) error {
 
 	var req Request
 	if err := c.BodyParser(&req); err != nil {
+		log.Println("BodyParser Error:", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Cannot parse JSON",
 		})
@@ -294,6 +295,7 @@ func loginUser(c *fiber.Ctx) error {
 
 	// Basic validation
 	if req.Email == "" || req.Password == "" {
+		log.Println("Validation Error: Missing fields")
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "All fields are required",
 		})
@@ -305,6 +307,7 @@ func loginUser(c *fiber.Ctx) error {
 		"email": req.Email,
 	}).Decode(&user)
 	if err != nil {
+		log.Println("FindOne Error:", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
@@ -313,6 +316,7 @@ func loginUser(c *fiber.Ctx) error {
 	// Compare passwords
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 	if err != nil {
+		log.Println("Password Compare Error:", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
@@ -333,6 +337,7 @@ func loginUser(c *fiber.Ctx) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
+		log.Println("JWT Generation Error:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",
 		})
