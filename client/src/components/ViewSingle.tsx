@@ -48,9 +48,8 @@ const ViewSingle: React.FC = () => {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await axiosInstance.get<Job>(
-          `http://localhost:5000/api/jobs/${id}`
-        );
+        const response = await axiosInstance.get<Job>(`/api/jobs/${id}`);
+
         setJob(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch job data.");
@@ -65,9 +64,8 @@ const ViewSingle: React.FC = () => {
   // Handle Delete Job
   const handleDelete = async () => {
     try {
-      const response = await axiosInstance.delete(
-        `http://localhost:5000/api/jobs/${id}`
-      );
+      const response = await axiosInstance.delete(`/api/jobs/${id}`);
+
       if (response.status === 200) {
         onOpen(); // Open the modal upon successful deletion
       } else {
