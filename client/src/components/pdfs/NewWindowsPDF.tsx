@@ -429,7 +429,10 @@ const calculateRoomCost = (room: Room): number => {
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
   const formationOnly = room.formation.split("_")[0];
-  const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
+  const formationInt = formationOnly
+    .split("/")
+    .map(Number)
+    .reduce((a, b) => a + b);
   const priceChange =
     typeof room.priceChange === "number" ? room.priceChange : 0; // Default to 0 if undefined
 
@@ -452,11 +455,11 @@ const calculateRoomCost = (room: Room): number => {
 
   // Base cost calculation
   const baseCost = Math.round(
-    (((((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +
-      (30 * formationInt) +(room.encapsulation*560)+
-      ((glassTypeCosts[glassType]) *
-      windowCount))) *
-      1.28) *
+    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
+      30 * formationInt +
+      room.encapsulation * 560 +
+      glassTypeCosts[glassType] * windowCount) *
+      1.28 *
       (1 + room.priceChange / 100) *
       (room.casement ? 0.8 : 1) // Apply 20% reduction if casement is true
   );
@@ -464,8 +467,7 @@ const calculateRoomCost = (room: Room): number => {
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
   // Apply multipliers
-  let totalCost =
-    baseCost * 1.28 * (1 + priceChange / 100) * (room.casement ? 0.8 : 1);
+  let totalCost = baseCost;
 
   console.log(`Total Cost after multipliers: £${totalCost}`);
 
@@ -829,7 +831,6 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                     style={[styles.detailedTableCell, styles.detailedColSum]}
                   ></Text>
                 </View>
-
 
                 {/* Second Row: Image and other details */}
                 <View style={styles.imageRow}>
