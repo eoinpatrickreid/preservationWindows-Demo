@@ -380,12 +380,13 @@ const calculateRoomCost = (room: Room): number => {
     Laminated: 150,
     Fineo: 220,
   };
-  const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
+  const formationInt = room.formation.split("/").map(Number).reduce((a, b) => a + b);
+
   const baseCost = Math.round(
     (((((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +
-      (30 * panesNumber) +(room.encapsulation*560)+
+      (30 * formationInt) +(room.encapsulation*560)+
       ((glassTypeCosts[glassType]) *
       windowCount))) *
       1.28) * 0.7 *

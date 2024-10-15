@@ -326,8 +326,7 @@ const Create: React.FC = () => {
                 {availableOptions.map((option) => (
                   <Checkbox
                     key={option}
-                    name="options"
-                    value={option}
+                    value={option} // No need for name attribute in this case
                     isChecked={job.options.includes(option)}
                     onChange={(e) => {
                       const isChecked = e.target.checked;
@@ -905,7 +904,6 @@ const Create: React.FC = () => {
                     >
                       Shutter Repairs
                     </Checkbox>
-      
                   </SimpleGrid>
                 </Box>
               </Box>
