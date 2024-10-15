@@ -182,11 +182,11 @@ const Create: React.FC = () => {
 
   // Define Planning Permission options
   const planningPermissionOptions = [
-    { label: "No Planning", value: "" },
-    { label: "Conservation Area", value: "Conservation Area" },
-    { label: "Category A", value: "Concervation Area: Category A" },
-    { label: "Category B", value: "Concervation Area: Category B" },
-    { label: "Category C", value: "Concervation Area: Category C" },
+    { label: "No Planning", value: "No Planning" },
+    { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
+    { label: "Category A", value: "Planning Permission: Concervation Area, Category A" },
+    { label: "Category B", value: "Planning Permission: Concervation Area, Category B" },
+    { label: "Category C", value: "Planning Permission: Concervation Area, Category C" },
   ];
 
   const formationOptions = [

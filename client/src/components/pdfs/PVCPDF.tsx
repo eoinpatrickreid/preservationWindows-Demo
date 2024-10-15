@@ -465,14 +465,15 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
   let adminFee = 0;
   let planningFee = 0;
 
-  if (job.planningPermission === "Conservation Area") {
+
+  if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 50;
     planningFee = 100;
   } else if (
     [
-      "Conservation Area: category A",
-      "Conservation Area: category B",
-      "Conservation Area: category C",
+      "Planning Permission: Concervation Area, Category A",
+      "Planning Permission: Concervation Area, Category B",
+      "Planning Permission: Concervation Area, Category C",
     ].includes(job.planningPermission)
   ) {
     adminFee = 50;
