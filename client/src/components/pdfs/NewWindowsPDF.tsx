@@ -532,7 +532,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   }
 
   // Update subtotal, VAT, and total calculations
-  const subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0) + adminFee;
+  let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
+  subtotal += adminFee;
   const vatAmount = subtotal * 0.2;
   const total = subtotal + vatAmount + planningFee;
 
