@@ -329,8 +329,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageStyle: {
-    width: 30,
-    height: 70,
+    width: 60,
+    height: 90,
     resizeMode: "contain",
   },
   widthLabel: {
