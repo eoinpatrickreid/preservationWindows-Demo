@@ -455,10 +455,10 @@ const calculateRoomCost = (room: Room): number => {
 
   // Base cost calculation
   const baseCost = Math.round(
-    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
+    ((((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
       room.encapsulation * 560 +
-      glassTypeCosts[glassType] * windowCount) *
+      glassTypeCosts[glassType]) * windowCount) *
       1.28 *
       (1 + room.priceChange / 100) *
       (room.casement ? 0.8 : 1) // Apply 20% reduction if casement is true
