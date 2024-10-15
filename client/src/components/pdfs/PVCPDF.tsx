@@ -424,7 +424,8 @@ const calculateRoomCost = (room: Room): number => {
   };
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
-  const formationInt = room.formation.split("/").map(Number).reduce((a, b) => a + b);
+  const formationOnly = room.formation.split("_")[0];
+  const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
 
   const baseCost = Math.round(
     (((((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +

@@ -428,7 +428,8 @@ const calculateRoomCost = (room: Room): number => {
   const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
-  const formationInt = room.formation.split("/").map(Number).reduce((a, b) => a + b);
+  const formationOnly = room.formation.split("_")[0];
+  const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
   const priceChange =
     typeof room.priceChange === "number" ? room.priceChange : 0; // Default to 0 if undefined
 

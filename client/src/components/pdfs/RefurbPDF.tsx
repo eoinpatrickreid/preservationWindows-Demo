@@ -370,7 +370,8 @@ const formationImageMap: { [key: string]: string } = {
 // Function to parse formation and calculate astrical
 const calculateAstrical = (formation: string): number => {
   if (!formation) return 0;
-  const parts = formation.split("/");
+  const formationOnly = formation.split("_")[0];
+  const parts = formationOnly.split("/");
   if (parts.length !== 2) return 0;
   const num1 = parseInt(parts[0], 10);
   const num2 = parseInt(parts[1], 10);
