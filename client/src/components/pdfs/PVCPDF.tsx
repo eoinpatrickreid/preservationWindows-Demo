@@ -24,7 +24,7 @@ import formation_4_2 from "../assets/4:2.png";
 import formation_4_4 from "../assets/4:4.png";
 import formation_6_1 from "../assets/6:1.png";
 import formation_6_2 from "../assets/6:2.png";
-import formation_6_4 from "../assets/6:4.png";
+// import formation_6_4 from "../assets/6:4.png";
 import formation_6_6 from "../assets/6:6.png";
 import formation_7_1 from "../assets/7:1.png";
 const styles = StyleSheet.create({
@@ -374,7 +374,7 @@ const formationImageMap: { [key: string]: string } = {
   "4/4": formation_4_4,
   "6/1": formation_6_1,
   "6/2": formation_6_2,
-  "6/4": formation_6_4,
+  // "6/4": formation_6_4,
   "6/6": formation_6_6,
   "7/1": formation_7_1,
 };
