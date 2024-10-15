@@ -398,8 +398,8 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
-
-  detailsArray.push("• ${room.glassType} Glass");
+ const glassTypeString = "• "+ room.glassType + "glass" 
+  detailsArray.push(glassTypeString);
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");
