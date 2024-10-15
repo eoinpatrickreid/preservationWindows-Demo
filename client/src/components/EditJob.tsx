@@ -338,29 +338,31 @@ const EditJob: React.FC = () => {
               </FormControl>
               <FormControl>
                 <FormLabel>Options</FormLabel>
-                <Stack direction="column">
+                <Stack direction="row" spacing={4}>
                   {availableOptions.map((option) => (
-                    <Checkbox
+                    <Button
                       key={option}
-                      name="options"
-                      value={option}
-                      isChecked={job.options.includes(option)}
-                      onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        const value = e.target.value;
+                      colorScheme="teal" // Use the same color scheme (teal) for consistency
+                      variant={
+                        job.options.includes(option) ? "solid" : "outline"
+                      } // Solid style when selected, outline when not
+                      onClick={() => {
                         let newOptions = [...job.options];
-                        if (isChecked) {
-                          newOptions.push(value);
-                        } else {
+                        if (newOptions.includes(option)) {
                           newOptions = newOptions.filter(
-                            (opt) => opt !== value
-                          );
+                            (opt) => opt !== option
+                          ); // Remove if already selected
+                        } else {
+                          newOptions.push(option); // Add if not selected
                         }
-                        setJob({ ...job, options: newOptions });
+                        setJob({ ...job, options: newOptions }); // Update the job state
                       }}
+                      size="md" // Ensure the button size matches the rest of the form
+                      borderRadius="md" // Match border-radius style with other form elements
+                      _focus={{ boxShadow: "outline" }} // Keep the same focus style as inputs
                     >
                       {option}
-                    </Checkbox>
+                    </Button>
                   ))}
                 </Stack>
               </FormControl>
