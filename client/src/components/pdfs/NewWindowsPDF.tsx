@@ -398,7 +398,8 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
-  detailsArray.push("• Glass 4/16/4 argon filled");
+
+  detailsArray.push("• ${room.glassType} Glass");
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");
