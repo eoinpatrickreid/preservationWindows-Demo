@@ -535,10 +535,10 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   console.log(`Admin fee: £${adminFee}`);
   let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
   console.log(`Subtotal: £${subtotal}`);
-  subtotal += adminFee;
-  console.log(`Subtotal: £${subtotal}`);
-  const vatAmount = subtotal * 0.2;
-  const total = subtotal + vatAmount + planningFee;
+  let subtotalWithAdmin = subtotal+ adminFee;
+  console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
+  const vatAmount = subtotalWithAdmin * 0.2;
+  const total = subtotalWithAdmin + vatAmount + planningFee;
 
   return (
     <Document>
@@ -686,7 +686,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>Subtotal</Text>
               <Text style={styles.footerRightValue}>
-                £{subtotal.toFixed(2)}
+                £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
 
@@ -911,7 +911,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>Subtotal</Text>
               <Text style={styles.finalSummaryValue}>
-                £{subtotal.toFixed(2)}
+                £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
 
