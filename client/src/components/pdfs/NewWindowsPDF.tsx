@@ -11,7 +11,22 @@ import {
 } from "@react-pdf/renderer";
 import { Job, Room } from "../../interfaces";
 import logo from "../assets/logo.png"; // Adjust the path as necessary
-import windowImage from "../assets/window.png"; // Adjust the path as necessary
+import formation_1_1 from "../assets/1:1.png";
+import formation_1_2 from "../assets/1:2.png";
+import formation_2_1 from "../assets/2:1.png";
+import formation_2_2 from "../assets/2:2.png";
+import formation_2_4 from "../assets/2:4.png";
+import formation_3_1 from "../assets/3:1.png";
+import formation_3_2 from "../assets/3:2.png";
+import formation_3_3 from "../assets/3:3.png";
+import formation_4_1 from "../assets/4:1.png";
+import formation_4_2 from "../assets/4:2.png";
+import formation_4_4 from "../assets/4:4.png";
+import formation_6_1 from "../assets/6:1.png";
+import formation_6_2 from "../assets/6:2.png";
+import formation_6_4 from "../assets/6:4.png";
+import formation_6_6 from "../assets/6:6.png";
+import formation_7_1 from "../assets/7:1.png";
 const styles = StyleSheet.create({
   // Global styles
   page: {
@@ -345,6 +360,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+const formationImageMap: { [key: string]: string } = {
+  "1/1": formation_1_1,
+  "1/2": formation_1_2,
+  "2/1": formation_2_1,
+  "2/2": formation_2_2,
+  "2/4": formation_2_4,
+  "3/1": formation_3_1,
+  "3/2": formation_3_2,
+  "3/3": formation_3_3,
+  "4/1": formation_4_1,
+  "4/2": formation_4_2,
+  "4/4": formation_4_4,
+  "6/1": formation_6_1,
+  "6/2": formation_6_2,
+  "6/4": formation_6_4,
+  "6/6": formation_6_6,
+  "7/1": formation_7_1,
+};
 
 const formatRoomDetails = (room: Room): string[][] => {
   const detailsArray: string[] = [];
@@ -786,12 +820,16 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                   ></Text>
                 </View>
 
+
                 {/* Second Row: Image and other details */}
                 <View style={styles.imageRow}>
                   {/* Image Cell with Image and Labels */}
                   <View style={styles.imageCell}>
                     <View style={styles.imageContainer}>
-                      <Image src={windowImage} style={styles.imageStyle} />
+                      <Image
+                        src={formationImageMap[room.formation]}
+                        style={styles.imageStyle}
+                      />
                       <Text style={styles.widthLabel}>{room.width} mm</Text>
                     </View>
                     {/* Height Label */}
