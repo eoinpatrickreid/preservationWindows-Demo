@@ -320,28 +320,28 @@ const Create: React.FC = () => {
                 onChange={(val) => setJob({ ...job, planningPermission: val })}
               />
             </FormControl>
+
             <FormControl>
               <FormLabel>Options</FormLabel>
-              <Stack direction="column">
+              <Stack direction="row">
+                {" "}
+                {/* Stack for horizontal button layout */}
                 {availableOptions.map((option) => (
-                  <Checkbox
+                  <Button
                     key={option}
-                    value={option} // No need for name attribute in this case
-                    isChecked={job.options.includes(option)}
-                    onChange={(e) => {
-                      const isChecked = e.target.checked;
-                      const value = e.target.value;
+                    variant={job.options.includes(option) ? "solid" : "outline"} // Solid style when selected, outline when not
+                    onClick={() => {
                       let newOptions = [...job.options];
-                      if (isChecked) {
-                        newOptions.push(value);
+                      if (newOptions.includes(option)) {
+                        newOptions = newOptions.filter((opt) => opt !== option); // Remove if already selected
                       } else {
-                        newOptions = newOptions.filter((opt) => opt !== value);
+                        newOptions.push(option); // Add if not selected
                       }
-                      setJob({ ...job, options: newOptions });
+                      setJob({ ...job, options: newOptions }); // Update the job state
                     }}
                   >
                     {option}
-                  </Checkbox>
+                  </Button>
                 ))}
               </Stack>
             </FormControl>
