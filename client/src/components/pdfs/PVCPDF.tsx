@@ -352,8 +352,8 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 2,
   },
   detailItem: {
@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
 const formationImageMap: { [key: string]: string } = {
   "1/1": formation_1_1,
   "1/2": formation_1_2,
@@ -397,7 +398,7 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
- const glassTypeString = "• "+ room.glassType + " glass" 
+  const glassTypeString = "• " + room.glassType + " glass";
   detailsArray.push(glassTypeString);
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
@@ -415,6 +416,7 @@ const formatRoomDetails = (room: Room): string[][] => {
 };
 
 // Calculate the cost for a room
+// Calculate the cost for a room
 const calculateRoomCost = (room: Room): number => {
   const glassTypeCosts: { [key: string]: number } = {
     Clear: 0,
@@ -423,31 +425,77 @@ const calculateRoomCost = (room: Room): number => {
     Laminated: 150,
     Fineo: 220,
   };
+
+  const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
   const formationOnly = room.formation.split("_")[0];
-  const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
+  const formationInt = formationOnly
+    .split("/")
+    .map(Number)
+    .reduce((a, b) => a + b);
+  const priceChange =
+    typeof room.priceChange === "number" ? room.priceChange : 0; // Default to 0 if undefined
 
+  // Handle encapsulation: boolean or number
+  const encapsulationCost =
+    typeof room.encapsulation === "number"
+      ? room.encapsulation * 560
+      : room.encapsulation
+      ? 560
+      : 0;
+
+  console.log(`Calculating cost for room: ${room.roomName}`);
+  console.log(`Width (mm): ${room.width}`);
+  console.log(`Height (mm): ${room.height}`);
+  console.log(`Panes Number: ${panesNumber}`);
+  console.log(`Glass Type: ${glassType}`);
+  console.log(`Window Count: ${windowCount}`);
+  console.log(`Price Change (%): ${priceChange}`);
+  console.log(`Encapsulation Cost: £${encapsulationCost}`);
+
+  // Base cost calculation
   const windowCost = Math.round(
-    (((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +
-      (30 * formationInt) +(room.encapsulation*560)+
-      (glassTypeCosts[glassType])) *1.28
+    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
+      30 * formationInt +
+      room.encapsulation * 560 +
+      glassTypeCosts[glassType]) *
+      1.28
   );
-  const pvcDiscount = windowCost * 0.7;
-  const baseCost = pvcDiscount * windowCount ;
 
-  const roomChangesCost = baseCost * (1 + room.priceChange / 100);
-      
-  const withCasementCost = room.casement ? roomChangesCost * 0.8 : roomChangesCost;
-  
-  let totalCost = withCasementCost;
-      
+  console.log(`Cost per window: £${windowCost}`);
+  const baseCost = windowCost * windowCount;
 
-  let additionalCost = 0;
-  if (room.dormer) additionalCost += 55;
-  if (room.easyClean) additionalCost += 80;
+  console.log(`Base Cost before multipliers: £${baseCost}`);
 
-  return totalCost + additionalCost;
+  // Apply multipliers
+  const roomChangeCost = baseCost * (1 + room.priceChange / 100);
+  const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
+  let totalCost = withCasementCost ;
+  console.log(`Total Cost after multipliers: £${totalCost}`);
+
+  // Additional costs
+  if (room.dormer) {
+    totalCost += 55;
+    console.log(`Added Dormer Cost: £55`);
+  }
+  if (room.easyClean) {
+    totalCost += 80;
+    console.log(`Added Easy Clean Cost: £80`);
+  }
+
+  console.log(`Final Room Cost: £${totalCost}`);
+
+  // Ensure no NaN values
+  if (isNaN(totalCost)) {
+    console.warn(
+      `Warning: Calculated cost for room "${room.roomName}" is NaN. Check input values.`
+    );
+    return 0;
+  }
+  totalCost = totalCost * 0.7;
+
+  return Math.round(totalCost);
 };
 
 const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
@@ -456,20 +504,10 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
   const companyCity = "Glasgow";
   const stateZip = "G4 9AD";
 
-  // Compute roomRefs
-
-  // Calculate costs
-  const roomCosts = useMemo(() => {
-    return job.rooms.map((room) => {
-      const cost = calculateRoomCost(room);
-      return cost;
-    });
-  }, [job.rooms]);
-
-  // Determine adminFee and planningFee based on planningPermission
   let adminFee = 0;
   let planningFee = 0;
 
+  console.log(`!!!Planning Permission: ${job.planningPermission}`);
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 50;
@@ -484,11 +522,29 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
     adminFee = 50;
     planningFee = 300;
   }
+  console.log(`!!!Admin fee: £${adminFee}`);
+  console.log(`!!!Planning fee: £${adminFee}`);
+
+  // Compute roomRefs
+
+  // Calculate costs
+  const roomCosts = useMemo(() => {
+    return job.rooms.map((room) => {
+      const cost = calculateRoomCost(room);
+      return cost;
+    });
+  }, [job.rooms]);
+
+  // Determine adminFee and planningFee based on planningPermission
 
   // Update subtotal, VAT, and total calculations
-  const subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0) + adminFee;
-  const vatAmount = subtotal * 0.2;
-  const total = subtotal + vatAmount + planningFee;
+  console.log(`Admin fee: £${adminFee}`);
+  let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
+  console.log(`Subtotal: £${subtotal}`);
+  let subtotalWithAdmin = subtotal + adminFee;
+  console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
+  const vatAmount = subtotalWithAdmin * 0.2;
+  const total = subtotalWithAdmin + vatAmount + planningFee;
 
   return (
     <Document>
@@ -499,9 +555,9 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
             {/* Left side: Date and company address */}
             <View style={styles.headerLeft}>
               <Text style={styles.text}>
-                Date: {job.date} {"\n\n"}{" "}
+                Date: {job.date}
+                {"\n\n"}
               </Text>
-
               <Text style={styles.text}>{companyAddress}</Text>
               <Text style={styles.text}>{companyCity}</Text>
               <Text style={styles.text}>{stateZip}</Text>
@@ -636,7 +692,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>Subtotal</Text>
               <Text style={styles.footerRightValue}>
-                £{subtotal.toFixed(2)}
+                £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
 
@@ -660,14 +716,10 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
 
             {/* Total */}
             <View style={styles.footerRightRow}>
-              <Text
-                style={[styles.footerRightLabel, { fontWeight: "bold" }]}
-              >
+              <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>
                 Total
               </Text>
-              <Text
-                style={[styles.footerRightValue, { fontWeight: "bold" }]}
-              >
+              <Text style={[styles.footerRightValue, { fontWeight: "bold" }]}>
                 £{total.toFixed(2)}
               </Text>
             </View>
@@ -684,7 +736,28 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
         </View>
 
         {/* Start the Detailed Summary on a new page */}
-        <View break />
+        <View style={styles.headerBox} break>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.text}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
 
         {/* Detailed Summary */}
         <View style={styles.section}>
@@ -714,10 +787,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
               Details
             </Text>
             <Text
-              style={[
-                styles.detailedTableHeaderCell,
-                styles.detailedColRate,
-              ]}
+              style={[styles.detailedTableHeaderCell, styles.detailedColRate]}
             >
               Rate (£)
             </Text>
@@ -738,15 +808,36 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
             const roomCost = roomCosts[index];
             const count = room.count || 1;
             const rate = roomCost / count;
+
             return (
               <React.Fragment key={index}>
                 {/* Insert a page break after every 4 rooms */}
                 {index > 0 && index % 4 === 0 && (
                   <>
                     {/* Add a page break */}
-                    <View break />
-
                     {/* Re-render the table header after the break */}
+                    <View style={styles.headerBox} break>
+                      <View style={styles.headerRow}>
+                        {/* Left side: Date and company address */}
+                        <View style={styles.headerLeft}>
+                          <Text style={styles.text}>Date: {job.date}</Text>
+                          <Text style={styles.text}>{companyAddress}</Text>
+                          <Text style={styles.text}>{companyCity}</Text>
+                          <Text style={styles.text}>{stateZip}</Text>
+                        </View>
+
+                        {/* Center: Company name and Quotation */}
+                        <View style={styles.headerCenter}>
+                          <Text style={styles.headerText}>{companyName}</Text>
+                          <Text style={styles.text}>Quotation</Text>
+                        </View>
+
+                        {/* Right side: Logo */}
+                        <View style={styles.headerRight}>
+                          <Image style={styles.logo} src={logo} />
+                        </View>
+                      </View>
+                    </View>
                     <View style={styles.detailedTableHeader}>
                       <Text
                         style={[
@@ -823,29 +914,20 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
                     ]}
                   >
                     {room.priceChange < 0
-                      ? `${room.priceChangeNotes}`
+                      ? ` ${room.priceChangeNotes}`
                       : room.priceChange > 0
                       ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
                   </Text>
                   {/* Empty cells for Rate, Qty, Sum */}
                   <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColRate,
-                    ]}
+                    style={[styles.detailedTableCell, styles.detailedColRate]}
                   ></Text>
                   <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColQty,
-                    ]}
+                    style={[styles.detailedTableCell, styles.detailedColQty]}
                   ></Text>
                   <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColSum,
-                    ]}
+                    style={[styles.detailedTableCell, styles.detailedColSum]}
                   ></Text>
                 </View>
 
@@ -921,7 +1003,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>Subtotal</Text>
               <Text style={styles.finalSummaryValue}>
-                £{subtotal.toFixed(2)}
+                £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
 
@@ -945,28 +1027,24 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
 
             {/* Total */}
             <View style={styles.finalSummaryRow}>
-              <Text
-                style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}
-              >
+              <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>
                 Total
               </Text>
-              <Text
-                style={[styles.finalSummaryValue, { fontWeight: "bold" }]}
-              >
+              <Text style={[styles.finalSummaryValue, { fontWeight: "bold" }]}>
                 £{total.toFixed(2)}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Footer */}
+        {/* Footer
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
+            ????6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
             99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
-        </View>
+        </View> */}
       </Page>
     </Document>
   );

@@ -741,8 +741,9 @@ const EditJob: React.FC = () => {
                               min={-100}
                               step={5}
                               precision={1}
+                              clampValueOnBlur={false}
                               value={field.value}
-                              onChange={(valueString: string) => {
+                              onChange={(valueString) => {
                                 const parsedValue = parseFloat(valueString);
                                 field.onChange(
                                   isNaN(parsedValue) ? "" : parsedValue
