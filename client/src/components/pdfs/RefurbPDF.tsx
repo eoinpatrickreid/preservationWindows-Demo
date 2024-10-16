@@ -508,7 +508,6 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
   const subtotal = roomCosts.reduce((sum, { totalCost }) => sum + totalCost, 0);
   const vatAmount = subtotal * 0.2;
   const total = subtotal + vatAmount;
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -558,7 +557,6 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-        {/* Rest of the document */}
         {/* Project Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
@@ -607,6 +605,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           })}
         </View>
 
+        {/* Footer Container */}
         <View style={styles.footerContainer}>
           {/* Left 2/3rds */}
           <View style={styles.footerLeft}>
@@ -668,34 +667,18 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
           </View>
         </View>
+
+        {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText}></Text>
+          <Text style={styles.footerText}>
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
+            24 | Mob: 07973 820 855
+          </Text>
           <View style={styles.footerBox} />
         </View>
 
-        {/* New Page for Detailed Summary */}
-        <View style={styles.headerBox} break>
-          <View style={styles.headerRow}>
-            {/* Left side: Date and company address */}
-            <View style={styles.headerLeft}>
-              <Text style={styles.text}>Date: {job.date}</Text>
-              <Text style={styles.text}>{companyAddress}</Text>
-              <Text style={styles.text}>{companyCity}</Text>
-              <Text style={styles.text}>{stateZip}</Text>
-            </View>
-
-            {/* Center: Company name and Quotation */}
-            <View style={styles.headerCenter}>
-              <Text style={styles.headerText}>{companyName}</Text>
-              <Text style={styles.text}>Quotation</Text>
-            </View>
-
-            {/* Right side: Logo */}
-            <View style={styles.headerRight}>
-              <Image style={styles.logo} src={logo} />
-            </View>
-          </View>
-        </View>
+        {/* Start the Detailed Summary on a new page */}
+        <View break />
 
         {/* Detailed Summary */}
         <View style={styles.section}>
@@ -712,7 +695,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                 styles.detailedColRoomName,
               ]}
             >
-               Location
+              Location
             </Text>
             <Text
               style={[
@@ -744,20 +727,84 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             const { totalCost, costBreakdown } = roomCosts[index];
             const count = room.count || 1;
 
-            // Prepare details text
-            const detailsText = Object.entries(costBreakdown)
+            // Prepare details text and prices
+            const detailsEntries = Object.entries(costBreakdown);
+
+            // Generate strings for details and prices
+            const detailsText = detailsEntries
               .map(([detail, _]) => `${detail}:`)
               .join("\n");
-
-            const detailsPrices = Object.entries(costBreakdown)
+            const detailsPrices = detailsEntries
               .map(([_, cost]) => `£${cost}`)
               .join("\n");
 
             return (
               <React.Fragment key={index}>
+                {/* Insert a page break after every 4 rooms */}
+                {index > 0 && index % 4 === 0 && (
+                  <>
+                    {/* Add a page break */}
+                    <View break />
+
+                    {/* Re-render the table header after the break */}
+                    <View style={styles.detailedTableHeader}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRef,
+                        ]}
+                      >
+                        Ref
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRoomName,
+                        ]}
+                      >
+                        Location
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColDetails,
+                        ]}
+                      >
+                        Details
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRate,
+                        ]}
+                      >
+                        Rate (£)
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColQty,
+                        ]}
+                      >
+                        Quantity
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColSum,
+                        ]}
+                      >
+                        Sum (£)
+                      </Text>
+                    </View>
+                  </>
+                )}
+
                 {/* First Row: Ref and Room Name */}
                 <View style={styles.detailedTableRow}>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRef]}>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColRef]}
+                  >
                     {room.ref}
                   </Text>
                   <Text
@@ -768,7 +815,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                   >
                     {room.roomName}
                   </Text>
-                  {/* Empty cells for Details, Rate, Quantity, Sum */}
+                  {/* Details */}
                   <Text
                     style={[
                       styles.detailedTableCell,
@@ -776,13 +823,12 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                     ]}
                   >
                     {room.priceChange < 0
-                      ? `${
-                          room.priceChangeNotes
-                        }`
+                      ? `${room.priceChangeNotes}`
                       : room.priceChange > 0
                       ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
                   </Text>
+                  {/* Empty cells for Rate, Quantity, Sum */}
                   <Text
                     style={[styles.detailedTableCell, styles.detailedColRate]}
                   ></Text>
@@ -875,17 +921,18 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-        {/* Additional content can be added here */}
-        <View style={styles.footer} fixed>
+        {/* Footer */}
+        {/* <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
             6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
             24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
-        </View>
+        </View> */}
       </Page>
     </Document>
   );
 };
+
 
 export default RefurbPDF;

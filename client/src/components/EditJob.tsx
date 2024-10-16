@@ -739,12 +739,15 @@ const EditJob: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={-100}
-                              step={0.1}
+                              step={5}
                               precision={1}
                               value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
+                              onChange={(valueString: string) => {
+                                const parsedValue = parseFloat(valueString);
+                                field.onChange(
+                                  isNaN(parsedValue) ? "" : parsedValue
+                                );
+                              }}
                             >
                               <NumberInputField
                                 bg="white"
