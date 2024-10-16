@@ -398,7 +398,7 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
- const glassTypeString = "• "+ room.glassType + " glass" 
+  const glassTypeString = "• " + room.glassType + " glass";
   detailsArray.push(glassTypeString);
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
@@ -456,22 +456,21 @@ const calculateRoomCost = (room: Room): number => {
 
   // Base cost calculation
   const windowCost = Math.round(
-    (((((((room.width / 1000) * (room.height / 1000)) * 200) + 540) * 1.8) +
-      (30 * formationInt) +
-      (room.encapsulation * 560) +
+    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
+      30 * formationInt +
+      room.encapsulation * 560 +
       glassTypeCosts[glassType]) *
-      1.28 )
+      1.28
   );
 
   console.log(`Cost per window: £${windowCost}`);
   const baseCost = windowCost * windowCount;
 
-
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
   // Apply multipliers
-  const roomChangeCost = baseCost * (1 + room.priceChange / 100) 
-  const withCasementCost = roomChangeCost*(room.casement ? 0.8 : 1) // Apply 20% reduction if casement is true;
+  const roomChangeCost = baseCost * (1 + room.priceChange / 100);
+  const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
   let totalCost = withCasementCost;
   console.log(`Total Cost after multipliers: £${totalCost}`);
 
@@ -504,19 +503,10 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   const companyCity = "Glasgow";
   const stateZip = "G4 9AD";
 
-  // Compute roomRefs
-
-  // Calculate costs
-  const roomCosts = useMemo(() => {
-    return job.rooms.map((room) => {
-      const cost = calculateRoomCost(room);
-      return cost;
-    });
-  }, [job.rooms]);
-
-  // Determine adminFee and planningFee based on planningPermission
   let adminFee = 0;
   let planningFee = 0;
+
+  console.log(`!!!Planning Permission: ${job.planningPermission}`);
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 50;
@@ -531,12 +521,26 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
     adminFee = 50;
     planningFee = 300;
   }
+  console.log(`!!!Admin fee: £${adminFee}`);
+  console.log(`!!!Planning fee: £${adminFee}`);
+
+  // Compute roomRefs
+
+  // Calculate costs
+  const roomCosts = useMemo(() => {
+    return job.rooms.map((room) => {
+      const cost = calculateRoomCost(room);
+      return cost;
+    });
+  }, [job.rooms]);
+
+  // Determine adminFee and planningFee based on planningPermission
 
   // Update subtotal, VAT, and total calculations
   console.log(`Admin fee: £${adminFee}`);
   let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
   console.log(`Subtotal: £${subtotal}`);
-  let subtotalWithAdmin = subtotal+ adminFee;
+  let subtotalWithAdmin = subtotal + adminFee;
   console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
   const vatAmount = subtotalWithAdmin * 0.2;
   const total = subtotalWithAdmin + vatAmount + planningFee;
@@ -822,9 +826,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                     ]}
                   >
                     {room.priceChange < 0
-                      ? ` ${
-                          room.priceChangeNotes
-                        }`
+                      ? ` ${room.priceChangeNotes}`
                       : room.priceChange > 0
                       ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
