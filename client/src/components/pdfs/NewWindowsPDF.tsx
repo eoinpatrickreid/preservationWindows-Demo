@@ -752,8 +752,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-        {/* Detailed Summary */}
-        <View style={styles.section}>
+{/* Detailed Summary */}
+<View style={styles.section} break>
           <Text style={styles.sectionTitle}>Detailed Summary</Text>
 
           {/* Table Header */}
@@ -780,7 +780,10 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               Details
             </Text>
             <Text
-              style={[styles.detailedTableHeaderCell, styles.detailedColRate]}
+              style={[
+                styles.detailedTableHeaderCell,
+                styles.detailedColRate,
+              ]}
             >
               Rate (£)
             </Text>
@@ -801,6 +804,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             const roomCost = roomCosts[index];
             const count = room.count || 1;
             const rate = roomCost / count;
+
             return (
               <React.Fragment key={index}>
                 {/* Top Row: Ref and Room Name */}
@@ -832,7 +836,10 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                       : room.priceChangeNotes}
                   </Text>
                   <Text
-                    style={[styles.detailedTableCell, styles.detailedColRate]}
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColRate,
+                    ]}
                   ></Text>
                   <Text
                     style={[styles.detailedTableCell, styles.detailedColQty]}
@@ -901,6 +908,103 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                     £{roomCost.toFixed(2)}
                   </Text>
                 </View>
+
+                {/* Insert a page break after every 4 rooms */}
+                {(index + 1) % 4 === 0 && index + 1 !== job.rooms.length && (
+                  <>
+                    {/* Add a footer at the bottom of the current page */}
+                    <View style={styles.footer} fixed>
+                      <Text style={styles.footerText}>
+                        6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel:
+                        01236 72 99 24 | Mob: 07973 820 855
+                      </Text>
+                      <View style={styles.footerBox} />
+                    </View>
+                    {/* Start a new page */}
+                    <Page size="A4" style={styles.page}>
+                      {/* Add the header to the new page */}
+                      <View style={styles.headerBox}>
+                        <View style={styles.headerRow}>
+                          {/* Left side: Date and company address */}
+                          <View style={styles.headerLeft}>
+                            <Text style={styles.text}>Date: {job.date}</Text>
+                            <Text style={styles.text}>{companyAddress}</Text>
+                            <Text style={styles.text}>{companyCity}</Text>
+                            <Text style={styles.text}>{stateZip}</Text>
+                          </View>
+
+                          {/* Center: Company name and Quotation */}
+                          <View style={styles.headerCenter}>
+                            <Text style={styles.headerText}>{companyName}</Text>
+                            <Text style={styles.text}>Quotation</Text>
+                          </View>
+
+                          {/* Right side: Logo */}
+                          <View style={styles.headerRight}>
+                            <Image style={styles.logo} src={logo} />
+                          </View>
+                        </View>
+                      </View>
+
+                      {/* Re-render the table header */}
+                      <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Detailed Summary</Text>
+
+                        {/* Table Header */}
+                        <View style={styles.detailedTableHeader}>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColRef,
+                            ]}
+                          >
+                            Ref
+                          </Text>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColRoomName,
+                            ]}
+                          >
+                            Location
+                          </Text>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColDetails,
+                            ]}
+                          >
+                            Details
+                          </Text>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColRate,
+                            ]}
+                          >
+                            Rate (£)
+                          </Text>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColQty,
+                            ]}
+                          >
+                            Qty
+                          </Text>
+                          <Text
+                            style={[
+                              styles.detailedTableHeaderCell,
+                              styles.detailedColSum,
+                            ]}
+                          >
+                            Sum (£)
+                          </Text>
+                        </View>
+                      </View>
+                    </Page>
+                  </>
+                )}
               </React.Fragment>
             );
           })}
