@@ -739,7 +739,7 @@ const EditJob: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={-100}
-                              step={5}
+                              step={0.05}
                               precision={1}
                               clampValueOnBlur={false}
                               value={field.value}
