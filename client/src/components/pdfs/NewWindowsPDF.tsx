@@ -730,7 +730,29 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         </View>
 
 {/* Detailed Summary */}
-<View style={styles.section} break>
+<View style={styles.headerBox} break>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.text}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
+<View style={styles.section}>
           <Text style={styles.sectionTitle}>Detailed Summary</Text>
 
           {/* Table Header */}
