@@ -554,26 +554,27 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             {/* Left side: Date and company address */}
             <View style={styles.headerLeft}>
               <Text style={styles.text}>
-                Date: {job.date}{"\n\n"}
+                Date: {job.date}
+                {"\n\n"}
               </Text>
               <Text style={styles.text}>{companyAddress}</Text>
               <Text style={styles.text}>{companyCity}</Text>
               <Text style={styles.text}>{stateZip}</Text>
             </View>
-  
+
             {/* Center: Company name and Quotation */}
             <View style={styles.headerCenter}>
               <Text style={styles.headerText}>{companyName}</Text>
               <Text style={styles.headerText}>Quotation</Text>
             </View>
-  
+
             {/* Right side: Logo */}
             <View style={styles.headerRight}>
               <Image style={styles.logo} src={logo} />
             </View>
           </View>
         </View>
-  
+
         {/* Client Box */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
@@ -581,7 +582,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.text}>Job ID: {job.quoteId}</Text>
           </View>
         </View>
-  
+
         {/* Client Box with Address/Postcode and Planning Permission */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
@@ -592,16 +593,18 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
-  
+
         {/* Project Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
             Project Summary: Replace Windows
           </Text>
-  
+
           {/* Table Header */}
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
+              Ref
+            </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
               Location
             </Text>
@@ -615,7 +618,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               Cost (£)
             </Text>
           </View>
-  
+
           {/* Table Rows */}
           {job.rooms.map((room, index) => {
             const roomCost = roomCosts[index];
@@ -640,7 +643,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             );
           })}
         </View>
-  
+
         {/* Footer Container */}
         <View style={styles.footerContainer}>
           {/* Left 2/3rds */}
@@ -659,8 +662,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             </Text>
             <Text style={styles.footerText}>
               We hope this quotation is of interest to you and look forward to
-              hearing from you in the future. Planning applications include a £50
-              admin fee which is subject to VAT.
+              hearing from you in the future. Planning applications include a
+              £50 admin fee which is subject to VAT.
             </Text>
             <Text
               style={[
@@ -676,14 +679,14 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               balance will be required.
             </Text>
           </View>
-  
+
           {/* Right 1/3rd */}
           <View style={styles.footerRight}>
             {/* Final Summary Title */}
             <View style={styles.footerRightSection}>
               <Text style={styles.footerRightTitle}>Final Summary</Text>
             </View>
-  
+
             {/* Subtotal */}
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>Subtotal</Text>
@@ -691,7 +694,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
-  
+
             {/* VAT */}
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>VAT (20%)</Text>
@@ -699,7 +702,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{vatAmount.toFixed(2)}
               </Text>
             </View>
-  
+
             {/* Planning Fee (if applicable) */}
             {planningFee > 0 && (
               <View style={styles.footerRightRow}>
@@ -709,7 +712,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 </Text>
               </View>
             )}
-  
+
             {/* Total */}
             <View style={styles.footerRightRow}>
               <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>
@@ -721,23 +724,44 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
           </View>
         </View>
-  
+
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
-            24 | Mob: 07973 820 855
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
+            99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
         </View>
-  
+
         {/* Start the Detailed Summary on a new page */}
-        <View break />
-  
+        <View style={styles.headerBox} break>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.text}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
+
         {/* Detailed Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detailed Summary</Text>
-  
+
           {/* Table Header */}
           <View style={styles.detailedTableHeader}>
             <Text
@@ -777,22 +801,50 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               Sum (£)
             </Text>
           </View>
-  
+
           {/* Table Rows */}
           {job.rooms.map((room, index) => {
             const roomCost = roomCosts[index];
             const count = room.count || 1;
             const rate = roomCost / count;
-  
+
             return (
               <React.Fragment key={index}>
                 {/* Insert a page break after every 4 rooms */}
-                {index > 0 && index % 4 === 0 && (
+                {index > 0 && index % 3 === 0 && (
                   <>
+                    {/* Footer */}
+                    <View style={styles.footer} fixed>
+                      <Text style={styles.footerText}>
+                        6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH |
+                        Tel: 01236 72 99 24 | Mob: 07973 820 855
+                      </Text>
+                      <View style={styles.footerBox} />
+                    </View>
                     {/* Add a page break */}
-                    <View break />
-  
                     {/* Re-render the table header after the break */}
+                    <View style={styles.headerBox} break>
+                      <View style={styles.headerRow}>
+                        {/* Left side: Date and company address */}
+                        <View style={styles.headerLeft}>
+                          <Text style={styles.text}>Date: {job.date}</Text>
+                          <Text style={styles.text}>{companyAddress}</Text>
+                          <Text style={styles.text}>{companyCity}</Text>
+                          <Text style={styles.text}>{stateZip}</Text>
+                        </View>
+
+                        {/* Center: Company name and Quotation */}
+                        <View style={styles.headerCenter}>
+                          <Text style={styles.headerText}>{companyName}</Text>
+                          <Text style={styles.text}>Quotation</Text>
+                        </View>
+
+                        {/* Right side: Logo */}
+                        <View style={styles.headerRight}>
+                          <Image style={styles.logo} src={logo} />
+                        </View>
+                      </View>
+                    </View>
                     <View style={styles.detailedTableHeader}>
                       <Text
                         style={[
@@ -845,7 +897,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                     </View>
                   </>
                 )}
-  
+
                 {/* Top Row: Ref and Room Name */}
                 <View style={styles.detailedTableRow}>
                   <Text
@@ -876,10 +928,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                   </Text>
                   {/* Empty cells for Rate, Qty, Sum */}
                   <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColRate,
-                    ]}
+                    style={[styles.detailedTableCell, styles.detailedColRate]}
                   ></Text>
                   <Text
                     style={[styles.detailedTableCell, styles.detailedColQty]}
@@ -888,7 +937,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                     style={[styles.detailedTableCell, styles.detailedColSum]}
                   ></Text>
                 </View>
-  
+
                 {/* Second Row: Image and other details */}
                 <View style={styles.imageRow}>
                   {/* Image Cell with Image and Labels */}
@@ -952,7 +1001,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             );
           })}
         </View>
-  
+
         {/* Final Summary Below Detailed Summary */}
         <View style={styles.finalSummaryContainer}>
           <View style={styles.finalSummaryBox}>
@@ -964,7 +1013,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
-  
+
             {/* VAT */}
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>VAT (20%)</Text>
@@ -972,7 +1021,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{vatAmount.toFixed(2)}
               </Text>
             </View>
-  
+
             {/* Planning Fee (if applicable) */}
             {planningFee > 0 && (
               <View style={styles.finalSummaryRow}>
@@ -982,7 +1031,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 </Text>
               </View>
             )}
-  
+
             {/* Total */}
             <View style={styles.finalSummaryRow}>
               <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>
@@ -994,18 +1043,18 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
           </View>
         </View>
-  
+
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
-            24 | Mob: 07973 820 855
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
+            99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
         </View>
       </Page>
     </Document>
   );
-}  
+};
 
 export default NewWindowsPDF;

@@ -45,7 +45,7 @@ const Create: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: { },
+    formState: {},
   } = useForm<Job>({
     defaultValues: {
       completed: false,
@@ -94,7 +94,11 @@ const Create: React.FC = () => {
   });
 
   // Use useFieldArray for dynamic room fields
-  const { fields: rooms, append, remove } = useFieldArray({
+  const {
+    fields: rooms,
+    append,
+    remove,
+  } = useFieldArray({
     control,
     name: "rooms",
   });
@@ -130,7 +134,10 @@ const Create: React.FC = () => {
   // Define Planning Permission options
   const planningPermissionOptions = [
     { label: "No Planning", value: "No Planning" },
-    { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
+    {
+      label: "Conservation Area",
+      value: "Planning Permission: Conservation Area",
+    },
     {
       label: "Category A",
       value: "Planning Permission: Concervation Area, Category A",
@@ -143,7 +150,7 @@ const Create: React.FC = () => {
       label: "Category C",
       value: "Planning Permission: Concervation Area, Category C",
     },
-  ];    
+  ];
 
   const formationOptions = [
     { label: "1/1", value: "1/1" },
@@ -309,11 +316,15 @@ const Create: React.FC = () => {
                       <Button
                         key={option}
                         colorScheme="teal"
-                        variant={field.value.includes(option) ? "solid" : "outline"}
+                        variant={
+                          field.value.includes(option) ? "solid" : "outline"
+                        }
                         onClick={() => {
                           let newOptions = [...field.value];
                           if (newOptions.includes(option)) {
-                            newOptions = newOptions.filter((opt) => opt !== option);
+                            newOptions = newOptions.filter(
+                              (opt) => opt !== option
+                            );
                           } else {
                             newOptions.push(option);
                           }
@@ -353,7 +364,11 @@ const Create: React.FC = () => {
                   <Heading as="h4" size="sm">
                     Room {index + 1}
                   </Heading>
-                  <Button size="sm" colorScheme="red" onClick={() => remove(index)}>
+                  <Button
+                    size="sm"
+                    colorScheme="red"
+                    onClick={() => remove(index)}
+                  >
                     Delete Room
                   </Button>
                 </Stack>
@@ -381,7 +396,9 @@ const Create: React.FC = () => {
                       <FormLabel>Room Name</FormLabel>
                       <Input
                         type="text"
-                        {...register(`rooms.${index}.roomName`, { required: true })}
+                        {...register(`rooms.${index}.roomName`, {
+                          required: true,
+                        })}
                         bg="white"
                         _focus={{ bg: "white", boxShadow: "outline" }}
                         boxShadow="sm"
@@ -400,7 +417,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -428,7 +447,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -450,7 +471,9 @@ const Create: React.FC = () => {
                     <FormControl isRequired>
                       <FormLabel>Formation</FormLabel>
                       <Select
-                        {...register(`rooms.${index}.formation`, { required: true })}
+                        {...register(`rooms.${index}.formation`, {
+                          required: true,
+                        })}
                         bg="white"
                         _focus={{ bg: "white", boxShadow: "outline" }}
                         boxShadow="sm"
@@ -495,7 +518,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -523,7 +548,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -551,7 +578,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -579,7 +608,9 @@ const Create: React.FC = () => {
                           <NumberInput
                             min={0}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -651,9 +682,12 @@ const Create: React.FC = () => {
                         render={({ field }) => (
                           <NumberInput
                             min={-100}
-                            step={5}
+                            step={0.1}
+                            precision={1}
                             value={field.value}
-                            onChange={(valueString) => field.onChange(Number(valueString))}
+                            onChange={(valueString) =>
+                              field.onChange(Number(valueString))
+                            }
                           >
                             <NumberInputField
                               bg="white"
@@ -702,34 +736,33 @@ const Create: React.FC = () => {
                 </Grid>
                 {/* Options Section */}
                 <Box mt={4}>
-  <Heading as="h5" size="sm" mb={2}>
-    Options
-  </Heading>
-  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
-    {roomOptionFields.map((option) => (
-      <Controller<Job, RoomOptionPath>
-        key={option.name}
-        control={control}
-        name={`rooms.${index}.${option.name}` as RoomOptionPath}
-        render={({ field }) => {
-          const { value, ...rest } = field;
-          return (
-            <Checkbox
-              {...rest}
-              isChecked={value as boolean}
-              onChange={(e) => field.onChange(e.target.checked)}
-              size="md"
-              colorScheme="teal"
-            >
-              {option.label}
-            </Checkbox>
-          );
-        }}
-      />
-    ))}
-  </SimpleGrid>
-</Box>
-
+                  <Heading as="h5" size="sm" mb={2}>
+                    Options
+                  </Heading>
+                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+                    {roomOptionFields.map((option) => (
+                      <Controller<Job, RoomOptionPath>
+                        key={option.name}
+                        control={control}
+                        name={`rooms.${index}.${option.name}` as RoomOptionPath}
+                        render={({ field }) => {
+                          const { value, ...rest } = field;
+                          return (
+                            <Checkbox
+                              {...rest}
+                              isChecked={value as boolean}
+                              onChange={(e) => field.onChange(e.target.checked)}
+                              size="md"
+                              colorScheme="teal"
+                            >
+                              {option.label}
+                            </Checkbox>
+                          );
+                        }}
+                      />
+                    ))}
+                  </SimpleGrid>
+                </Box>
               </Box>
             ))}
             <Button

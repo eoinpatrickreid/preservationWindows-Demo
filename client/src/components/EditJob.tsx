@@ -60,7 +60,12 @@ const EditJob: React.FC = () => {
   });
 
   // Use useFieldArray for dynamic room fields
-  const { fields: rooms, append, remove, replace } = useFieldArray({
+  const {
+    fields: rooms,
+    append,
+    remove,
+    replace,
+  } = useFieldArray({
     control,
     name: "rooms",
   });
@@ -120,7 +125,10 @@ const EditJob: React.FC = () => {
   // Define Planning Permission options
   const planningPermissionOptions = [
     { label: "No Planning", value: "No Planning" },
-    { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
+    {
+      label: "Conservation Area",
+      value: "Planning Permission: Conservation Area",
+    },
     {
       label: "Category A",
       value: "Planning Permission: Concervation Area, Category A",
@@ -133,7 +141,7 @@ const EditJob: React.FC = () => {
       label: "Category C",
       value: "Planning Permission: Concervation Area, Category C",
     },
-  ];    
+  ];
 
   const formationOptions = [
     { label: "1/1", value: "1/1" },
@@ -363,11 +371,15 @@ const EditJob: React.FC = () => {
                         <Button
                           key={option}
                           colorScheme="teal"
-                          variant={field.value.includes(option) ? "solid" : "outline"}
+                          variant={
+                            field.value.includes(option) ? "solid" : "outline"
+                          }
                           onClick={() => {
                             let newOptions = [...field.value];
                             if (newOptions.includes(option)) {
-                              newOptions = newOptions.filter((opt) => opt !== option);
+                              newOptions = newOptions.filter(
+                                (opt) => opt !== option
+                              );
                             } else {
                               newOptions.push(option);
                             }
@@ -399,21 +411,35 @@ const EditJob: React.FC = () => {
                   bg="white"
                   boxShadow="sm"
                 >
-                  <Stack direction="row" justifyContent="space-between" align="center">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    align="center"
+                  >
                     <Heading as="h4" size="sm">
                       Room {index + 1}
                     </Heading>
-                    <Button size="sm" colorScheme="red" onClick={() => remove(index)}>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      onClick={() => remove(index)}
+                    >
                       Delete Room
                     </Button>
                   </Stack>
-                  <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4} mt={4}>
+                  <Grid
+                    templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                    gap={4}
+                    mt={4}
+                  >
                     <GridItem>
                       <FormControl isRequired>
                         <FormLabel>Ref</FormLabel>
                         <Input
                           type="text"
-                          {...register(`rooms.${index}.ref`, { required: true })}
+                          {...register(`rooms.${index}.ref`, {
+                            required: true,
+                          })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -427,7 +453,9 @@ const EditJob: React.FC = () => {
                         <FormLabel>Room Name</FormLabel>
                         <Input
                           type="text"
-                          {...register(`rooms.${index}.roomName`, { required: true })}
+                          {...register(`rooms.${index}.roomName`, {
+                            required: true,
+                          })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -446,7 +474,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -474,7 +504,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -496,7 +528,9 @@ const EditJob: React.FC = () => {
                       <FormControl isRequired>
                         <FormLabel>Formation</FormLabel>
                         <Select
-                          {...register(`rooms.${index}.formation`, { required: true })}
+                          {...register(`rooms.${index}.formation`, {
+                            required: true,
+                          })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -541,7 +575,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -569,7 +605,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -597,7 +635,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -625,7 +665,9 @@ const EditJob: React.FC = () => {
                             <NumberInput
                               min={0}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -697,9 +739,12 @@ const EditJob: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={-100}
-                              step={5}
+                              step={0.1}
+                              precision={1}
                               value={field.value}
-                              onChange={(valueString) => field.onChange(Number(valueString))}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
                             >
                               <NumberInputField
                                 bg="white"
@@ -717,6 +762,7 @@ const EditJob: React.FC = () => {
                         />
                       </FormControl>
                     </GridItem>
+
                     <GridItem>
                       <FormControl>
                         <FormLabel>Price Change Notes</FormLabel>
@@ -756,14 +802,18 @@ const EditJob: React.FC = () => {
                         <Controller<Job, RoomOptionPath>
                           key={option.name}
                           control={control}
-                          name={`rooms.${index}.${option.name}` as RoomOptionPath}
+                          name={
+                            `rooms.${index}.${option.name}` as RoomOptionPath
+                          }
                           render={({ field }) => {
                             const { value, ...rest } = field;
                             return (
                               <Checkbox
                                 {...rest}
                                 isChecked={value as boolean}
-                                onChange={(e) => field.onChange(e.target.checked)}
+                                onChange={(e) =>
+                                  field.onChange(e.target.checked)
+                                }
                                 size="md"
                                 colorScheme="teal"
                               >
@@ -777,11 +827,22 @@ const EditJob: React.FC = () => {
                   </Box>
                 </Box>
               ))}
-              <Button mt={4} onClick={addRoom} colorScheme="teal" variant="outline">
+              <Button
+                mt={4}
+                onClick={addRoom}
+                colorScheme="teal"
+                variant="outline"
+              >
                 Add Room
               </Button>
               {/* Submit Button */}
-              <Button type="submit" colorScheme="teal" size="lg" mt={6} isLoading={isSubmitting}>
+              <Button
+                type="submit"
+                colorScheme="teal"
+                size="lg"
+                mt={6}
+                isLoading={isSubmitting}
+              >
                 Update Job
               </Button>
             </VStack>
