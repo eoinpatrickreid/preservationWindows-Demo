@@ -1,9 +1,9 @@
 // src/components/Create.tsx
 
-import React from 'react';
 import axiosInstance from "../utils/axiosInstance";
+import React from "react";
 import Navbar from "./NavBar";
-import { Job} from "../interfaces";
+import { Job, Room } from "../interfaces";
 import {
   Box,
   Button,
@@ -12,6 +12,11 @@ import {
   Input,
   Textarea,
   Checkbox,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
   Stack,
   Grid,
   GridItem,
@@ -23,66 +28,109 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import MultiOptionToggle from "./MultiOptionToggle";
-import { Formik, Form, FieldArray, FastField, FieldProps } from 'formik';
-import * as Yup from 'yup';
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 const Create: React.FC = () => {
-  const navigate = useNavigate();
-  const toast = useToast();
-
-  const initialValues: Job = {
-    completed: false,
-    date: new Date().toISOString().split("T")[0],
-    customerName: "",
-    address: "",
-    email: "",
-    phone: "",
-    postCode: "",
-    rooms: [
-      {
-        ref: "",
-        roomName: "",
-        width: 0,
-        height: 0,
-        count: 0,
-        putty: false,
-        mastic: false,
-        paint: false,
-        tenon: false,
-        eC: false,
-        encapsulation: 0,
-        bottomRail: false,
-        dormer: false,
-        easyClean: false,
-        pullyWheel: false,
-        panesNumber: 0,
-        stainRepairs: 0,
-        cill: "",
-        sash: "",
-        notes: "",
-        formation: "",
-        glassType: "Clear",
-        casement: false,
-        priceChange: 0,
-        priceChangeNotes: "",
-        masticPatch: false,
-        outsidePatch: false,
-        concealedVent: false,
-        shutters: false,
-      },
-    ],
-    options: [],
-    planningPermission: "Conservation Area",
+  // Initialize the current date in 'YYYY-MM-DD' format
+  const getCurrentDate = () => {
+    const tzoffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
+    return new Date(Date.now() - tzoffset).toISOString().split("T")[0];
   };
 
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  // Use React Hook Form
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { },
+  } = useForm<Job>({
+    defaultValues: {
+      completed: false,
+      date: getCurrentDate(),
+      customerName: "",
+      address: "",
+      email: "",
+      phone: "",
+      postCode: "",
+      rooms: [
+        {
+          ref: "",
+          roomName: "",
+          width: 0,
+          height: 0,
+          count: 0,
+          putty: false,
+          mastic: false,
+          paint: false,
+          tenon: false,
+          eC: false,
+          encapsulation: 0,
+          bottomRail: false,
+          dormer: false,
+          easyClean: false,
+          pullyWheel: false,
+          panesNumber: 0,
+          stainRepairs: 0,
+          cill: "",
+          sash: "",
+          notes: "",
+          formation: "",
+          glassType: "Clear",
+          casement: false,
+          priceChange: 0,
+          priceChangeNotes: "",
+          masticPatch: false,
+          outsidePatch: false,
+          concealedVent: false,
+          shutters: false,
+        },
+      ],
+      options: [],
+      planningPermission: "Conservation Area",
+    },
+  });
+
+  // Use useFieldArray for dynamic room fields
+  const { fields: rooms, append, remove } = useFieldArray({
+    control,
+    name: "rooms",
+  });
+
+  const onSubmit = async (data: Job) => {
+    try {
+      const response = await axiosInstance.post("/api/jobs", data);
+      console.log("Job created:", response.data);
+      const createdJob: Job = response.data as Job;
+      toast({
+        title: "Job Created",
+        description: "The job has been successfully created.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      navigate(`/viewSingle/${createdJob._id}`);
+    } catch (error) {
+      console.error("Error creating job:", error);
+      toast({
+        title: "Error",
+        description: "There was an error creating the job.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  // Options available for the job options field
   const availableOptions = ["New Windows", "Refurb", "PVC"];
 
+  // Define Planning Permission options
   const planningPermissionOptions = [
     { label: "No Planning", value: "No Planning" },
-    {
-      label: "Conservation Area",
-      value: "Planning Permission: Conservation Area",
-    },
+    { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
     {
       label: "Category A",
       value: "Planning Permission: Conservation Area, Category A",
@@ -128,46 +176,29 @@ const Create: React.FC = () => {
     { label: "Fineo", value: "Fineo" },
   ];
 
-  const onSubmit = async (values: Job) => {
-    try {
-      const response = await axiosInstance.post("/api/jobs", values);
-      const createdJob: Job = response.data as Job;
-      toast({
-        title: "Job Created",
-        description: "The job has been successfully created.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-      navigate(`/viewSingle/${createdJob._id}`);
-    } catch (error) {
-      console.error("Error creating job:", error);
-      toast({
-        title: "Error",
-        description: "There was an error creating the job.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
+  // Extract boolean keys from Room
+  type RoomBooleanKeys = {
+    [K in keyof Room]: Room[K] extends boolean ? K : never;
+  }[keyof Room];
 
-  const validationSchema = Yup.object().shape({
-    customerName: Yup.string().required('Required'),
-    address: Yup.string().required('Required'),
-    postCode: Yup.string().required('Required'),
-    date: Yup.string().required('Required'),
-    rooms: Yup.array().of(
-      Yup.object().shape({
-        ref: Yup.string().required('Required'),
-        roomName: Yup.string().required('Required'),
-        width: Yup.number().required('Required'),
-        height: Yup.number().required('Required'),
-        count: Yup.number().required('Required'),
-        formation: Yup.string().required('Required'),
-      })
-    ),
-  });
+  type RoomOptionPath = `rooms.${number}.${RoomBooleanKeys}`;
+
+  const roomOptionFields: { name: RoomBooleanKeys; label: string }[] = [
+    { name: "easyClean", label: "Easy Clean" },
+    { name: "dormer", label: "Dormer" },
+    { name: "mastic", label: "Mastic" },
+    { name: "masticPatch", label: "Mastic Patch" },
+    { name: "putty", label: "Putty" },
+    { name: "paint", label: "Paint" },
+    { name: "tenon", label: "Tenon" },
+    { name: "eC", label: "EC" },
+    { name: "bottomRail", label: "Bottom Rail" },
+    { name: "pullyWheel", label: "Pully Wheel" },
+    { name: "casement", label: "Casement" },
+    { name: "concealedVent", label: "Concealed Vent" },
+    { name: "outsidePatch", label: "Outside Facing Patch" },
+    { name: "shutters", label: "Shutter Repairs" },
+  ];
 
   return (
     <>
@@ -176,147 +207,117 @@ const Create: React.FC = () => {
         <Heading as="h2" size="lg" mb={6} textAlign="center">
           Create Job
         </Heading>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={onSubmit}
-          validationSchema={validationSchema}
-        >
-          {({ values, setFieldValue }) => (
-            <Form>
-              <VStack spacing={4} align="stretch">
-                {/* Job Fields */}
-                <FormControl isRequired>
-                  <FormLabel>Date</FormLabel>
-                  <FastField name="date">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        type="date"
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Completed</FormLabel>
-                  <FastField name="completed">
-                    {({ field }: FieldProps<boolean>) => (
-                      <Checkbox
-                        isChecked={field.value}
-                        onChange={(e) => setFieldValue('completed', e.target.checked)}
-                      >
-                        Is Completed
-                      </Checkbox>
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Customer Name</FormLabel>
-                  <FastField name="customerName">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Email</FormLabel>
-                  <FastField name="email">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        type="email"
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Phone</FormLabel>
-                  <FastField name="phone">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        type="tel"
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Address</FormLabel>
-                  <FastField name="address">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Postcode</FormLabel>
-                  <FastField name="postCode">
-                    {({ field }: FieldProps<string>) => (
-                      <Input
-                        {...field}
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    )}
-                  </FastField>
-                </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Planning Permission</FormLabel>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <VStack spacing={4} align="stretch">
+            {/* Job Fields */}
+            <FormControl isRequired>
+              <FormLabel>Date</FormLabel>
+              <Input
+                type="date"
+                {...register("date", { required: true })}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Customer Name</FormLabel>
+              <Input
+                type="text"
+                {...register("customerName", { required: true })}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                {...register("email")}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Phone</FormLabel>
+              <Input
+                type="tel"
+                {...register("phone")}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Address</FormLabel>
+              <Input
+                type="text"
+                {...register("address", { required: true })}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Postcode</FormLabel>
+              <Input
+                type="text"
+                {...register("postCode", { required: true })}
+                bg="white"
+                _focus={{ bg: "white", boxShadow: "outline" }}
+                boxShadow="sm"
+                borderRadius="md"
+                borderColor="gray.300"
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Planning Permission</FormLabel>
+              <Controller
+                control={control}
+                name="planningPermission"
+                render={({ field }) => (
                   <MultiOptionToggle
                     options={planningPermissionOptions}
-                    value={values.planningPermission}
-                    onChange={(val) => setFieldValue('planningPermission', val)}
+                    value={field.value}
+                    onChange={field.onChange}
                   />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Options</FormLabel>
+                )}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Options</FormLabel>
+              <Controller
+                control={control}
+                name="options"
+                render={({ field }) => (
                   <Stack direction="row" spacing={4}>
                     {availableOptions.map((option) => (
                       <Button
                         key={option}
                         colorScheme="teal"
-                        variant={
-                          values.options.includes(option) ? "solid" : "outline"
-                        }
+                        variant={field.value.includes(option) ? "solid" : "outline"}
                         onClick={() => {
-                          let newOptions = [...values.options];
+                          let newOptions = [...field.value];
                           if (newOptions.includes(option)) {
                             newOptions = newOptions.filter((opt) => opt !== option);
                           } else {
                             newOptions.push(option);
                           }
-                          setFieldValue('options', newOptions);
+                          field.onChange(newOptions);
                         }}
                         size="md"
                         borderRadius="md"
@@ -326,268 +327,460 @@ const Create: React.FC = () => {
                       </Button>
                     ))}
                   </Stack>
-                </FormControl>
-                {/* Rooms */}
-                <Heading as="h3" size="md" mt={6}>
-                  Rooms
-                </Heading>
-                <FieldArray name="rooms">
-                  {({ remove, push }) => (
-                    <>
-                      {values.rooms.map((_, index) => (
-                        <RoomForm
-                          key={index}
-                          index={index}
-                          remove={remove}
-                          formationOptions={formationOptions}
-                          glassTypeOptions={glassTypeOptions}
-                        />
-                      ))}
-                      <Button mt={4} onClick={() => push(initialValues.rooms[0])} colorScheme="teal" variant="outline">
-                        Add Room
-                      </Button>
-                    </>
-                  )}
-                </FieldArray>
-                {/* Submit Button */}
-                <Button type="submit" colorScheme="teal" size="lg" mt={6}>
-                  Create Job
-                </Button>
-              </VStack>
-            </Form>
-          )}
-        </Formik>
+                )}
+              />
+            </FormControl>
+
+            {/* Rooms Section */}
+            <Heading as="h3" size="md" mt={6}>
+              Rooms
+            </Heading>
+            {rooms.map((room, index) => (
+              <Box
+                key={room.id}
+                borderWidth="1px"
+                borderRadius="lg"
+                p={4}
+                mt={4}
+                bg="white"
+                boxShadow="sm"
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  align="center"
+                >
+                  <Heading as="h4" size="sm">
+                    Room {index + 1}
+                  </Heading>
+                  <Button size="sm" colorScheme="red" onClick={() => remove(index)}>
+                    Delete Room
+                  </Button>
+                </Stack>
+                <Grid
+                  templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                  gap={4}
+                  mt={4}
+                >
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Ref</FormLabel>
+                      <Input
+                        type="text"
+                        {...register(`rooms.${index}.ref`, { required: true })}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Room Name</FormLabel>
+                      <Input
+                        type="text"
+                        {...register(`rooms.${index}.roomName`, { required: true })}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Width</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.width`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Height</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.height`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Formation</FormLabel>
+                      <Select
+                        {...register(`rooms.${index}.formation`, { required: true })}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      >
+                        <option value="">Select Formation</option>
+                        {formationOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Glass Type</FormLabel>
+                      <Select
+                        {...register(`rooms.${index}.glassType`)}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      >
+                        {glassTypeOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl isRequired>
+                      <FormLabel>Count</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.count`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>New Panes</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.panesNumber`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Stain Repairs</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.stainRepairs`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Encapsulation</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.encapsulation`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={0}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  {/* Cill Field */}
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Cill</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.cill`}
+                        render={({ field }) => (
+                          <MultiOptionToggle
+                            options={[
+                              { label: "None", value: "" },
+                              { label: "Full", value: "Full" },
+                              { label: "Half", value: "Half" },
+                              { label: "Repairs", value: "Repairs" },
+                            ]}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+
+                  {/* Sash Field */}
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Sash</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.sash`}
+                        render={({ field }) => (
+                          <MultiOptionToggle
+                            options={[
+                              { label: "None", value: "" },
+                              { label: "Top", value: "Top" },
+                              { label: "Bottom", value: "Bottom" },
+                              { label: "Both", value: "Both" },
+                            ]}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Price Change (%)</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.priceChange`}
+                        render={({ field }) => (
+                          <NumberInput
+                            min={-100}
+                            step={5}
+                            value={field.value}
+                            onChange={(valueString) => field.onChange(Number(valueString))}
+                          >
+                            <NumberInputField
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                            />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Price Change Notes</FormLabel>
+                      <Input
+                        type="text"
+                        {...register(`rooms.${index}.priceChangeNotes`)}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      />
+                    </FormControl>
+                  </GridItem>
+
+                  <GridItem colSpan={{ base: 1, md: 2 }}>
+                    <FormControl>
+                      <FormLabel>Notes</FormLabel>
+                      <Textarea
+                        {...register(`rooms.${index}.notes`)}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      />
+                    </FormControl>
+                  </GridItem>
+                </Grid>
+                {/* Options Section */}
+                <Box mt={4}>
+  <Heading as="h5" size="sm" mb={2}>
+    Options
+  </Heading>
+  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+    {roomOptionFields.map((option) => (
+      <Controller<Job, RoomOptionPath>
+        key={option.name}
+        control={control}
+        name={`rooms.${index}.${option.name}` as RoomOptionPath}
+        render={({ field }) => {
+          const { value, ...rest } = field;
+          return (
+            <Checkbox
+              {...rest}
+              isChecked={value as boolean}
+              onChange={(e) => field.onChange(e.target.checked)}
+              size="md"
+              colorScheme="teal"
+            >
+              {option.label}
+            </Checkbox>
+          );
+        }}
+      />
+    ))}
+  </SimpleGrid>
+</Box>
+
+              </Box>
+            ))}
+            <Button
+              mt={4}
+              onClick={() =>
+                append({
+                  ref: "",
+                  roomName: "",
+                  width: 0,
+                  height: 0,
+                  count: 0,
+                  putty: false,
+                  mastic: false,
+                  paint: false,
+                  tenon: false,
+                  eC: false,
+                  encapsulation: 0,
+                  bottomRail: false,
+                  dormer: false,
+                  easyClean: false,
+                  pullyWheel: false,
+                  panesNumber: 0,
+                  stainRepairs: 0,
+                  cill: "",
+                  sash: "",
+                  notes: "",
+                  formation: "",
+                  glassType: "Clear",
+                  casement: false,
+                  priceChange: 0,
+                  priceChangeNotes: "",
+                  masticPatch: false,
+                  outsidePatch: false,
+                  concealedVent: false,
+                  shutters: false,
+                })
+              }
+              colorScheme="teal"
+              variant="outline"
+            >
+              Add Room
+            </Button>
+            {/* Submit Button */}
+            <Button type="submit" colorScheme="teal" size="lg" mt={6}>
+              Create Job
+            </Button>
+          </VStack>
+        </form>
       </Box>
     </>
   );
 };
-
-interface RoomFormProps {
-  index: number;
-  remove: (index: number) => void;
-  formationOptions: { label: string; value: string }[];
-  glassTypeOptions: { label: string; value: string }[];
-}
-
-const RoomForm: React.FC<RoomFormProps> = React.memo(({ index, remove, formationOptions, glassTypeOptions }) => {
-  return (
-    <Box
-      borderWidth="1px"
-      borderRadius="lg"
-      p={4}
-      mt={4}
-      bg="white"
-      boxShadow="sm"
-    >
-      <Stack direction="row" justifyContent="space-between" align="center">
-        <Heading as="h4" size="sm">
-          Room {index + 1}
-        </Heading>
-        <Button size="sm" colorScheme="red" onClick={() => remove(index)}>
-          Delete Room
-        </Button>
-      </Stack>
-      <Grid
-        templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
-        gap={4}
-        mt={4}
-      >
-        {/* Ref */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Ref</FormLabel>
-            <FastField name={`rooms.${index}.ref`}>
-              {({ field }: FieldProps<string>) => (
-                <Input
-                  {...field}
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Room Name */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Room Name</FormLabel>
-            <FastField name={`rooms.${index}.roomName`}>
-              {({ field }: FieldProps<string>) => (
-                <Input
-                  {...field}
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Width */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Width</FormLabel>
-            <FastField name={`rooms.${index}.width`}>
-              {({ field }: FieldProps<number>) => (
-                <Input
-                  {...field}
-                  type="number"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Height */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Height</FormLabel>
-            <FastField name={`rooms.${index}.height`}>
-              {({ field }: FieldProps<number>) => (
-                <Input
-                  {...field}
-                  type="number"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Formation */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Formation</FormLabel>
-            <FastField name={`rooms.${index}.formation`}>
-              {({ field }: FieldProps<string>) => (
-                <Select
-                  {...field}
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                >
-                  <option value="">Select Formation</option>
-                  {formationOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Glass Type */}
-        <GridItem>
-          <FormControl>
-            <FormLabel>Glass Type</FormLabel>
-            <FastField name={`rooms.${index}.glassType`}>
-              {({ field }: FieldProps<string>) => (
-                <Select
-                  {...field}
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                >
-                  {glassTypeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Count */}
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Count</FormLabel>
-            <FastField name={`rooms.${index}.count`}>
-              {({ field }: FieldProps<number>) => (
-                <Input
-                  {...field}
-                  type="number"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-        {/* Notes */}
-        <GridItem colSpan={{ base: 1, md: 2 }}>
-          <FormControl>
-            <FormLabel>Notes</FormLabel>
-            <FastField name={`rooms.${index}.notes`}>
-              {({ field }: FieldProps<string>) => (
-                <Textarea
-                  {...field}
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-              )}
-            </FastField>
-          </FormControl>
-        </GridItem>
-      </Grid>
-      {/* Options */}
-      <Box mt={4}>
-        <Heading as="h5" size="sm" mb={2}>
-          Options
-        </Heading>
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
-          <FastField name={`rooms.${index}.easyClean`}>
-            {({ field, form }: FieldProps<boolean>) => (
-              <Checkbox
-                isChecked={field.value}
-                onChange={(e) => form.setFieldValue(field.name, e.target.checked)}
-                size="md"
-                colorScheme="teal"
-              >
-                Easy Clean
-              </Checkbox>
-            )}
-          </FastField>
-          <FastField name={`rooms.${index}.dormer`}>
-            {({ field, form }: FieldProps<boolean>) => (
-              <Checkbox
-                isChecked={field.value}
-                onChange={(e) => form.setFieldValue(field.name, e.target.checked)}
-                size="md"
-                colorScheme="teal"
-              >
-                Dormer
-              </Checkbox>
-            )}
-          </FastField>
-          {/* Add other checkboxes similarly */}
-        </SimpleGrid>
-      </Box>
-    </Box>
-  );
-});
 
 export default Create;

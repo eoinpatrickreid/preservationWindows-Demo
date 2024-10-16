@@ -1,6 +1,6 @@
 // src/components/EditJob.tsx
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "./NavBar";
@@ -29,546 +29,7 @@ import {
   Select,
   SimpleGrid,
 } from "@chakra-ui/react";
-import MultiOptionToggle from "./MultiOptionToggle";
-
-const RoomForm: React.FC<{
-  room: Room;
-  index: number;
-  handleRoomChange: (index: number, name: string, value: any) => void;
-  removeRoom: (index: number) => void;
-  formationOptions: { label: string; value: string }[];
-  glassTypeOptions: { label: string; value: string }[];
-}> = React.memo(
-  ({
-    room,
-    index,
-    handleRoomChange,
-    removeRoom,
-    formationOptions,
-    glassTypeOptions,
-  }) => {
-    return (
-      <Box
-        borderWidth="1px"
-        borderRadius="lg"
-        p={4}
-        mt={4}
-        bg="white"
-        boxShadow="sm"
-      >
-        <Stack direction="row" justifyContent="space-between" align="center">
-          <Heading as="h4" size="sm">
-            Room {index + 1}
-          </Heading>
-          <Button size="sm" colorScheme="red" onClick={() => removeRoom(index)}>
-            Delete Room
-          </Button>
-        </Stack>
-        <Grid
-          templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
-          gap={4}
-          mt={4}
-        >
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Ref</FormLabel>
-              <Input
-                type="text"
-                name="ref"
-                value={room.ref}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              />
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Room Name</FormLabel>
-              <Input
-                type="text"
-                name="roomName"
-                value={room.roomName}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              />
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Width</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.width}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "width", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="width"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Height</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.height}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "height", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="height"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Formation</FormLabel>
-              <Select
-                name="formation"
-                value={room.formation}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              >
-                <option value="">Select Formation</option>
-                {formationOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>Glass Type</FormLabel>
-              <Select
-                name="glassType"
-                value={room.glassType}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              >
-                {glassTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </GridItem>
-
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Count</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.count}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "count", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="count"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>New Panes</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.panesNumber}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "panesNumber", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="panesNumber"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>Stain Repairs</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.stainRepairs}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "stainRepairs", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="stainRepairs"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>Encapsulation</FormLabel>
-              <NumberInput
-                min={0}
-                value={room.encapsulation}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "encapsulation", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="encapsulation"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          {/* Cill Field */}
-          <GridItem>
-            <FormControl>
-              <FormLabel>Cill</FormLabel>
-              <MultiOptionToggle
-                options={[
-                  { label: "None", value: "" },
-                  { label: "Full", value: "Full" },
-                  { label: "Half", value: "Half" },
-                  { label: "Repairs", value: "Repairs" },
-                ]}
-                value={room.cill}
-                onChange={(val) => handleRoomChange(index, "cill", val)}
-              />
-            </FormControl>
-          </GridItem>
-
-          {/* Sash Field */}
-          <GridItem>
-            <FormControl>
-              <FormLabel>Sash</FormLabel>
-              <MultiOptionToggle
-                options={[
-                  { label: "None", value: "" },
-                  { label: "Top", value: "Top" },
-                  { label: "Bottom", value: "Bottom" },
-                  { label: "Both", value: "Both" },
-                ]}
-                value={room.sash}
-                onChange={(val) => handleRoomChange(index, "sash", val)}
-              />
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>Price Change (%)</FormLabel>
-              <NumberInput
-                min={-100}
-                step={5}
-                value={room.priceChange}
-                onChange={(valueString) =>
-                  handleRoomChange(index, "priceChange", Number(valueString))
-                }
-              >
-                <NumberInputField
-                  name="[priceChange]"
-                  bg="white"
-                  _focus={{ bg: "white", boxShadow: "outline" }}
-                  boxShadow="sm"
-                  borderRadius="md"
-                  borderColor="gray.300"
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </GridItem>
-          <GridItem>
-            <FormControl>
-              <FormLabel>Price Change Notes</FormLabel>
-              <Input
-                type="text"
-                name="priceChangeNotes"
-                value={room.priceChangeNotes}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              />
-            </FormControl>
-          </GridItem>
-
-          <GridItem colSpan={{ base: 1, md: 2 }}>
-            <FormControl>
-              <FormLabel>Notes</FormLabel>
-              <Textarea
-                name="notes"
-                value={room.notes}
-                onChange={(e) =>
-                  handleRoomChange(index, e.target.name, e.target.value)
-                }
-                bg="white"
-                _focus={{ bg: "white", boxShadow: "outline" }}
-                boxShadow="sm"
-                borderRadius="md"
-                borderColor="gray.300"
-              />
-            </FormControl>
-          </GridItem>
-        </Grid>
-        <Box mt={4}>
-          <Heading as="h5" size="sm" mb={2}>
-            Options
-          </Heading>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
-            <Checkbox
-              name="easyClean"
-              isChecked={room.easyClean}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Easy Clean
-            </Checkbox>
-            <Checkbox
-              name="dormer"
-              isChecked={room.dormer}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Dormer
-            </Checkbox>
-
-            <Checkbox
-              name="mastic"
-              isChecked={room.mastic}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Mastic
-            </Checkbox>
-            <Checkbox
-              name="masticPatch"
-              isChecked={room.masticPatch}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Mastic Patch
-            </Checkbox>
-            <Checkbox
-              name="putty"
-              isChecked={room.putty}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Putty
-            </Checkbox>
-            <Checkbox
-              name="paint"
-              isChecked={room.paint}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Paint
-            </Checkbox>
-            <Checkbox
-              name="tenon"
-              isChecked={room.tenon}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Tenon
-            </Checkbox>
-            <Checkbox
-              name="eC"
-              isChecked={room.eC}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              EC
-            </Checkbox>
-            <Checkbox
-              name="bottomRail"
-              isChecked={room.bottomRail}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Bottom Rail
-            </Checkbox>
-
-            <Checkbox
-              name="pullyWheel"
-              isChecked={room.pullyWheel}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Pully Wheel
-            </Checkbox>
-            <Checkbox
-              name="casement"
-              isChecked={room.casement}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Casement
-            </Checkbox>
-
-            <Checkbox
-              name="concealedVent"
-              isChecked={room.concealedVent}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Concealed Vent
-            </Checkbox>
-
-            <Checkbox
-              name="outsidePatch"
-              isChecked={room.outsidePatch}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Outside Facing Patch
-            </Checkbox>
-
-            <Checkbox
-              name="shutters"
-              isChecked={room.shutters}
-              onChange={(e) =>
-                handleRoomChange(index, e.target.name, e.target.checked)
-              }
-              size="md"
-              colorScheme="teal"
-            >
-              Shutter Repairs
-            </Checkbox>
-          </SimpleGrid>
-        </Box>
-      </Box>
-    );
-  }
-);
+import MultiOptionToggle from "./MultiOptionToggle"; // Import MultiOptionToggle
 
 const EditJob: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -584,23 +45,11 @@ const EditJob: React.FC = () => {
 
   // Define Planning Permission options
   const planningPermissionOptions = [
-    { label: "No Planning", value: "No Planning" },
-    {
-      label: "Conservation Area",
-      value: "Planning Permission: Conservation Area",
-    },
-    {
-      label: "Category A",
-      value: "Planning Permission: Concervation Area, Category A",
-    },
-    {
-      label: "Category B",
-      value: "Planning Permission: Concervation Area, Category B",
-    },
-    {
-      label: "Category C",
-      value: "Planning Permission: Concervation Area, Category C",
-    },
+    { label: "No Planning", value: "" },
+    { label: "Conservation Area", value: "Conservation Area" },
+    { label: "Category A", value: "Conservation Area: category A" },
+    { label: "Category B", value: "Conservation Area: category B" },
+    { label: "Category C", value: "Conservation Area: category C" },
   ];
 
   // Define Formation options
@@ -688,36 +137,31 @@ const EditJob: React.FC = () => {
   };
 
   // Handler for Job input changes
-  const handleJobChange = useCallback(
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >
-    ) => {
-      const { name, value, type, checked } = e.target as HTMLInputElement;
-      const val = type === "checkbox" ? checked : value;
-      setJob((prevJob) => (prevJob ? { ...prevJob, [name]: val } : prevJob));
-    },
-    []
-  );
+  const handleJobChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    const val = type === "checkbox" ? checked : value;
+    if (job) {
+      setJob({ ...job, [name]: val });
+    }
+  };
 
-  // Handler for Room input changes
-  const handleRoomChange = useCallback(
-    (index: number, name: string, value: any) => {
-      setJob((prevJob) => {
-        if (!prevJob) return prevJob;
-        const updatedRooms = [...prevJob.rooms];
-        updatedRooms[index] = { ...updatedRooms[index], [name]: value };
-        return { ...prevJob, rooms: updatedRooms };
-      });
-    },
-    []
-  );
+  // Refactored Handler for Room input changes
+  const handleRoomChange = (index: number, name: string, value: any) => {
+    if (job) {
+      const updatedRooms = job.rooms.map((room, i) =>
+        i === index ? { ...room, [name]: value } : room
+      );
+      setJob({ ...job, rooms: updatedRooms });
+    }
+  };
 
   // Function to add a new room
-  const addRoom = useCallback(() => {
-    setJob((prevJob) => {
-      if (!prevJob) return prevJob;
+  const addRoom = () => {
+    if (job) {
       const newRoom: Room = {
         ref: "",
         roomName: "",
@@ -732,15 +176,15 @@ const EditJob: React.FC = () => {
         encapsulation: 0,
         bottomRail: false,
         dormer: false,
-        easyClean: false,
-        pullyWheel: false,
+        easyClean: false, // Added field
+        pullyWheel: false, // Added field
         panesNumber: 0,
         stainRepairs: 0,
         cill: "",
         sash: "",
         notes: "",
         formation: "",
-        glassType: "Clear",
+        glassType: "Clear", // Added field with default value
         casement: false,
         priceChange: 0,
         priceChangeNotes: "",
@@ -749,18 +193,17 @@ const EditJob: React.FC = () => {
         concealedVent: false,
         shutters: false,
       };
-      return { ...prevJob, rooms: [...prevJob.rooms, newRoom] };
-    });
-  }, []);
+      setJob({ ...job, rooms: [...job.rooms, newRoom] });
+    }
+  };
 
   // Function to remove a room by index
-  const removeRoom = useCallback((index: number) => {
-    setJob((prevJob) => {
-      if (!prevJob) return prevJob;
-      const updatedRooms = prevJob.rooms.filter((_, i) => i !== index);
-      return { ...prevJob, rooms: updatedRooms };
-    });
-  }, []);
+  const removeRoom = (index: number) => {
+    if (job) {
+      const updatedRooms = job.rooms.filter((_, i) => i !== index);
+      setJob({ ...job, rooms: updatedRooms });
+    }
+  };
 
   if (loading)
     return (
@@ -901,9 +344,7 @@ const EditJob: React.FC = () => {
                   options={planningPermissionOptions}
                   value={job.planningPermission}
                   onChange={(val) =>
-                    setJob((prevJob) =>
-                      prevJob ? { ...prevJob, planningPermission: val } : prevJob
-                    )
+                    setJob({ ...job, planningPermission: val })
                   }
                   bg="white" // Set background to white
                 />
@@ -914,27 +355,24 @@ const EditJob: React.FC = () => {
                   {availableOptions.map((option) => (
                     <Button
                       key={option}
-                      colorScheme="teal"
+                      colorScheme="teal" // Use the same color scheme (teal) for consistency
                       variant={
                         job.options.includes(option) ? "solid" : "outline"
-                      }
+                      } // Solid style when selected, outline when not
                       onClick={() => {
-                        setJob((prevJob) => {
-                          if (!prevJob) return prevJob;
-                          let newOptions = [...prevJob.options];
-                          if (newOptions.includes(option)) {
-                            newOptions = newOptions.filter(
-                              (opt) => opt !== option
-                            );
-                          } else {
-                            newOptions.push(option);
-                          }
-                          return { ...prevJob, options: newOptions };
-                        });
+                        let newOptions = [...job.options];
+                        if (newOptions.includes(option)) {
+                          newOptions = newOptions.filter(
+                            (opt) => opt !== option
+                          ); // Remove if already selected
+                        } else {
+                          newOptions.push(option); // Add if not selected
+                        }
+                        setJob({ ...job, options: newOptions }); // Update the job state
                       }}
-                      size="md"
-                      borderRadius="md"
-                      _focus={{ boxShadow: "outline" }}
+                      size="md" // Ensure the button size matches the rest of the form
+                      borderRadius="md" // Match border-radius style with other form elements
+                      _focus={{ boxShadow: "outline" }} // Keep the same focus style as inputs
                     >
                       {option}
                     </Button>
@@ -947,15 +385,645 @@ const EditJob: React.FC = () => {
                 Rooms
               </Heading>
               {job.rooms.map((room, index) => (
-                <RoomForm
+                <Box
                   key={index}
-                  room={room}
-                  index={index}
-                  handleRoomChange={handleRoomChange}
-                  removeRoom={removeRoom}
-                  formationOptions={formationOptions}
-                  glassTypeOptions={glassTypeOptions}
-                />
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  p={4}
+                  mt={4}
+                  bg="white" // White background for room container
+                  boxShadow="sm"
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    align="center"
+                  >
+                    <Heading as="h4" size="sm">
+                      Room {index + 1}
+                    </Heading>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      onClick={() => removeRoom(index)}
+                    >
+                      Delete Room
+                    </Button>
+                  </Stack>
+                  <Grid
+                    templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}
+                    gap={4}
+                    mt={4}
+                  >
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Ref</FormLabel>
+                        <Input
+                          type="text"
+                          name="ref"
+                          value={room.ref}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        />
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Room Name</FormLabel>
+                        <Input
+                          type="text"
+                          name="roomName"
+                          value={room.roomName}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        />
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Width</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.width}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "width",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="width"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Height</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.height}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "height",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="height"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Formation</FormLabel>
+                        <Select
+                          name="formation"
+                          value={room.formation}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        >
+                          <option value="">Select Formation</option>
+                          {formationOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Glass Type</FormLabel>
+                        <Select
+                          name="glassType"
+                          value={room.glassType}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        >
+                          {glassTypeOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem>
+                      <FormControl isRequired>
+                        <FormLabel>Count</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.count}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "count",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="count"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>New Panes</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.panesNumber}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "panesNumber",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="panesNumber"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Stain Repairs</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.stainRepairs}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "stainRepairs",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="stainRepairs"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Encapsulation</FormLabel>
+                        <NumberInput
+                          min={0}
+                          value={room.encapsulation}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "encapsulation",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="encapsulation"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    {/* Cill Field */}
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Cill</FormLabel>
+                        <MultiOptionToggle
+                          options={[
+                            { label: "None", value: "" },
+                            { label: "Full", value: "Full" },
+                            { label: "Half", value: "Half" },
+                            { label: "Repairs", value: "Repairs" },
+                          ]}
+                          value={room.cill}
+                          onChange={(val) =>
+                            handleRoomChange(index, "cill", val)
+                          }
+                        />
+                      </FormControl>
+                    </GridItem>
+
+                    {/* Sash Field */}
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Sash</FormLabel>
+                        <MultiOptionToggle
+                          options={[
+                            { label: "None", value: "" },
+                            { label: "Top", value: "Top" },
+                            { label: "Bottom", value: "Bottom" },
+                            { label: "Both", value: "Both" },
+                          ]}
+                          value={room.sash}
+                          onChange={(val) =>
+                            handleRoomChange(index, "sash", val)
+                          }
+                        />
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Price Change (%)</FormLabel>
+                        <NumberInput
+                          min={-100}
+                          step={5}
+                          value={room.priceChange}
+                          onChange={(valueString) =>
+                            handleRoomChange(
+                              index,
+                              "priceChange",
+                              Number(valueString)
+                            )
+                          }
+                        >
+                          <NumberInputField
+                            name="[priceChange]"
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                          />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Price Change Notes</FormLabel>
+                        <Input
+                          type="text"
+                          name="priceChangeNotes"
+                          value={room.priceChangeNotes}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        />
+                      </FormControl>
+                    </GridItem>
+
+                    <GridItem colSpan={{ base: 1, md: 2 }}>
+                      <FormControl>
+                        <FormLabel>Notes</FormLabel>
+                        <Textarea
+                          name="notes"
+                          value={room.notes}
+                          onChange={(e) =>
+                            handleRoomChange(
+                              index,
+                              e.target.name,
+                              e.target.value
+                            )
+                          }
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        />
+                      </FormControl>
+                    </GridItem>
+                  </Grid>
+                  <Box mt={4}>
+                    <Heading as="h5" size="sm" mb={2}>
+                      Options
+                    </Heading>
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+                      <Checkbox
+                        name="easyClean"
+                        isChecked={room.easyClean}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Easy Clean
+                      </Checkbox>
+                      <Checkbox
+                        name="dormer"
+                        isChecked={room.dormer}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Dormer
+                      </Checkbox>
+
+                      <Checkbox
+                        name="mastic"
+                        isChecked={room.mastic}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Mastic
+                      </Checkbox>
+                      <Checkbox
+                        name="masticPatch"
+                        isChecked={room.masticPatch}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Mastic Patch
+                      </Checkbox>
+                      <Checkbox
+                        name="putty"
+                        isChecked={room.putty}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Putty
+                      </Checkbox>
+                      <Checkbox
+                        name="paint"
+                        isChecked={room.paint}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Paint
+                      </Checkbox>
+                      <Checkbox
+                        name="tenon"
+                        isChecked={room.tenon}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Tenon
+                      </Checkbox>
+                      <Checkbox
+                        name="eC"
+                        isChecked={room.eC}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        EC
+                      </Checkbox>
+                      <Checkbox
+                        name="bottomRail"
+                        isChecked={room.bottomRail}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Bottom Rail
+                      </Checkbox>
+
+                      <Checkbox
+                        name="pullyWheel"
+                        isChecked={room.pullyWheel}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Pully Wheel
+                      </Checkbox>
+                      <Checkbox
+                        name="casement"
+                        isChecked={room.casement}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Casement
+                      </Checkbox>
+
+                      <Checkbox
+                        name="concealedVent"
+                        isChecked={room.concealedVent}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Concealed Vent
+                      </Checkbox>
+
+                      <Checkbox
+                        name="outsidePatch"
+                        isChecked={room.outsidePatch}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Outside Facing Patch
+                      </Checkbox>
+
+                      <Checkbox
+                        name="shutters"
+                        isChecked={room.shutters}
+                        onChange={(e) =>
+                          handleRoomChange(
+                            index,
+                            e.target.name,
+                            e.target.checked
+                          )
+                        }
+                        size="md"
+                        colorScheme="teal"
+                      >
+                        Shutter Repairs
+                      </Checkbox>
+                    </SimpleGrid>
+                  </Box>
+                </Box>
               ))}
               <Button
                 mt={4}
