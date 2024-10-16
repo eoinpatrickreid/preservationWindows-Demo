@@ -114,29 +114,56 @@ const EditJob: React.FC = () => {
   };
 
   // Options available for the job options field
+  // Options available for the job options field
   const availableOptions = ["New Windows", "Refurb", "PVC"];
 
   // Define Planning Permission options
   const planningPermissionOptions = [
-    { label: "No Planning", value: "" },
-    { label: "Conservation Area", value: "Conservation Area" },
-    { label: "Category A", value: "Conservation Area: category A" },
-    { label: "Category B", value: "Conservation Area: category B" },
-    { label: "Category C", value: "Conservation Area: category C" },
+    { label: "No Planning", value: "No Planning" },
+    { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
+    {
+      label: "Category A",
+      value: "Planning Permission: Conservation Area, Category A",
+    },
+    {
+      label: "Category B",
+      value: "Planning Permission: Conservation Area, Category B",
+    },
+    {
+      label: "Category C",
+      value: "Planning Permission: Conservation Area, Category C",
+    },
   ];
 
-  // Define Formation options
   const formationOptions = [
     { label: "1/1", value: "1/1" },
     { label: "1/2", value: "1/2" },
-    // ... other options
+    { label: "2/1", value: "2/1" },
+    { label: "2/2", value: "2/2" },
+    { label: "2/4", value: "2/4" },
+    { label: "3/1", value: "3/1" },
+    { label: "3/1_portrait", value: "3/1_side" },
+    { label: "3/2", value: "3/2" },
+    { label: "3/3", value: "3/3" },
+    { label: "4/1", value: "4/1" },
+    { label: "4/2", value: "4/2" },
+    { label: "4/4", value: "4/4" },
+    { label: "6/1", value: "6/1" },
+    { label: "6/1_portrait", value: "6/1_side" },
+    { label: "6/2", value: "6/2" },
+    { label: "6/2_portrait", value: "6/2_side" },
+    { label: "6/4_portrait", value: "6/4_side" },
+    { label: "6/6", value: "6/6" },
+    { label: "6/6_portrait", value: "6/6_side" },
+    { label: "7/1", value: "7/1" },
   ];
 
-  // Glass Type options
   const glassTypeOptions = [
     { label: "Clear", value: "Clear" },
     { label: "Toughened", value: "Toughened" },
-    // ... other options
+    { label: "Obscured", value: "Obscured" },
+    { label: "Laminated", value: "Laminated" },
+    { label: "Fineo", value: "Fineo" },
   ];
 
   // Extract boolean keys from Room
