@@ -123,17 +123,17 @@ const EditJob: React.FC = () => {
     { label: "Conservation Area", value: "Planning Permission: Conservation Area" },
     {
       label: "Category A",
-      value: "Planning Permission: Conservation Area, Category A",
+      value: "Planning Permission: Concervation Area, Category A",
     },
     {
       label: "Category B",
-      value: "Planning Permission: Conservation Area, Category B",
+      value: "Planning Permission: Concervation Area, Category B",
     },
     {
       label: "Category C",
-      value: "Planning Permission: Conservation Area, Category C",
+      value: "Planning Permission: Concervation Area, Category C",
     },
-  ];
+  ];    
 
   const formationOptions = [
     { label: "1/1", value: "1/1" },

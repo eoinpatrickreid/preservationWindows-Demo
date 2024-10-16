@@ -778,11 +778,11 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
                     ]}
                   >
                     {room.priceChange < 0
-                      ? `Discount of ${Math.abs(room.priceChange)}%: ${
+                      ? `${
                           room.priceChangeNotes
                         }`
                       : room.priceChange > 0
-                      ? `Additional charge of ${room.priceChange}%: ${room.priceChangeNotes}`
+                      ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
                   </Text>
                   <Text
