@@ -811,7 +811,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             return (
               <React.Fragment key={index}>
                 {/* Insert a page break after every 4 rooms */}
-                {index > 0 && index % 3 === 0 && (
+                {index > 0 && index % 4 === 0 && (
                   <>
                     {/* Add a page break */}
                     {/* Re-render the table header after the break */}
@@ -1036,14 +1036,14 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-        {/* Footer */}
+        {/* Footer
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
             ????6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
             99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
-        </View>
+        </View> */}
       </Page>
     </Document>
   );
