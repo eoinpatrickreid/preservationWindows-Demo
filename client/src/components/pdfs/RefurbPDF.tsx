@@ -569,7 +569,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
             <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
-              Room
+              Location
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
               Description
@@ -712,7 +712,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                 styles.detailedColRoomName,
               ]}
             >
-              Room Name
+               Location
             </Text>
             <Text
               style={[

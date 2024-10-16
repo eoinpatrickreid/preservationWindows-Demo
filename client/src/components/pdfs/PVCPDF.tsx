@@ -428,21 +428,26 @@ const calculateRoomCost = (room: Room): number => {
   const formationOnly = room.formation.split("_")[0];
   const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
 
-  const baseCost = Math.round(
-    (((((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +
+  const windowCost = Math.round(
+    (((((room.width / 1000) * (room.height / 1000)) * 200 + 540) * 1.8) +
       (30 * formationInt) +(room.encapsulation*560)+
-      ((glassTypeCosts[glassType]) *
-      windowCount))) *
-      1.28) * 0.7 *
-      (1 + room.priceChange / 100) *
-      (room.casement ? 0.8 : 1) // Apply 20% reduction if casement is true
+      (glassTypeCosts[glassType])) *1.28
   );
+  const pvcDiscount = windowCost * 0.7;
+  const baseCost = pvcDiscount * windowCount ;
+
+  const roomChangesCost = baseCost * (1 + room.priceChange / 100);
+      
+  const withCasementCost = room.casement ? roomChangesCost * 0.8 : roomChangesCost;
+  
+  let totalCost = withCasementCost;
+      
 
   let additionalCost = 0;
   if (room.dormer) additionalCost += 55;
   if (room.easyClean) additionalCost += 80;
 
-  return baseCost + additionalCost;
+  return totalCost + additionalCost;
 };
 
 const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
@@ -547,7 +552,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
               Ref
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
-              Room
+              Location
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
               Description
@@ -713,7 +718,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
                 styles.detailedColRoomName,
               ]}
             >
-              Room Name
+               Location
             </Text>
             <Text
               style={[

@@ -603,7 +603,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               Ref
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
-              Room
+              Location
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
               Description
@@ -765,7 +765,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 styles.detailedColRoomName,
               ]}
             >
-              Room Name
+              Location
             </Text>
             <Text
               style={[
