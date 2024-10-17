@@ -164,6 +164,7 @@ const EditJob: React.FC = () => {
     { label: "6/6", value: "6/6" },
     { label: "6/6_portrait", value: "6/6_side" },
     { label: "7/1", value: "7/1" },
+    { label: "placeholder", value: "placeholder" },
   ];
 
   const glassTypeOptions = [

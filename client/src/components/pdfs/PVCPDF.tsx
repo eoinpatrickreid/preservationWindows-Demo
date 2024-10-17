@@ -31,6 +31,7 @@ import formation_6_4_side from "../assets/6:4_side.png";
 import formation_6_6 from "../assets/6:6.png";
 import formation_6_6_side from "../assets/6:6_side.png";
 import formation_7_1 from "../assets/7:1.png";
+import placeholder from "../assets/placeholder.png";
 const styles = StyleSheet.create({
   // Global styles
   page: {
@@ -387,6 +388,7 @@ const formationImageMap: { [key: string]: string } = {
   "6/6": formation_6_6,
   "6/6_side": formation_6_6_side,
   "7/1": formation_7_1,
+  "placeholder": placeholder,
 };
 
 const formatRoomDetails = (room: Room): string[][] => {
