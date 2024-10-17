@@ -175,6 +175,7 @@ func main() {
     app.Put("/api/jobs/:id", updateJob)
     app.Delete("/api/jobs/:id", deleteJob)
     app.Post("/api/temps", uploadTempImage)
+	app.Get("/api/temps/image/:name", getTempImage)
 
     app.Use(func(c *fiber.Ctx) error {
         if c.Path() == "/api" || strings.HasPrefix(c.Path(), "/api/") {
@@ -516,3 +517,26 @@ func uploadTempImage(c *fiber.Ctx) error {
 
     return c.Status(fiber.StatusCreated).JSON(temp)
 }
+
+
+func getTempImage(c *fiber.Ctx) error {
+    name := c.Params("name")
+    if name == "" {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Name is required",
+        })
+    }
+
+    var temp Temp
+    err := tempsCollection.FindOne(context.Background(), bson.M{"name": name}).Decode(&temp)
+    if err != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+            "error": "Image not found",
+        })
+    }
+
+    c.Set("Content-Type", temp.FileType)
+    return c.Send(temp.Image)
+}
+
+

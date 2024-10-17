@@ -1,6 +1,6 @@
 // src/components/pdfs/NewWindowsPDF.tsx
 
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Document,
   Page,
@@ -364,7 +364,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
 const formationImageMap: { [key: string]: string } = {
   "1/1": formation_1_1,
   "1/2": formation_1_2,
@@ -383,12 +382,12 @@ const formationImageMap: { [key: string]: string } = {
   "6/2": formation_6_2,
   "6/2_side": formation_6_2_side,
   "6/4_side": formation_6_4_side,
-  // "6/4": formation_6_4,
   "6/6": formation_6_6,
   "6/6_side": formation_6_6_side,
   "7/1": formation_7_1,
 };
 
+// Helper function to format room details
 const formatRoomDetails = (room: Room): string[][] => {
   const detailsArray: string[] = [];
 
@@ -415,8 +414,7 @@ const formatRoomDetails = (room: Room): string[][] => {
   return pairedDetails;
 };
 
-// Calculate the cost for a room
-// Calculate the cost for a room
+// Function to calculate the cost for a room
 const calculateRoomCost = (room: Room): number => {
   const glassTypeCosts: { [key: string]: number } = {
     Clear: 0,
@@ -426,7 +424,7 @@ const calculateRoomCost = (room: Room): number => {
     Fineo: 220,
   };
 
-  const panesNumber = room.panesNumber || 0;
+  // const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
   const formationOnly = room.formation.split("_")[0];
@@ -445,46 +443,29 @@ const calculateRoomCost = (room: Room): number => {
       ? 560
       : 0;
 
-  console.log(`Calculating cost for room: ${room.roomName}`);
-  console.log(`Width (mm): ${room.width}`);
-  console.log(`Height (mm): ${room.height}`);
-  console.log(`Panes Number: ${panesNumber}`);
-  console.log(`Glass Type: ${glassType}`);
-  console.log(`Window Count: ${windowCount}`);
-  console.log(`Price Change (%): ${priceChange}`);
-  console.log(`Encapsulation Cost: £${encapsulationCost}`);
-
   // Base cost calculation
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
-      room.encapsulation * 560 +
+      encapsulationCost +
       glassTypeCosts[glassType]) *
       1.28
   );
 
-  console.log(`Cost per window: £${windowCost}`);
   const baseCost = windowCost * windowCount;
 
-  console.log(`Base Cost before multipliers: £${baseCost}`);
-
   // Apply multipliers
-  const roomChangeCost = baseCost * (1 + room.priceChange / 100);
-  const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
+  const roomChangeCost = baseCost * (1 + priceChange / 100);
+  const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true
   let totalCost = withCasementCost;
-  console.log(`Total Cost after multipliers: £${totalCost}`);
 
   // Additional costs
   if (room.dormer) {
     totalCost += 55;
-    console.log(`Added Dormer Cost: £55`);
   }
   if (room.easyClean) {
     totalCost += 80;
-    console.log(`Added Easy Clean Cost: £80`);
   }
-
-  console.log(`Final Room Cost: £${totalCost}`);
 
   // Ensure no NaN values
   if (isNaN(totalCost)) {
@@ -497,16 +478,22 @@ const calculateRoomCost = (room: Room): number => {
   return Math.round(totalCost);
 };
 
+// Main component
 const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   const companyName = "Preservation Windows";
   const companyAddress = "124 Great Western Road";
   const companyCity = "Glasgow";
   const stateZip = "G4 9AD";
 
+  // Calculate costs
+  const roomCosts = job.rooms.map((room) => {
+    const cost = calculateRoomCost(room);
+    return cost;
+  });
+
+  // Determine adminFee and planningFee based on planningPermission
   let adminFee = 0;
   let planningFee = 0;
-
-  console.log(`!!!Planning Permission: ${job.planningPermission}`);
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 50;
@@ -521,29 +508,21 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
     adminFee = 50;
     planningFee = 300;
   }
-  console.log(`!!!Admin fee: £${adminFee}`);
-  console.log(`!!!Planning fee: £${adminFee}`);
 
-  // Compute roomRefs
-
-  // Calculate costs
-  const roomCosts = useMemo(() => {
-    return job.rooms.map((room) => {
-      const cost = calculateRoomCost(room);
-      return cost;
-    });
-  }, [job.rooms]);
-
-  // Determine adminFee and planningFee based on planningPermission
-
-  // Update subtotal, VAT, and total calculations
-  console.log(`Admin fee: £${adminFee}`);
+  // Calculate totals
   let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
-  console.log(`Subtotal: £${subtotal}`);
   let subtotalWithAdmin = subtotal + adminFee;
-  console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
   const vatAmount = subtotalWithAdmin * 0.2;
   const total = subtotalWithAdmin + vatAmount + planningFee;
+
+  // Function to get the formation image
+  const getFormationImage = (room: Room): string | undefined => {
+    if (room.formation.includes("_temp")) {
+      return room.imageData;
+    } else {
+      return formationImageMap[room.formation];
+    }
+  };
 
   return (
     <Document>
@@ -551,499 +530,164 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         {/* Header */}
         <View style={styles.headerBox}>
           <View style={styles.headerRow}>
-            {/* Left side: Date and company address */}
             <View style={styles.headerLeft}>
-              <Text style={styles.text}>
-                Date: {job.date}
-                {"\n\n"}
-              </Text>
-              <Text style={styles.text}>{companyAddress}</Text>
-              <Text style={styles.text}>{companyCity}</Text>
-              <Text style={styles.text}>{stateZip}</Text>
+              <Image style={styles.logo} src={logo} />
             </View>
-
-            {/* Center: Company name and Quotation */}
             <View style={styles.headerCenter}>
-              <Text style={styles.headerText}>{companyName}</Text>
               <Text style={styles.headerText}>Quotation</Text>
             </View>
-
-            {/* Right side: Logo */}
             <View style={styles.headerRight}>
-              <Image style={styles.logo} src={logo} />
-            </View>
-          </View>
-        </View>
-
-        {/* Client Box */}
-        <View style={styles.clientBox}>
-          <View style={styles.clientRow}>
-            <Text style={styles.text}>Client: {job.customerName}</Text>
-            <Text style={styles.text}>Job ID: {job.quoteId}</Text>
-          </View>
-        </View>
-
-        {/* Client Box with Address/Postcode and Planning Permission */}
-        <View style={styles.clientBox}>
-          <View style={styles.clientRow}>
-            <Text style={styles.text}>
-              Address: {job.address}
-              {"\n"}Postcode: {job.postCode}
-            </Text>
-            <Text style={styles.text}>{job.planningPermission}</Text>
-          </View>
-        </View>
-
-        {/* Project Summary */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Project Summary: Replace Windows
-          </Text>
-
-          {/* Table Header */}
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
-              Ref
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
-              Location
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
-              Description
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
-              Cost (£)
-            </Text>
-          </View>
-
-          {/* Table Rows */}
-          {job.rooms.map((room, index) => {
-            const roomCost = roomCosts[index];
-            return (
-              <View key={index} style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.tableColRef]}>
-                  {room.ref}
-                </Text>
-                <Text style={[styles.tableCell, styles.tableColRoom]}>
-                  {room.roomName}
-                </Text>
-                <Text style={[styles.tableCell, styles.tableColDescription]}>
-                  {room.width} x {room.height} mm Sash and Case
-                </Text>
-                <Text style={[styles.tableCell, styles.tableColQuantity]}>
-                  {room.count || 0}
-                </Text>
-                <Text style={[styles.tableCell, styles.tableColCost]}>
-                  £{roomCost.toFixed(2)}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
-
-        {/* Footer Container */}
-        <View style={styles.footerContainer}>
-          {/* Left 2/3rds */}
-          <View style={styles.footerLeft}>
-            <Text
-              style={[styles.footerText, { fontWeight: "bold", fontSize: 12 }]}
-            >
-              Notes
-            </Text>
-            <Text style={styles.footerText}>
-              All new windows will be fully finished in a colour of your choice
-              and all exterior mastic pointing is included in the quotation.
-            </Text>
-            <Text style={styles.footerText}>
-              All curtains to be removed by customer prior to the installation.
-            </Text>
-            <Text style={styles.footerText}>
-              We hope this quotation is of interest to you and look forward to
-              hearing from you in the future. Planning applications include a
-              £50 admin fee which is subject to VAT.
-            </Text>
-            <Text
-              style={[
-                styles.footerText,
-                { fontWeight: "bold", fontSize: 12, marginTop: 10 },
-              ]}
-            >
-              Payment Terms
-            </Text>
-            <Text style={styles.footerText}>
-              On the first day of installation we require you to pay 50% of the
-              agreed quote. Once installation is complete the remainder of the
-              balance will be required.
-            </Text>
-          </View>
-
-          {/* Right 1/3rd */}
-          <View style={styles.footerRight}>
-            {/* Final Summary Title */}
-            <View style={styles.footerRightSection}>
-              <Text style={styles.footerRightTitle}>Final Summary</Text>
-            </View>
-
-            {/* Subtotal */}
-            <View style={styles.footerRightRow}>
-              <Text style={styles.footerRightLabel}>Subtotal</Text>
-              <Text style={styles.footerRightValue}>
-                £{subtotalWithAdmin.toFixed(2)}
-              </Text>
-            </View>
-
-            {/* VAT */}
-            <View style={styles.footerRightRow}>
-              <Text style={styles.footerRightLabel}>VAT (20%)</Text>
-              <Text style={styles.footerRightValue}>
-                £{vatAmount.toFixed(2)}
-              </Text>
-            </View>
-
-            {/* Planning Fee (if applicable) */}
-            {planningFee > 0 && (
-              <View style={styles.footerRightRow}>
-                <Text style={styles.footerRightLabel}>Planning Fee</Text>
-                <Text style={styles.footerRightValue}>
-                  £{planningFee.toFixed(2)}
-                </Text>
-              </View>
-            )}
-
-            {/* Total */}
-            <View style={styles.footerRightRow}>
-              <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>
-                Total
-              </Text>
-              <Text style={[styles.footerRightValue, { fontWeight: "bold" }]}>
-                £{total.toFixed(2)}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
-            99 24 | Mob: 07973 820 855
-          </Text>
-          <View style={styles.footerBox} />
-        </View>
-
-        {/* Start the Detailed Summary on a new page */}
-        <View style={styles.headerBox} break>
-          <View style={styles.headerRow}>
-            {/* Left side: Date and company address */}
-            <View style={styles.headerLeft}>
-              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyName}</Text>
               <Text style={styles.text}>{companyAddress}</Text>
               <Text style={styles.text}>{companyCity}</Text>
               <Text style={styles.text}>{stateZip}</Text>
             </View>
-
-            {/* Center: Company name and Quotation */}
-            <View style={styles.headerCenter}>
-              <Text style={styles.headerText}>{companyName}</Text>
-              <Text style={styles.text}>Quotation</Text>
+          </View>
+        </View>
+        {/* Client Info */}
+        <View style={styles.clientBox}>
+          <View style={styles.clientRow}>
+            <View>
+              <Text style={styles.text}>Quote ID: {job.quoteId}</Text>
+              <Text style={styles.text}>Date: {job.date}</Text>
             </View>
-
-            {/* Right side: Logo */}
-            <View style={styles.headerRight}>
-              <Image style={styles.logo} src={logo} />
+            <View>
+              <Text style={styles.text}>Client:</Text>
+              <Text style={styles.text}>{job.customerName}</Text>
+              <Text style={styles.text}>{job.address}</Text>
+              <Text style={styles.text}>{job.postCode}</Text>
             </View>
           </View>
         </View>
-
         {/* Detailed Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detailed Summary</Text>
-
           {/* Table Header */}
           <View style={styles.detailedTableHeader}>
-            <Text
-              style={[styles.detailedTableHeaderCell, styles.detailedColRef]}
-            >
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRef]}>
               Ref
             </Text>
             <Text
-              style={[
-                styles.detailedTableHeaderCell,
-                styles.detailedColRoomName,
-              ]}
+              style={[styles.detailedTableHeaderCell, styles.detailedColRoomName]}
             >
-              Location
+              Room Name
             </Text>
-            <Text
-              style={[
-                styles.detailedTableHeaderCell,
-                styles.detailedColDetails,
-              ]}
-            >
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColDetails]}>
               Details
             </Text>
-            <Text
-              style={[styles.detailedTableHeaderCell, styles.detailedColRate]}
-            >
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRate]}>
               Rate (£)
             </Text>
-            <Text
-              style={[styles.detailedTableHeaderCell, styles.detailedColQty]}
-            >
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColQty]}>
               Qty
             </Text>
-            <Text
-              style={[styles.detailedTableHeaderCell, styles.detailedColSum]}
-            >
+            <Text style={[styles.detailedTableHeaderCell, styles.detailedColSum]}>
               Sum (£)
             </Text>
           </View>
-
           {/* Table Rows */}
           {job.rooms.map((room, index) => {
             const roomCost = roomCosts[index];
-            const count = room.count || 1;
-            const rate = roomCost / count;
+            const rate = room.count ? Math.round(roomCost / room.count) : 0;
+            const formationImage = getFormationImage(room);
 
             return (
-              <React.Fragment key={index}>
-                {/* Insert a page break after every 4 rooms */}
-                {index > 0 && index % 4 === 0 && (
-                  <>
-                    {/* Add a page break */}
-                    {/* Re-render the table header after the break */}
-                    <View style={styles.headerBox} break>
-                      <View style={styles.headerRow}>
-                        {/* Left side: Date and company address */}
-                        <View style={styles.headerLeft}>
-                          <Text style={styles.text}>Date: {job.date}</Text>
-                          <Text style={styles.text}>{companyAddress}</Text>
-                          <Text style={styles.text}>{companyCity}</Text>
-                          <Text style={styles.text}>{stateZip}</Text>
-                        </View>
-
-                        {/* Center: Company name and Quotation */}
-                        <View style={styles.headerCenter}>
-                          <Text style={styles.headerText}>{companyName}</Text>
-                          <Text style={styles.text}>Quotation</Text>
-                        </View>
-
-                        {/* Right side: Logo */}
-                        <View style={styles.headerRight}>
-                          <Image style={styles.logo} src={logo} />
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.detailedTableHeader}>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRef,
-                        ]}
-                      >
-                        Ref
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRoomName,
-                        ]}
-                      >
-                        Location
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColDetails,
-                        ]}
-                      >
-                        Details
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRate,
-                        ]}
-                      >
-                        Rate (£)
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColQty,
-                        ]}
-                      >
-                        Qty
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColSum,
-                        ]}
-                      >
-                        Sum (£)
-                      </Text>
-                    </View>
-                  </>
-                )}
-
-                {/* Top Row: Ref and Room Name */}
-                <View style={styles.detailedTableRow}>
-                  <Text
-                    style={[styles.detailedTableCell, styles.detailedColRef]}
-                  >
-                    {room.ref}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColRoomName,
-                    ]}
-                  >
-                    {room.roomName}
-                  </Text>
-                  {/* Details */}
-                  <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColDetails,
-                    ]}
-                  >
-                    {room.priceChange < 0
-                      ? ` ${room.priceChangeNotes}`
-                      : room.priceChange > 0
-                      ? `${room.priceChangeNotes}`
-                      : room.priceChangeNotes}
-                  </Text>
-                  {/* Empty cells for Rate, Qty, Sum */}
-                  <Text
-                    style={[styles.detailedTableCell, styles.detailedColRate]}
-                  ></Text>
-                  <Text
-                    style={[styles.detailedTableCell, styles.detailedColQty]}
-                  ></Text>
-                  <Text
-                    style={[styles.detailedTableCell, styles.detailedColSum]}
-                  ></Text>
-                </View>
-
-                {/* Second Row: Image and other details */}
-                <View style={styles.imageRow}>
-                  {/* Image Cell with Image and Labels */}
-                  <View style={styles.imageCell}>
-                    <View style={styles.imageContainer}>
-                      <Image
-                        src={formationImageMap[room.formation]}
-                        style={styles.imageStyle}
-                      />
-                      <Text style={styles.widthLabel}>{room.width} mm</Text>
-                    </View>
-                    {/* Height Label */}
-                    <View style={styles.heightLabelContainer}>
-                      <Text style={styles.heightLabel}>{room.height} mm</Text>
-                    </View>
-                  </View>
-                  {/* Details, Rate, Qty, Sum Cells */}
-                  <View
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColDetails,
-                    ]}
-                  >
-                    {formatRoomDetails(room).map((detailPair, idx) => (
-                      <View key={idx} style={styles.detailRow}>
-                        <Text style={[styles.detailItem, styles.detailColumn]}>
-                          {detailPair[0]}
+              <View key={index} style={styles.detailedTableRow}>
+                {/* Ref */}
+                <Text style={[styles.detailedTableCell, styles.detailedColRef]}>
+                  {room.ref}
+                </Text>
+                {/* Room Name */}
+                <Text
+                  style={[styles.detailedTableCell, styles.detailedColRoomName]}
+                >
+                  {room.roomName}
+                </Text>
+                {/* Details */}
+                <View style={[styles.detailedTableCell, styles.detailedColDetails]}>
+                  {/* Details Text */}
+                  {formatRoomDetails(room).map((detailPair, idx) => (
+                    <View key={idx} style={styles.detailRow}>
+                      {detailPair.map((detail, i) => (
+                        <Text key={i} style={styles.detailItem}>
+                          {detail}
                         </Text>
-                        <Text style={[styles.detailItem, styles.detailColumn]}>
-                          {detailPair[1] || ""}
+                      ))}
+                    </View>
+                  ))}
+                  {/* Image and Dimensions */}
+                  <View style={styles.imageRow}>
+                    <View style={styles.imageCell}>
+                      {formationImage && (
+                        <Image style={styles.imageStyle} src={formationImage} />
+                      )}
+                      {/* Dimensions */}
+                      <View style={styles.imageContainer}>
+                        <Text style={styles.widthLabel}>
+                          Width: {room.width} mm
+                        </Text>
+                        <Text style={styles.widthLabel}>
+                          Height: {room.height} mm
                         </Text>
                       </View>
-                    ))}
+                    </View>
                   </View>
-                  <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColRateImageRow,
-                    ]}
-                  >
-                    £{rate.toFixed(2)}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColQtyImageRow,
-                    ]}
-                  >
-                    {count}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.detailedTableCell,
-                      styles.detailedColSumImageRow,
-                    ]}
-                  >
-                    £{roomCost.toFixed(2)}
-                  </Text>
                 </View>
-              </React.Fragment>
+                {/* Rate */}
+                <Text style={[styles.detailedTableCell, styles.detailedColRate]}>
+                  {rate}
+                </Text>
+                {/* Quantity */}
+                <Text style={[styles.detailedTableCell, styles.detailedColQty]}>
+                  {room.count}
+                </Text>
+                {/* Sum */}
+                <Text style={[styles.detailedTableCell, styles.detailedColSum]}>
+                  {roomCost}
+                </Text>
+              </View>
             );
           })}
         </View>
-
-        {/* Final Summary Below Detailed Summary */}
+        {/* Final Summary */}
         <View style={styles.finalSummaryContainer}>
           <View style={styles.finalSummaryBox}>
-            <Text style={styles.finalSummaryTitle}>Final Summary</Text>
-            {/* Subtotal */}
+            <Text style={styles.finalSummaryTitle}>Summary</Text>
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>Subtotal</Text>
-              <Text style={styles.finalSummaryValue}>
-                £{subtotalWithAdmin.toFixed(2)}
-              </Text>
+              <Text style={styles.finalSummaryValue}>{subtotal.toFixed(2)}</Text>
             </View>
-
-            {/* VAT */}
-            <View style={styles.finalSummaryRow}>
-              <Text style={styles.finalSummaryLabel}>VAT (20%)</Text>
-              <Text style={styles.finalSummaryValue}>
-                £{vatAmount.toFixed(2)}
-              </Text>
-            </View>
-
-            {/* Planning Fee (if applicable) */}
+            {adminFee > 0 && (
+              <View style={styles.finalSummaryRow}>
+                <Text style={styles.finalSummaryLabel}>Admin Fee</Text>
+                <Text style={styles.finalSummaryValue}>
+                  {adminFee.toFixed(2)}
+                </Text>
+              </View>
+            )}
             {planningFee > 0 && (
               <View style={styles.finalSummaryRow}>
                 <Text style={styles.finalSummaryLabel}>Planning Fee</Text>
                 <Text style={styles.finalSummaryValue}>
-                  £{planningFee.toFixed(2)}
+                  {planningFee.toFixed(2)}
                 </Text>
               </View>
             )}
-
-            {/* Total */}
             <View style={styles.finalSummaryRow}>
-              <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>
-                Total
-              </Text>
-              <Text style={[styles.finalSummaryValue, { fontWeight: "bold" }]}>
-                £{total.toFixed(2)}
-              </Text>
+              <Text style={styles.finalSummaryLabel}>VAT @20%</Text>
+              <Text style={styles.finalSummaryValue}>{vatAmount.toFixed(2)}</Text>
+            </View>
+            <View style={styles.finalSummaryRow}>
+              <Text style={styles.finalSummaryLabel}>Total</Text>
+              <Text style={styles.finalSummaryValue}>{total.toFixed(2)}</Text>
             </View>
           </View>
         </View>
-
-        {/* Footer
-        <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>
-            ????6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
-            99 24 | Mob: 07973 820 855
-          </Text>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.text}>Thank you for your business!</Text>
           <View style={styles.footerBox} />
-        </View> */}
+        </View>
       </Page>
     </Document>
   );

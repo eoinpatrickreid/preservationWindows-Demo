@@ -1,7 +1,7 @@
 // src/components/Create.tsx
 
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
-import React from "react";
 import Navbar from "./NavBar";
 import { Job, Room } from "../interfaces";
 import {
@@ -152,7 +152,10 @@ const Create: React.FC = () => {
     },
   ];
 
-  const formationOptions = [
+  // State for formation options
+  const [formationOptions, setFormationOptions] = useState<
+    { label: string; value: string }[]
+  >([
     { label: "1/1", value: "1/1" },
     { label: "1/2", value: "1/2" },
     { label: "2/1", value: "2/1" },
@@ -173,7 +176,25 @@ const Create: React.FC = () => {
     { label: "6/6", value: "6/6" },
     { label: "6/6_portrait", value: "6/6_side" },
     { label: "7/1", value: "7/1" },
-  ];
+  ]);
+
+  useEffect(() => {
+    const fetchTempFormations = async () => {
+      try {
+        const response = await axiosInstance.get("/api/temps/names");
+        const tempNames: string[] = response.data as string[]; // Assuming it returns an array of names
+        const tempOptions = tempNames.map((name: string) => ({
+          label: name,
+          value: `${name}_temp`,
+        }));
+        setFormationOptions((prevOptions) => [...prevOptions, ...tempOptions]);
+      } catch (error) {
+        console.error("Error fetching temp formations:", error);
+      }
+    };
+
+    fetchTempFormations();
+  }, []);
 
   const glassTypeOptions = [
     { label: "Clear", value: "Clear" },
@@ -185,7 +206,7 @@ const Create: React.FC = () => {
 
   // Extract boolean keys from Room
   type RoomBooleanKeys = {
-    [K in keyof Room]: Room[K] extends boolean ? K : never;
+    [K in keyof Room]-?: NonNullable<Room[K]> extends boolean ? K : never;
   }[keyof Room];
 
   type RoomOptionPath = `rooms.${number}.${RoomBooleanKeys}`;
@@ -682,7 +703,7 @@ const Create: React.FC = () => {
                         render={({ field }) => (
                           <NumberInput
                             min={-100}
-                            step={0.05}
+                            step={5}
                             precision={1}
                             clampValueOnBlur={false}
                             value={field.value}

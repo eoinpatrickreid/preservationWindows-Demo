@@ -46,19 +46,50 @@ const ViewSingle: React.FC = () => {
   const [isDownloadingMap, setIsDownloadingMap] = useState<{ [option: string]: boolean }>({});
 
   useEffect(() => {
-    const fetchJob = async () => {
+    const fetchJobWithImages = async () => {
       try {
         const response = await axiosInstance.get<Job>(`/api/jobs/${id}`);
+        const jobData: Job = response.data;
 
-        setJob(response.data);
+        // Fetch images for rooms with '_temp' formations
+        const roomsWithImages = await Promise.all(
+          jobData.rooms.map(async (room) => {
+            if (room.formation.includes("_temp")) {
+              const tempName = room.formation.replace("_temp", "");
+              try {
+                const imageResponse = await axiosInstance.get(
+                  `/api/temps/image/${tempName}`,
+                  {
+                    responseType: "arraybuffer",
+                  }
+                );
+                const base64Image = `data:${
+                  imageResponse.headers["content-type"]
+                };base64,${Buffer.from(new Uint8Array(imageResponse.data as ArrayBuffer)).toString(
+                  "base64"
+                )}`;
+                return { ...room, imageData: base64Image };
+              } catch (error) {
+                console.error(`Error fetching image for ${tempName}:`, error);
+                return room; // Return room without imageData if fetching fails
+              }
+            } else {
+              return room;
+            }
+          })
+        );
+
+        jobData.rooms = roomsWithImages;
+        setJob(jobData);
       } catch (err: any) {
+        console.error("Error fetching job with images:", err);
         setError(err.message || "Failed to fetch job data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchJob();
+    fetchJobWithImages();
   }, [id]);
 
   // Handle Delete Job

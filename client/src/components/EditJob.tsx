@@ -176,7 +176,7 @@ const EditJob: React.FC = () => {
 
   // Extract boolean keys from Room
   type RoomBooleanKeys = {
-    [K in keyof Room]: Room[K] extends boolean ? K : never;
+    [K in keyof Room]-?: NonNullable<Room[K]> extends boolean ? K : never;
   }[keyof Room];
 
   type RoomOptionPath = `rooms.${number}.${RoomBooleanKeys}`;
