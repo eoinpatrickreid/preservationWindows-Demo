@@ -18,6 +18,7 @@ const Links = [
   { name: "Home", to: "/" },
   { name: "Create Quote", to: "/create" },
   { name: "View Quotes", to: "/viewAll" },
+  { name: "Temporary Formation", to: "/temporaryFormation" },
 ];
 
 const Navbar: React.FC = () => {
