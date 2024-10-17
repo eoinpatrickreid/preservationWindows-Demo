@@ -3,25 +3,27 @@
 package main
 
 import (
-    "context"
-    "fmt"
-    "log"
-    "os"
-    "strconv"
-    "strings"
-    "time"
+	"context"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 
-    "github.com/gofiber/fiber/v2"
-    "github.com/gofiber/fiber/v2/middleware/cors"
-    jwtware "github.com/gofiber/jwt/v3"
-    // "github.com/joho/godotenv"
-    "github.com/golang-jwt/jwt/v4"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/bson/primitive"
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	jwtware "github.com/gofiber/jwt/v3"
 
-    "golang.org/x/crypto/bcrypt"
+	// "github.com/joho/godotenv"
+	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Struct Definitions
@@ -93,9 +95,16 @@ var (
     jobCollection      *mongo.Collection
     userCollection     *mongo.Collection
     countersCollection *mongo.Collection // Added countersCollection
+	tempsCollection *mongo.Collection
     jwtSecret          string
     tokenExpiryTime    = time.Hour * 72 // 72 hours
 )
+type Temp struct {
+    ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+    Name     string             `json:"name" bson:"name"`
+    Image    []byte             `json:"image" bson:"image"`
+    FileType string             `json:"fileType" bson:"fileType"`
+}
 
 // JWT Claims Structure
 
@@ -184,6 +193,8 @@ func main() {
     app.Post("/api/jobs", createJob)
     app.Put("/api/jobs/:id", updateJob)
     app.Delete("/api/jobs/:id", deleteJob)
+	app.Post("/api/temps", uploadTempImage)
+    app.Get("/api/temps/:name", getTempImage)
 
     // Fallback handler for SPA
 	app.Use(func(c *fiber.Ctx) error {
@@ -500,3 +511,90 @@ func deleteJob(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Job deleted"})
 }
+
+func getTempImage(c *fiber.Ctx) error {
+    name := c.Params("name")
+    if name == "" {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Name is required",
+        })
+    }
+
+    var temp Temp
+    err := tempsCollection.FindOne(context.Background(), bson.M{"name": name}).Decode(&temp)
+    if err != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+            "error": "Image not found",
+        })
+    }
+
+    // Set the appropriate content type
+    c.Set("Content-Type", temp.FileType)
+    return c.Send(temp.Image)
+}
+
+func uploadTempImage(c *fiber.Ctx) error {
+    // Parse the multipart form data
+    form, err := c.MultipartForm()
+    if err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Failed to parse form data",
+        })
+    }
+
+    // Get the name from the form data
+    names := form.Value["name"]
+    if len(names) == 0 {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Name is required",
+        })
+    }
+    name := names[0]
+
+    // Get the image file from the form data
+    files := form.File["image"]
+    if len(files) == 0 {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+            "error": "Image file is required",
+        })
+    }
+    fileHeader := files[0]
+
+    // Open the uploaded file
+    file, err := fileHeader.Open()
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to open uploaded file",
+        })
+    }
+    defer file.Close()
+
+    // Read the file content
+    imageData, err := ioutil.ReadAll(file)
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to read file content",
+        })
+    }
+
+    // Create a Temp object
+    temp := Temp{
+        Name:     name,
+        Image:    imageData,
+        FileType: fileHeader.Header.Get("Content-Type"),
+    }
+
+    // Insert into the database
+    result, err := tempsCollection.InsertOne(context.Background(), temp)
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to save image",
+        })
+    }
+
+    temp.ID = result.InsertedID.(primitive.ObjectID)
+
+    // Return success response
+    return c.Status(fiber.StatusCreated).JSON(temp)
+}
+
