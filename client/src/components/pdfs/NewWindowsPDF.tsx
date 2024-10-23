@@ -478,8 +478,8 @@ const calculateRoomCost = (room: Room): number => {
 
   // Additional costs
   if (room.dormer) {
-    totalCost += 55;
-    console.log(`Added Dormer Cost: £55`);
+    totalCost += 420;
+    console.log(`Added Dormer Cost: £420`);
   }
   if (room.easyClean) {
     totalCost += 80;
