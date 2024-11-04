@@ -549,19 +549,21 @@ const EditJob: React.FC = () => {
                       </FormControl>
                     </GridItem>
                     <GridItem>
-                    <FormControl>
-                      <FormLabel>Custom Formation</FormLabel>
-                      <Input
-                        type="text"
-                        {...register(`rooms.${index}.customFormation`)}
-                        bg="white"
-                        _focus={{ bg: "white", boxShadow: "outline" }}
-                        boxShadow="sm"
-                        borderRadius="md"
-                        borderColor="gray.300"
-                      />
-                    </FormControl>
-                  </GridItem>
+                      <FormControl>
+                        <FormLabel>Custom Formation</FormLabel>
+                        <Input
+                          type="text"
+                          {...register(`rooms.${index}.customFormation`, {
+                            required: true,
+                          })}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        />
+                      </FormControl>
+                    </GridItem>
                     <GridItem>
                       <FormControl>
                         <FormLabel>Glass Type</FormLabel>
