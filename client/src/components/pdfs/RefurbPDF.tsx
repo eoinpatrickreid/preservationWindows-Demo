@@ -372,8 +372,7 @@ const formationImageMap: { [key: string]: string } = {
 // Function to parse formation and calculate astrical
 const calculateAstrical = (formation: string): number => {
   if (!formation) return 0;
-  const formationOnly = formation.split("_")[0];
-  const parts = formationOnly.split("/");
+  const parts = formation.split("/");
   if (parts.length !== 2) return 0;
   const num1 = parseInt(parts[0], 10);
   const num2 = parseInt(parts[1], 10);
@@ -390,7 +389,13 @@ const calculateRoomCost = (room: Room): {
   const windowCount = room.count || 1;
   const panesNumber = room.panesNumber || 0;
   const stainRepairs = room.stainRepairs || 0;
-  const astrical = calculateAstrical(room.formation || "") || 0;
+  let formationOnly = "";
+  if (room.formation === "placeholder") {
+    formationOnly = room.customFormation;
+  } else {
+    formationOnly = room.formation.split("_")[0];
+  }
+  const astrical = calculateAstrical(formationOnly || "") || 0;
 
   // Main cost
   const mainCost =

@@ -223,6 +223,7 @@ const EditJob: React.FC = () => {
       sash: "",
       notes: "",
       formation: "",
+      customFormation: "",
       glassType: "Clear",
       casement: false,
       priceChange: 0,
@@ -547,6 +548,20 @@ const EditJob: React.FC = () => {
                         </Select>
                       </FormControl>
                     </GridItem>
+                    <GridItem>
+                    <FormControl>
+                      <FormLabel>Custom Formation</FormLabel>
+                      <Input
+                        type="text"
+                        {...register(`rooms.${index}.customFormation`)}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      />
+                    </FormControl>
+                  </GridItem>
                     <GridItem>
                       <FormControl>
                         <FormLabel>Glass Type</FormLabel>

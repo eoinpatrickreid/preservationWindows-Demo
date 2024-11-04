@@ -30,6 +30,7 @@ export interface Room {
     shutters: boolean;
     priceChange: number;
     priceChangeNotes: string;
+    customFormation: string;
   
   }
   

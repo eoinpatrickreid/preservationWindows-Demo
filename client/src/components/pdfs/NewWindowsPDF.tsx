@@ -431,7 +431,12 @@ const calculateRoomCost = (room: Room): number => {
   const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const windowCount = room.count || 1;
-  const formationOnly = room.formation.split("_")[0];
+  let formationOnly = "";
+  if (room.formation === "placeholder") {
+    formationOnly = room.customFormation;
+  } else {
+    formationOnly = room.formation.split("_")[0];
+  }
   const formationInt = formationOnly
     .split("/")
     .map(Number)

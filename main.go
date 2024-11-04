@@ -45,6 +45,7 @@ type Room struct {
     Sash             string  `json:"sash" bson:"sash"`
     Notes            string  `json:"notes" bson:"notes"`
     Formation        string  `json:"formation" bson:"formation"`
+    CustomFormation  string  `json:"customFormation" bson:"customFormation"`
     Count            int     `json:"count" bson:"count"`
     GlassType        string  `json:"glassType" bson:"glassType"`
     Casement         bool    `json:"casement" bson:"casement"`
