@@ -554,7 +554,7 @@ const EditJob: React.FC = () => {
                         <Input
                           type="text"
                           {...register(`rooms.${index}.customFormation`, {
-                            required: true,
+                            required: false,
                           })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
@@ -591,7 +591,7 @@ const EditJob: React.FC = () => {
                           name={`rooms.${index}.count`}
                           render={({ field }) => (
                             <NumberInput
-                              min={0}
+                              min={1}
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
