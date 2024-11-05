@@ -556,6 +556,7 @@ const EditJob: React.FC = () => {
                           {...register(`rooms.${index}.customFormation`, {
                             required: false,
                           })}
+                          defaultValue="0/0"
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"

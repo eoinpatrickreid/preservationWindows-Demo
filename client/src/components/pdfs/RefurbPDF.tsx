@@ -582,7 +582,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
               Description
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity (${totalCount})
+              Quantity ({totalCount})
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
               Cost (£)
