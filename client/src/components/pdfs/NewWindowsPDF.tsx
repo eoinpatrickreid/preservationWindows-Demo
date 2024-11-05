@@ -437,7 +437,7 @@ const calculateRoomCost = (room: Room): number => {
   const windowCount = room.count || 1;
   let formationOnly = "";
   if (room.formation === "placeholder") {
-    formationOnly = room.customFormation;
+    formationOnly = "1/1";
   } else {
     formationOnly = room.formation.split("_")[0];
   }

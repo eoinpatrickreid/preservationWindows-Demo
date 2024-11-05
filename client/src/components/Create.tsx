@@ -491,7 +491,7 @@ const Create: React.FC = () => {
                       </Select>
                     </FormControl>
                   </GridItem>
-                  <GridItem>
+                  {/* <GridItem>
                       <FormControl>
                         <FormLabel>Custom Formation</FormLabel>
                         <Input
@@ -507,7 +507,7 @@ const Create: React.FC = () => {
                           borderColor="gray.300"
                         />
                       </FormControl>
-                    </GridItem>
+                    </GridItem> */}
                   <GridItem>
                     <FormControl>
                       <FormLabel>Glass Type</FormLabel>

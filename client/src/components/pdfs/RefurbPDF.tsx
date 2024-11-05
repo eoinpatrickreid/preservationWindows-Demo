@@ -391,7 +391,7 @@ const calculateRoomCost = (room: Room): {
   const stainRepairs = room.stainRepairs || 0;
   let formationOnly = "";
   if (room.formation === "placeholder") {
-    formationOnly = room.customFormation;
+    formationOnly = "1/1";
   } else {
     formationOnly = room.formation.split("_")[0];
   }
