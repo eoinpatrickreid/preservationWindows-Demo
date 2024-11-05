@@ -515,6 +515,8 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
   const subtotal = roomCosts.reduce((sum, { totalCost }) => sum + totalCost, 0);
   const vatAmount = subtotal * 0.2;
   const total = subtotal + vatAmount;
+  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -580,7 +582,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
               Description
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity
+              Quantity (${totalCount})
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
               Cost (£)

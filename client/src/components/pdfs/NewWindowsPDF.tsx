@@ -406,7 +406,11 @@ const formatRoomDetails = (room: Room): string[][] => {
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");
   detailsArray.push("• Ironmongery: TBC");
-  detailsArray.push("• Easy Clean: TBC");
+  if (room.easyClean || room.eC) {
+    detailsArray.push("• Easy Clean Installation");
+  } else {
+    detailsArray.push("• Easy Clean: TBC");
+  }
 
   // Group the details into pairs
   const pairedDetails: string[][] = [];
@@ -541,6 +545,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
     });
   }, [job.rooms]);
 
+  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
+
   // Determine adminFee and planningFee based on planningPermission
 
   // Update subtotal, VAT, and total calculations
@@ -619,7 +625,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               Description
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity
+              Quantity (${totalCount})
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
               Cost (£)

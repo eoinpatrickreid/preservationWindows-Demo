@@ -406,7 +406,12 @@ const formatRoomDetails = (room: Room): string[][] => {
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");
   detailsArray.push("• Ironmongery: TBC");
-  detailsArray.push("• Easy Clean: TBC");
+  if (room.easyClean || room.eC) {
+    detailsArray.push("• Easy Clean Installation");
+  } else {
+    detailsArray.push("• Easy Clean: TBC");
+  }
+
 
   // Group the details into pairs
   const pairedDetails: string[][] = [];
@@ -552,6 +557,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
   console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
   const vatAmount = subtotalWithAdmin * 0.2;
   const total = subtotalWithAdmin + vatAmount + planningFee;
+  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
 
   return (
     <Document>
@@ -620,7 +626,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
               Description
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity
+              Quantity (${totalCount})
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
               Cost (£)

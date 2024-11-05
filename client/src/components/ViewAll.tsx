@@ -31,8 +31,11 @@ const ViewAll: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const [sortField, setSortField] = useState<SortField>("date");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // Changed from "asc" to "desc"
+  
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  
 
   const toast = useToast();
 
@@ -61,7 +64,7 @@ const ViewAll: React.FC = () => {
   const sortedJobs = [...jobs].sort((a, b) => {
     const fieldA = a[sortField];
     const fieldB = b[sortField];
-
+  
     if (sortField === "date") {
       return sortOrder === "asc"
         ? new Date(fieldA as string).getTime() - new Date(fieldB as string).getTime()
