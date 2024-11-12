@@ -33,6 +33,7 @@ const pdfComponents: { [key: string]: React.FC<{ job: Job }> } = {
   PVC: PVCPDF,
 };
 
+
 const ViewSingle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
