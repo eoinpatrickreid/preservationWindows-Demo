@@ -757,8 +757,9 @@ const EditJob: React.FC = () => {
                           name={`rooms.${index}.priceChange`}
                           render={({ field }) => (
                             <NumberInput
-                              min={-100}
-                              step={0.05}
+                              min={-500}
+                              max={500}
+                              step={0.1}
                               precision={1}
                               clampValueOnBlur={false}
                               value={field.value}

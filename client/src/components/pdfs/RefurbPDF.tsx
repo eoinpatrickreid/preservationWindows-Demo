@@ -417,7 +417,7 @@ const calculateRoomCost = (room: Room): {
 
   if (room.bottomRail) costBreakdown["• Repair Rail"] = 160;
   if (room.pullyWheel) costBreakdown["• Carry out pully Style Repair"] = 70;
-  if (room.easyClean) costBreakdown["• Fit new simplex easy-clean system"] = 80;
+  if (room.easyClean || room.eC) costBreakdown["• Fit new simplex easy-clean system"] = 80;
   if (room.outsidePatch) costBreakdown["• Carry out outside facing patch repairs"] = 50;
   if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
   if (room.shutters) costBreakdown["• Repair shutters"] = 120;
