@@ -119,7 +119,6 @@ const EditJob: React.FC = () => {
   };
 
   // Options available for the job options field
-  // Options available for the job options field
   const availableOptions = ["New Windows", "Refurb", "PVC"];
 
   // Define Planning Permission options
@@ -131,15 +130,15 @@ const EditJob: React.FC = () => {
     },
     {
       label: "Category A",
-      value: "Planning Permission: Concervation Area, Category A",
+      value: "Planning Permission: Conservation Area, Category A",
     },
     {
       label: "Category B",
-      value: "Planning Permission: Concervation Area, Category B",
+      value: "Planning Permission: Conservation Area, Category B",
     },
     {
       label: "Category C",
-      value: "Planning Permission: Concervation Area, Category C",
+      value: "Planning Permission: Conservation Area, Category C",
     },
   ];
 
@@ -548,23 +547,6 @@ const EditJob: React.FC = () => {
                         </Select>
                       </FormControl>
                     </GridItem>
-                    {/* <GridItem>
-                      <FormControl>
-                        <FormLabel>Custom Formation</FormLabel>
-                        <Input
-                          type="text"
-                          {...register(`rooms.${index}.customFormation`, {
-                            required: false,
-                          })}
-                          defaultValue="0/0"
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                        />
-                      </FormControl>
-                    </GridItem> */}
                     <GridItem>
                       <FormControl>
                         <FormLabel>Glass Type</FormLabel>
@@ -755,33 +737,57 @@ const EditJob: React.FC = () => {
                         <Controller
                           control={control}
                           name={`rooms.${index}.priceChange`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={-500}
-                              max={500}
-                              step={0.1}
-                              precision={1}
-                              clampValueOnBlur={false}
-                              value={field.value}
-                              onChange={(valueString) => {
-                                const parsedValue = parseFloat(valueString);
-                                field.onChange(
-                                  isNaN(parsedValue) ? "" : parsedValue
-                                );
-                              }}
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
+                          rules={{
+                            pattern: {
+                              value: /^-?\d+(\.\d+)?$/,
+                              message:
+                                "Please enter a valid number between -500 and 500.",
+                            },
+                            min: {
+                              value: -500,
+                              message:
+                                "Value must be greater than or equal to -500.",
+                            },
+                            max: {
+                              value: 500,
+                              message:
+                                "Value must be less than or equal to 500.",
+                            },
+                          }}
+                          render={({ field, fieldState }) => (
+                            <>
+                              <NumberInput
+                                min={-500}
+                                max={500}
+                                step={0.1}
+                                precision={1}
+                                clampValueOnBlur={false}
+                                value={field.value}
+                                onChange={(valueString) => {
+                                  field.onChange(valueString);
+                                }}
+                              >
+                                <NumberInputField
+                                  type="text"
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor={
+                                    fieldState.invalid ? "red.500" : "gray.300"
+                                  }
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                              {fieldState.error && (
+                                <Text color="red.500" mt={1}>
+                                  {fieldState.error.message}
+                                </Text>
+                              )}
+                            </>
                           )}
                         />
                       </FormControl>
