@@ -445,9 +445,11 @@ const calculateRoomCost = (room: Room): number => {
     .split("/")
     .map(Number)
     .reduce((a, b) => a + b);
-  const priceChange =
-    typeof room.priceChange === "number" ? room.priceChange : 0; // Default to 0 if undefined
-
+    let priceChange = room.priceChange || 0;
+    if (room.positiveNegative === "negative") {
+      priceChange = room.priceChange * -1;
+    }
+  
   // Handle encapsulation: boolean or number
   const encapsulationCost =
     typeof room.encapsulation === "number"
@@ -480,7 +482,7 @@ const calculateRoomCost = (room: Room): number => {
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
   // Apply multipliers
-  const roomChangeCost = baseCost * (1 + room.priceChange / 100);
+  const roomChangeCost = baseCost * (1 + (priceChange / 100));
   const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
   let totalCost = withCasementCost;
   console.log(`Total Cost after multipliers: £${totalCost}`);

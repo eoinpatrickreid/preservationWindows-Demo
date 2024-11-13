@@ -729,6 +729,25 @@ const Create: React.FC = () => {
                       />
                     </FormControl>
                   </GridItem>
+                  <GridItem>
+                    <FormControl>
+                      <FormLabel>Positive/Negative</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.positiveNegative`}
+                        render={({ field }) => (
+                          <MultiOptionToggle
+                            options={[
+                              { label: "Positive", value: "positive" },
+                              { label: "Negative", value: "negative" },
+                            ]}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
 
                   <GridItem>
                     <FormControl>
@@ -819,6 +838,7 @@ const Create: React.FC = () => {
                   glassType: "Clear",
                   casement: false,
                   priceChange: 0,
+                  positiveNegative: "positive",
                   priceChangeNotes: "",
                   masticPatch: false,
                   outsidePatch: false,

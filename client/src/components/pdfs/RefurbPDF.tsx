@@ -34,6 +34,7 @@ import formation_6_6_side from "../assets/6:6_side.png";
 import formation_7_1 from "../assets/7:1.png";
 import placeholder from "../assets/placeholder.png";
 
+
 const styles = StyleSheet.create({
   // Global styles
   page: {
@@ -396,12 +397,16 @@ const calculateRoomCost = (room: Room): {
     formationOnly = room.formation.split("_")[0];
   }
   const astrical = calculateAstrical(formationOnly || "") || 0;
+  let priceChange = room.priceChange || 0;
+  if (room.positiveNegative === "negative") {
+    priceChange = room.priceChange * -1;
+  }
 
   // Main cost
   const mainCost =
     ((room.width / 1000) * (room.height / 1000) * 150 + 300 + astrical * 30) *
     1.28 *
-    (1 + room.priceChange / 100) *
+    (1 + (priceChange / 100)) *
     (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true
 
   costBreakdown["• Overhaul and draught-proof installation"] = Math.round(mainCost);

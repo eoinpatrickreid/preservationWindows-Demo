@@ -29,6 +29,7 @@ export interface Room {
     concealedVent: boolean;
     shutters: boolean;
     priceChange: number;
+    positiveNegative: string;
     priceChangeNotes: string;
     customFormation: string;
   

@@ -228,6 +228,7 @@ const EditJob: React.FC = () => {
       casement: false,
       priceChange: 0,
       priceChangeNotes: "",
+      positiveNegative: "positive",
       masticPatch: false,
       outsidePatch: false,
       concealedVent: false,
@@ -785,6 +786,26 @@ const EditJob: React.FC = () => {
                         />
                       </FormControl>
                     </GridItem>
+
+                    <GridItem>
+                    <FormControl>
+                      <FormLabel>Positive/Negative</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rooms.${index}.positiveNegative`}
+                        render={({ field }) => (
+                          <MultiOptionToggle
+                            options={[
+                              { label: "Positive", value: "positive" },
+                              { label: "Negative", value: "negative" },
+                            ]}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </GridItem>
 
                     <GridItem>
                       <FormControl>
