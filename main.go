@@ -50,6 +50,7 @@ type Room struct {
     GlassType        string  `json:"glassType" bson:"glassType"`
     Casement         bool    `json:"casement" bson:"casement"`
     PriceChange      float64 `json:"priceChange" bson:"priceChange"`
+    PositiveNegative string  `json:"positiveNegative" bson:"positiveNegative"`
     PriceChangeNotes string  `json:"priceChangeNotes" bson:"priceChangeNotes"`
     EasyClean        bool    `json:"easyClean" bson:"easyClean"`
     MasticPatch      bool    `json:"masticPatch" bson:"masticPatch"`
