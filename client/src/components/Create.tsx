@@ -183,6 +183,7 @@ const Create: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
+    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, // New option added here
   ];
 
   // Extract boolean keys from Room

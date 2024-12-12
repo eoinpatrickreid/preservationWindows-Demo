@@ -173,6 +173,7 @@ const EditJob: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
+    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, // New option added here
   ];
 
   // Extract boolean keys from Room
@@ -192,7 +193,7 @@ const EditJob: React.FC = () => {
     { name: "tenon", label: "Tenon" },
     { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
-    { name: "pullyWheel", label: "Pully Wheel" },
+    { name: "pullyWheel", label: "Pully Style" },
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "outsidePatch", label: "Outside Facing Patch" },
