@@ -463,7 +463,7 @@ const calculateRoomCost = (room: Room): {
 
   // New panes
   if (panesNumber > 0) {
-    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
+    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane(s)";
     costBreakdown[newPanesStr] = panesNumber * 90;
   }
 

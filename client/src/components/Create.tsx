@@ -202,7 +202,7 @@ const Create: React.FC = () => {
     { name: "tenon", label: "Tenon" },
     { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
-    { name: "pullyWheel", label: "Pully Wheel" },
+    { name: "pullyWheel", label: "Pully Style" }, // Updated label
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "outsidePatch", label: "Outside Facing Patch" },

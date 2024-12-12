@@ -526,9 +526,9 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
     planningFee = 100;
   } else if (
     [
-      "Planning Permission: Concervation Area, Category A",
-      "Planning Permission: Concervation Area, Category B",
-      "Planning Permission: Concervation Area, Category C",
+      "Planning Permission: Conservation Area, Category A",
+      "Planning Permission: Conservation Area, Category B",
+      "Planning Permission: Conservation Area, Category C",
     ].includes(job.planningPermission)
   ) {
     adminFee = 50;
