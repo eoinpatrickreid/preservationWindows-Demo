@@ -208,6 +208,7 @@ const Create: React.FC = () => {
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "outsidePatch", label: "Outside Facing Patch" },
     { name: "shutters", label: "Shutter Repairs" },
+    { name: "shutters", label: "Placeholder" }, // Added Placeholder option
   ];
 
   return (
@@ -845,6 +846,7 @@ const Create: React.FC = () => {
                   outsidePatch: false,
                   concealedVent: false,
                   shutters: false,
+                  placeholder: false,
                 })
               }
               colorScheme="teal"
