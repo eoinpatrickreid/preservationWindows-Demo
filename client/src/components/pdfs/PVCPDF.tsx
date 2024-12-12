@@ -411,6 +411,9 @@ const formatRoomDetails = (room: Room): string[][] => {
   } else {
     detailsArray.push("• Easy Clean: TBC");
   }
+  if (room.customItem) {
+    detailsArray.push("• Custom Item");
+  }
 
 
   // Group the details into pairs

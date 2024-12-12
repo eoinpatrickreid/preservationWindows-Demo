@@ -426,7 +426,7 @@ const calculateRoomCost = (room: Room): {
   if (room.outsidePatch) costBreakdown["• Carry out outside facing patch repairs"] = 50;
   if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
   if (room.shutters) costBreakdown["• Repair shutters"] = 120;
-
+  if (room.customItem) costBreakdown["• Custom Item"] = 1;
 
 
   // Cill costs

@@ -32,7 +32,7 @@ export interface Room {
     positiveNegative: string;
     priceChangeNotes: string;
     customFormation: string;
-    placeholder: boolean;
+    customItem: boolean;
   
   }
   
