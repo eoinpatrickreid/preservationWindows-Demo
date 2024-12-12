@@ -402,6 +402,18 @@ const formatRoomDetails = (room: Room): string[][] => {
   detailsArray.push("• Timber: Meranti Hardwood");
   const glassTypeString = "• " + room.glassType + " glass";
   detailsArray.push(glassTypeString);
+
+  const panesNumber = room.panesNumber || 0;
+  const stainRepairs = room.stainRepairs || 0;
+  if (panesNumber > 0) {
+    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane(s)";
+    detailsArray.push(newPanesStr);
+  }
+  // Stain repairs
+  if (stainRepairs > 0) {
+    const stainRepairsStr = "• Repair " + `${panesNumber}` + " stained glass pane(s)";
+    detailsArray.push(stainRepairsStr);
+  }
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");
@@ -414,6 +426,7 @@ const formatRoomDetails = (room: Room): string[][] => {
   if (room.customItem) {
     detailsArray.push("• Custom Item");
   }
+
 
   // Group the details into pairs
   const pairedDetails: string[][] = [];

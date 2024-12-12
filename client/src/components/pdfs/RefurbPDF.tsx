@@ -469,7 +469,7 @@ const calculateRoomCost = (room: Room): {
 
   // Stain repairs
   if (stainRepairs > 0) {
-    const stainRepairsStr = "• Repair " + `${panesNumber}` + " stained glass panes";
+    const stainRepairsStr = "• Repair " + `${panesNumber}` + " stained glass pane(s)";
     costBreakdown[stainRepairsStr] = stainRepairs * 45;
   }
 
