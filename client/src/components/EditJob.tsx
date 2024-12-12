@@ -198,7 +198,7 @@ const EditJob: React.FC = () => {
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "outsidePatch", label: "Outside Facing Patch" },
     { name: "shutters", label: "Shutter Repairs" },
-    { name: "customItem", label: "Iustom Item" },
+    { name: "customItem", label: "Custom Item" },
   ];
 
   // Function to add a new room
