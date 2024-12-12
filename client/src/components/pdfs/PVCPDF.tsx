@@ -402,6 +402,27 @@ const formatRoomDetails = (room: Room): string[][] => {
   detailsArray.push("• Timber: Meranti Hardwood");
   const glassTypeString = "• " + room.glassType + " glass";
   detailsArray.push(glassTypeString);
+  // const panesNumber = room.panesNumber || 0;
+  const stainRepairs = room.stainRepairs || 0;
+//   if (panesNumber > 0) {
+//     if (panesNumber === 1) {
+//       const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane";
+//       detailsArray.push(newPanesStr);
+//     } else {
+//     const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
+//     detailsArray.push(newPanesStr);
+//   }
+// }
+  // Stain repairs
+  if (stainRepairs > 0) {
+    if (stainRepairs === 1) {
+      const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass pane";
+      detailsArray.push(stainRepairsStr);
+    } else {
+    const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass panes";
+    detailsArray.push(stainRepairsStr);
+    }
+  }
   detailsArray.push("• Spacer Bar: TBC");
   detailsArray.push("• Colour in: TBC");
   detailsArray.push("• Colour Out: TBC");

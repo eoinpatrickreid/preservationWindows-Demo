@@ -461,16 +461,24 @@ const calculateRoomCost = (room: Room): {
     }
   }
 
-  // New panes
   if (panesNumber > 0) {
-    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane(s)";
+    if (panesNumber === 1) {
+      const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane";
+      costBreakdown[newPanesStr] = 90;
+    } else {
+    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
     costBreakdown[newPanesStr] = panesNumber * 90;
   }
-
+}
   // Stain repairs
   if (stainRepairs > 0) {
-    const stainRepairsStr = "• Repair " + `${panesNumber}` + " stained glass pane(s)";
+    if (stainRepairs === 1) {
+      const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass pane";
+      costBreakdown[stainRepairsStr] = 45;
+    } else {
+    const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass panes";
     costBreakdown[stainRepairsStr] = stainRepairs * 45;
+    }
   }
 
   // Glass type costs
