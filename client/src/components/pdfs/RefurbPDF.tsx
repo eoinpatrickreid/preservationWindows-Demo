@@ -34,7 +34,6 @@ import formation_6_6_side from "../assets/6:6_side.png";
 import formation_7_1 from "../assets/7:1.png";
 import placeholder from "../assets/placeholder.png";
 
-
 const styles = StyleSheet.create({
   // Global styles
   page: {
@@ -367,7 +366,7 @@ const formationImageMap: { [key: string]: string } = {
   "6/6": formation_6_6,
   "6/6_side": formation_6_6_side,
   "7/1": formation_7_1,
-  "placeholder": placeholder,
+  placeholder: placeholder,
 };
 
 // Function to parse formation and calculate astrical
@@ -382,7 +381,9 @@ const calculateAstrical = (formation: string): number => {
 };
 
 // Calculate the cost for a room
-const calculateRoomCost = (room: Room): {
+const calculateRoomCost = (
+  room: Room
+): {
   totalCost: number;
   costBreakdown: { [key: string]: number };
 } => {
@@ -406,30 +407,39 @@ const calculateRoomCost = (room: Room): {
   const mainCost =
     ((room.width / 1000) * (room.height / 1000) * 150 + 300 + astrical * 30) *
     1.28 *
-    (1 + (priceChange / 100)) *
+    (1 + priceChange / 100) *
     (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true
 
-  costBreakdown["• Overhaul and draught-proof installation"] = Math.round(mainCost);
+  costBreakdown["• Overhaul and draught-proof installation"] =
+    Math.round(mainCost);
 
   // Additional costs
-  const roomEncapStr = "• Carry out " + `${room.encapsulation}` + " feature glass encapsulation(s)";
-  if (room.encapsulation !=0) costBreakdown[roomEncapStr] = room.encapsulation*560;
+  const roomEncapStr =
+    "• Carry out " +
+    `${room.encapsulation}` +
+    " feature glass encapsulation(s)";
+  if (room.encapsulation != 0)
+    costBreakdown[roomEncapStr] = room.encapsulation * 560;
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
-  if (room.mastic) costBreakdown["• Strip out exterior pointing and replace with new poly sealant"] = 110;
+  if (room.mastic)
+    costBreakdown[
+      "• Strip out exterior pointing and replace with new poly sealant"
+    ] = 110;
   if (room.masticPatch) costBreakdown["• Carry out mastic patch repairs"] = 50;
-  if (room.paint) costBreakdown["• Paint on completion of works inside and out"] = 160;
+  if (room.paint)
+    costBreakdown["• Paint on completion of works inside and out"] = 160;
 
   if (room.bottomRail) costBreakdown["• Repair Rail"] = 160;
   if (room.pullyWheel) costBreakdown["• Carry out pully Style Repair"] = 70;
-  if (room.easyClean || room.eC) costBreakdown["• Fit new simplex easy-clean system"] = 80;
-  if (room.outsidePatch) costBreakdown["• Carry out outside facing patch repairs"] = 50;
+  if (room.easyClean || room.eC)
+    costBreakdown["• Fit new simplex easy-clean system"] = 80;
+  if (room.outsidePatch)
+    costBreakdown["• Carry out outside facing patch repairs"] = 50;
   if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
   if (room.trickleVent) costBreakdown["• Fit trickle vent"] = 32;
   if (room.handles) costBreakdown["• Refurbish customers handles"] = 22;
   if (room.shutters) costBreakdown["• Repair shutters"] = 120;
- 
-
 
   // Cill costs
   if (room.cill) {
@@ -468,18 +478,20 @@ const calculateRoomCost = (room: Room): {
       const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane";
       costBreakdown[newPanesStr] = 90;
     } else {
-    const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
-    costBreakdown[newPanesStr] = panesNumber * 90;
+      const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
+      costBreakdown[newPanesStr] = panesNumber * 90;
+    }
   }
-}
   // Stain repairs
   if (stainRepairs > 0) {
     if (stainRepairs === 1) {
-      const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass pane";
+      const stainRepairsStr =
+        "• Repair " + `${stainRepairs}` + " stained glass pane";
       costBreakdown[stainRepairsStr] = 45;
     } else {
-    const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass panes";
-    costBreakdown[stainRepairsStr] = stainRepairs * 45;
+      const stainRepairsStr =
+        "• Repair " + `${stainRepairs}` + " stained glass panes";
+      costBreakdown[stainRepairsStr] = stainRepairs * 45;
     }
   }
 
@@ -496,8 +508,8 @@ const calculateRoomCost = (room: Room): {
     };
     const glassType = room.glassType.toLowerCase();
     const glassCost = glassTypeCosts[glassType] || 0;
-    if (glassCost > 0){
-    costBreakdown["Glass Type"] = glassCost;
+    if (glassCost > 0) {
+      costBreakdown["Glass Type"] = glassCost;
     }
   }
 
@@ -532,7 +544,10 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
   const subtotal = roomCosts.reduce((sum, { totalCost }) => sum + totalCost, 0);
   const vatAmount = subtotal * 0.2;
   const total = subtotal + vatAmount;
-  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
+  const totalCount = job.rooms.reduce(
+    (sum, room) => sum + (room.count || 1),
+    0
+  );
 
   return (
     <Document>
@@ -591,7 +606,9 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
 
           {/* Table Header */}
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
+              Ref
+            </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
               Location
             </Text>
@@ -673,13 +690,17 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             {/* Subtotal */}
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>Subtotal</Text>
-              <Text style={styles.footerRightValue}>£{subtotal.toFixed(2)}</Text>
+              <Text style={styles.footerRightValue}>
+                £{subtotal.toFixed(2)}
+              </Text>
             </View>
 
             {/* VAT */}
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>VAT</Text>
-              <Text style={styles.footerRightValue}>£{vatAmount.toFixed(2)}</Text>
+              <Text style={styles.footerRightValue}>
+                £{vatAmount.toFixed(2)}
+              </Text>
             </View>
 
             {/* Total */}
@@ -697,14 +718,35 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
-            24 | Mob: 07973 820 855
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
+            99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
         </View>
 
         {/* Start the Detailed Summary on a new page */}
-        <View break />
+        <View style={styles.headerBox} break>
+          <View style={styles.headerRow}>
+            {/* Left side: Date and company address */}
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+
+            {/* Center: Company name and Quotation */}
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.text}>Quotation</Text>
+            </View>
+
+            {/* Right side: Logo */}
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
+            </View>
+          </View>
+        </View>
 
         {/* Detailed Summary */}
         <View style={styles.section}>
@@ -712,7 +754,9 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
 
           {/* Table Header */}
           <View style={styles.detailedTableHeader}>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRef]}>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColRef]}
+            >
               Ref
             </Text>
             <Text
@@ -767,10 +811,31 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             return (
               <React.Fragment key={index}>
                 {/* Insert a page break after every 4 rooms */}
-                {index > 0 && (index+1) % 4 === 0 && (
+                {index > 0 && index % 4 === 0 && (
                   <>
                     {/* Add a page break */}
-                    <View break />
+                    <View style={styles.headerBox} break>
+                      <View style={styles.headerRow}>
+                        {/* Left side: Date and company address */}
+                        <View style={styles.headerLeft}>
+                          <Text style={styles.text}>Date: {job.date}</Text>
+                          <Text style={styles.text}>{companyAddress}</Text>
+                          <Text style={styles.text}>{companyCity}</Text>
+                          <Text style={styles.text}>{stateZip}</Text>
+                        </View>
+
+                        {/* Center: Company name and Quotation */}
+                        <View style={styles.headerCenter}>
+                          <Text style={styles.headerText}>{companyName}</Text>
+                          <Text style={styles.text}>Quotation</Text>
+                        </View>
+
+                        {/* Right side: Logo */}
+                        <View style={styles.headerRight}>
+                          <Image style={styles.logo} src={logo} />
+                        </View>
+                      </View>
+                    </View>
 
                     {/* Re-render the table header after the break */}
                     <View style={styles.detailedTableHeader}>
@@ -926,13 +991,17 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             {/* Subtotal */}
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>Subtotal</Text>
-              <Text style={styles.finalSummaryValue}>£{subtotal.toFixed(2)}</Text>
+              <Text style={styles.finalSummaryValue}>
+                £{subtotal.toFixed(2)}
+              </Text>
             </View>
 
             {/* VAT */}
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>VAT</Text>
-              <Text style={styles.finalSummaryValue}>£{vatAmount.toFixed(2)}</Text>
+              <Text style={styles.finalSummaryValue}>
+                £{vatAmount.toFixed(2)}
+              </Text>
             </View>
 
             {/* Total */}
@@ -959,6 +1028,5 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
     </Document>
   );
 };
-
 
 export default RefurbPDF;
