@@ -455,6 +455,7 @@ const calculateRoomCost = (room: Room): number => {
     Obscured: 100,
     Laminated: 150,
     Fineo: 220,
+    ToughenedObscured: 150,
   };
 
   const panesNumber = room.panesNumber || 0;

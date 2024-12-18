@@ -505,12 +505,22 @@ const calculateRoomCost = (
       Obscured: 100,
       Laminated: 150,
       Fineo: 220,
+      ToughenedObscured: 150,
     };
-    const glassType = room.glassType.toLowerCase();
-    const glassCost = glassTypeCosts[glassType] || 0;
+    const glassPosCosts: { [key: string]: number } = {
+      Both: 2,
+      Top: 1,
+      Bottom: 1,
+    };
+    const glassType = room.glassType;
+    const glassPos = room.glassTypeTopBottom || "Bottom";
+    const glassPosMult = glassPosCosts[glassPos];
+    const glassCost = glassTypeCosts[glassType]*glassPosMult || 0;
+
     if (glassCost > 0) {
-      costBreakdown["Glass Type"] = glassCost;
+      costBreakdown[`• Fit ${room.glassType} glass`] = glassCost;
     }
+    
   }
 
   // Sum up all costs per window

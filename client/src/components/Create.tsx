@@ -80,6 +80,7 @@ const Create: React.FC = () => {
           formation: "",
           customFormation: "",
           glassType: "Clear",
+          glassTypeTopBottom: "Bottom",
           casement: false,
           priceChange: 0,
           priceChangeNotes: "",
@@ -186,8 +187,16 @@ const Create: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
-    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, 
+    { label: "Toughened and Obscured", value: "ToughenedObscured" }, 
   ];
+
+  const glassTypeTopBottom = [
+    { label: "Top", value: "Top" },
+    { label: "Bottom", value: "Bottom" },
+    { label: "Top and Bottom", value: "Both" },
+  ];
+
+
 
   // Extract boolean keys from Room
   type RoomBooleanKeys = {
@@ -535,6 +544,25 @@ const Create: React.FC = () => {
                     </FormControl>
                   </GridItem>
                   <GridItem>
+                    <FormControl>
+                      <FormLabel>Glass Type Top/Bottom</FormLabel>
+                      <Select
+                        {...register(`rooms.${index}.glassTypeTopBottom`)}
+                        bg="white"
+                        _focus={{ bg: "white", boxShadow: "outline" }}
+                        boxShadow="sm"
+                        borderRadius="md"
+                        borderColor="gray.300"
+                      >
+                        {glassTypeTopBottom.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                  <GridItem>
                     <FormControl isRequired>
                       <FormLabel>Count</FormLabel>
                       <Controller
@@ -843,6 +871,7 @@ const Create: React.FC = () => {
                   formation: "",
                   customFormation: "",
                   glassType: "Clear",
+                  glassTypeTopBottom: "Bottom",
                   casement: false,
                   priceChange: 0,
                   positiveNegative: "positive",

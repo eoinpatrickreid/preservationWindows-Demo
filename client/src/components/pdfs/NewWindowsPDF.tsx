@@ -472,10 +472,20 @@ const calculateRoomCost = (room: Room): number => {
     Obscured: 100,
     Laminated: 150,
     Fineo: 220,
+    ToughenedObscured: 150,
   };
+
+  const glassPosCosts: { [key: string]: number } = {
+    Both: 2,
+    Top: 1,
+    Bottom: 1,
+  };
+
+
 
   const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
+  const glassPos = room.glassTypeTopBottom || "Bottom";
   const windowCount = room.count || 1;
   let formationOnly = "";
   if (room.formation === "placeholder") {
@@ -514,7 +524,7 @@ const calculateRoomCost = (room: Room): number => {
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
       room.encapsulation * 560 +
-      glassTypeCosts[glassType]) *
+      (glassTypeCosts[glassType]*glassPosCosts[glassPos])) *
       1.28
   );
 

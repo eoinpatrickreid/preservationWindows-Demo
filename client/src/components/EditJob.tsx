@@ -173,7 +173,13 @@ const EditJob: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
-    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, // New option added here
+    { label: "Toughened and Obscured", value: "ToughenedObscured" }, // New option added here
+  ];
+
+  const glassTypeTopBottom = [
+    { label: "Top", value: "Top" },
+    { label: "Bottom", value: "Bottom" },
+    { label: "Top and Bottom", value: "Both" },
   ];
 
   // Extract boolean keys from Room
@@ -229,6 +235,7 @@ const EditJob: React.FC = () => {
       formation: "",
       customFormation: "",
       glassType: "Clear",
+      glassTypeTopBottom: "Bottom",
       casement: false,
       priceChange: 0,
       priceChangeNotes: "",
@@ -585,6 +592,25 @@ const EditJob: React.FC = () => {
                           borderColor="gray.300"
                         >
                           {glassTypeOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </GridItem>
+                    <GridItem>
+                      <FormControl>
+                        <FormLabel>Glass Type Top/Bottom</FormLabel>
+                        <Select
+                          {...register(`rooms.${index}.glassTypeTopBottom`)}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                        >
+                          {glassTypeTopBottom.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>

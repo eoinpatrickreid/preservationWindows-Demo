@@ -24,6 +24,7 @@ export interface Room {
     notes: string;
     formation: string;
     glassType: string; // Added field
+    glassTypeTopBottom: string; // Added field
     casement: boolean;
     outsidePatch: boolean;
     concealedVent: boolean;
