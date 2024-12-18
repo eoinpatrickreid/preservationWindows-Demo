@@ -32,6 +32,7 @@ import formation_6_6 from "../assets/6:6.png";
 import formation_6_6_side from "../assets/6:6_side.png";
 import formation_7_1 from "../assets/7:1.png";
 import placeholder from "../assets/placeholder.png";
+
 const styles = StyleSheet.create({
   // Global styles
   page: {
@@ -528,7 +529,7 @@ const calculateRoomCost = (room: Room): number => {
   );
 
   console.log(`Cost per window: £${windowCost}`);
-  const baseCost = windowCost * windowCount;
+  const baseCost = windowCost;
 
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
@@ -571,17 +572,19 @@ const calculateRoomCost = (room: Room): number => {
   totalCost += glassTypeCosts[glassType] * glassPosCosts[glassPos];
   console.log(`Added Handles Cost: ${glassTypeCosts[glassType] * glassPosCosts[glassPos]}`);
 
-  console.log(`Final Room Cost: £${totalCost}`);
+  console.log(`Final Window Cost: £${totalCost}`);
+
+  const finalCost = totalCost * windowCount;
 
   // Ensure no NaN values
-  if (isNaN(totalCost)) {
+  if (isNaN(finalCost)) {
     console.warn(
       `Warning: Calculated cost for room "${room.roomName}" is NaN. Check input values.`
     );
     return 0;
   }
 
-  return Math.round(totalCost);
+  return Math.round(finalCost);
 };
 
 const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
