@@ -523,8 +523,7 @@ const calculateRoomCost = (room: Room): number => {
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
-      room.encapsulation * 560 +
-      (glassTypeCosts[glassType]*glassPosCosts[glassPos])) *
+      room.encapsulation * 560) *
       1.28
   );
 
@@ -569,6 +568,8 @@ const calculateRoomCost = (room: Room): number => {
     totalCost += 22;
     console.log(`Added Handles Cost: £22`);
   }
+  totalCost += glassTypeCosts[glassType] * glassPosCosts[glassPos];
+  console.log(`Added Handles Cost: ${glassTypeCosts[glassType] * glassPosCosts[glassPos]}`);
 
   console.log(`Final Room Cost: £${totalCost}`);
 
