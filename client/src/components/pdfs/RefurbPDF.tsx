@@ -767,7 +767,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             return (
               <React.Fragment key={index}>
                 {/* Insert a page break after every 4 rooms */}
-                {index > 0 && index % 4 === 0 && (
+                {index > 0 && (index+1) % 4 === 0 && (
                   <>
                     {/* Add a page break */}
                     <View break />

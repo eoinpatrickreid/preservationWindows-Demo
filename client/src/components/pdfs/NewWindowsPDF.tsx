@@ -428,13 +428,13 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push("• Dormer Window");
   }
   if (room.concealedVent){
-    detailsArray.push("• To supply and fit a concealed vent");
+    detailsArray.push("• Supply and fit concealed vent");
   }
   if (room.trickleVent){
-    detailsArray.push("• To supply and fit a surface hood trickle vent");
+    detailsArray.push("• Supply and fit surface hood trickle vent");
   }
   if (room.handles) {
-    detailsArray.push("• Carry out refurbishment of the customers handles");
+    detailsArray.push("• Carry out refurbishment of handles");
   }
   if (room.shutters){
     detailsArray.push("• Shutters");
