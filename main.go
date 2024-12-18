@@ -48,6 +48,7 @@ type Room struct {
     CustomFormation  string  `json:"customFormation" bson:"customFormation"`
     Count            int     `json:"count" bson:"count"`
     GlassType        string  `json:"glassType" bson:"glassType"`
+    GlassTypeTopBottom string `json:"glassTypeTopBottom" bson:"glassTypeTopBottom"`
     Casement         bool    `json:"casement" bson:"casement"`
     PriceChange      float64 `json:"priceChange" bson:"priceChange"`
     PositiveNegative string  `json:"positiveNegative" bson:"positiveNegative"`
