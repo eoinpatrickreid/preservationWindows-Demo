@@ -523,8 +523,8 @@ const calculateRoomCost = (room: Room): number => {
   // Base cost calculation
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
-      30 * formationInt +
-      room.encapsulation * 560) *
+      (30 * formationInt) +
+      (room.encapsulation * 560) + (glassTypeCosts[glassType] * glassPosCosts[glassPos])) *
       1.28
   );
 
@@ -569,8 +569,6 @@ const calculateRoomCost = (room: Room): number => {
     totalCost += 22;
     console.log(`Added Handles Cost: £22`);
   }
-  totalCost += glassTypeCosts[glassType] * glassPosCosts[glassPos];
-  console.log(`Added Handles Cost: ${glassTypeCosts[glassType] * glassPosCosts[glassPos]}`);
 
   console.log(`Final Window Cost: £${totalCost}`);
 
@@ -600,7 +598,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 0;
-    planningFee = 100;
+    planningFee = 400;
   } else if (
     [
       "Planning Permission: Conservation Area, Category A",
