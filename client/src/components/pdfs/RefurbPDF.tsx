@@ -766,66 +766,6 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
 
             return (
               <React.Fragment key={index}>
-                {/* Insert a page break after every 4 rooms */}
-                {index > 0 && (index+1) % 4 === 0 && (
-                  <>
-                    {/* Add a page break */}
-                    <View break />
-
-                    {/* Re-render the table header after the break */}
-                    <View style={styles.detailedTableHeader}>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRef,
-                        ]}
-                      >
-                        Ref
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRoomName,
-                        ]}
-                      >
-                        Location
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColDetails,
-                        ]}
-                      >
-                        Details
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColRate,
-                        ]}
-                      >
-                        Rate (£)
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColQty,
-                        ]}
-                      >
-                        Quantity
-                      </Text>
-                      <Text
-                        style={[
-                          styles.detailedTableHeaderCell,
-                          styles.detailedColSum,
-                        ]}
-                      >
-                        Sum (£)
-                      </Text>
-                    </View>
-                  </>
-                )}
-
                 {/* First Row: Ref and Room Name */}
                 <View style={styles.detailedTableRow}>
                   <Text
@@ -914,6 +854,65 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                     £{totalCost.toFixed(2)}
                   </Text>
                 </View>
+                                {/* Insert a page break after every 4 rooms */}
+                                {index > 0 && (index+1) % 4 === 0 && (
+                  <>
+                    {/* Add a page break */}
+                    <View break />
+
+                    {/* Re-render the table header after the break */}
+                    <View style={styles.detailedTableHeader}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRef,
+                        ]}
+                      >
+                        Ref
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRoomName,
+                        ]}
+                      >
+                        Location
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColDetails,
+                        ]}
+                      >
+                        Details
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRate,
+                        ]}
+                      >
+                        Rate (£)
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColQty,
+                        ]}
+                      >
+                        Quantity
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColSum,
+                        ]}
+                      >
+                        Sum (£)
+                      </Text>
+                    </View>
+                  </>
+                )}
               </React.Fragment>
             );
           })}
