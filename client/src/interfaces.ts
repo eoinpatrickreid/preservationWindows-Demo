@@ -27,7 +27,9 @@ export interface Room {
     casement: boolean;
     outsidePatch: boolean;
     concealedVent: boolean;
+    trickleVent: boolean;
     shutters: boolean;
+    handles: boolean;
     priceChange: number;
     positiveNegative: string;
     priceChangeNotes: string;

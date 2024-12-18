@@ -86,6 +86,8 @@ const Create: React.FC = () => {
           masticPatch: false,
           outsidePatch: false,
           concealedVent: false,
+          trickleVent: false,
+          handles: false,
           shutters: false,
           customItem: false,
         },
@@ -184,7 +186,7 @@ const Create: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
-    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, // New option added here
+    { label: "Toughened and Obscured", value: "Toughened and Obscured" }, 
   ];
 
   // Extract boolean keys from Room
@@ -204,12 +206,14 @@ const Create: React.FC = () => {
     { name: "tenon", label: "Tenon" },
     { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
-    { name: "pullyWheel", label: "Pully Style" }, // Updated label
+    { name: "pullyWheel", label: "Pully Style" }, 
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
+    { name: "trickleVent", label: "Trickle Vent" },
+    { name: "handles", label: "Handles" },
     { name: "outsidePatch", label: "Outside Facing Patch" },
     { name: "shutters", label: "Shutter Repairs" },
-    { name: "customItem", label: "Custom Item" }, // Added customItem option
+    { name: "customItem", label: "Custom Item" }, 
   ];
 
   return (
@@ -846,6 +850,8 @@ const Create: React.FC = () => {
                   masticPatch: false,
                   outsidePatch: false,
                   concealedVent: false,
+                  trickleVent: false,
+                  handles: false,
                   shutters: false,
                   customItem: false,
                 })

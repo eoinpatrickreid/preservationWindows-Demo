@@ -196,6 +196,8 @@ const EditJob: React.FC = () => {
     { name: "pullyWheel", label: "Pully Style" },
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
+    { name: "trickleVent", label: "Trickle Vent" },
+    { name: "handles", label: "Handles" },
     { name: "outsidePatch", label: "Outside Facing Patch" },
     { name: "shutters", label: "Shutter Repairs" },
     { name: "customItem", label: "Custom Item" },
@@ -234,6 +236,8 @@ const EditJob: React.FC = () => {
       masticPatch: false,
       outsidePatch: false,
       concealedVent: false,
+      trickleVent: false,
+      handles: false,
       shutters: false,
       customItem: false,
     });

@@ -424,15 +424,31 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(stainRepairsStr);
     }
   }
-  detailsArray.push("• Spacer Bar: TBC");
-  detailsArray.push("• Colour in: TBC");
-  detailsArray.push("• Colour Out: TBC");
-  detailsArray.push("• Ironmongery: TBC");
+  if (room.dormer) {
+    detailsArray.push("• Dormer Window");
+  }
+  if (room.concealedVent){
+    detailsArray.push("• To supply and fit a concealed vent");
+  }
+  if (room.trickleVent){
+    detailsArray.push("• To supply and fit a surface hood trickle vent");
+  }
+  if (room.handles) {
+    detailsArray.push("• Carry out refurbishment of the customers handles");
+  }
+  if (room.shutters){
+    detailsArray.push("• Shutters");
+  }
   if (room.easyClean || room.eC) {
     detailsArray.push("• Easy Clean Installation");
   } else {
     detailsArray.push("• Easy Clean: TBC");
   }
+  detailsArray.push("• Spacer Bar: TBC");
+  detailsArray.push("• Colour in: TBC");
+  detailsArray.push("• Colour Out: TBC");
+  detailsArray.push("• Ironmongery: TBC");
+
   if (room.customItem) {
     detailsArray.push("• Custom Item");
   }
@@ -510,6 +526,7 @@ const calculateRoomCost = (room: Room): number => {
   // Apply multipliers
   const roomChangeCost = baseCost * (1 + (priceChange / 100));
   const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
+
   let totalCost = withCasementCost;
   console.log(`Total Cost after multipliers: £${totalCost}`);
 
@@ -525,6 +542,22 @@ const calculateRoomCost = (room: Room): number => {
   if (room.stainRepairs) {
     totalCost += room.stainRepairs * 45;
     console.log(`Added Stain Repairs Cost: £${room.stainRepairs * 45}`);
+  }
+  if (room.shutters) {
+    totalCost += 120;
+    console.log(`Added Shutters Cost: £120`);
+  }
+  if (room.concealedVent) {
+    totalCost += 45;
+    console.log(`Added Concealed Trickle Vent Cost: £45`);
+  }
+  if (room.trickleVent) {
+    totalCost += 32;
+    console.log(`Added Trickle Vent Cost: £32`);
+  }
+  if (room.handles) {
+    totalCost += 22;
+    console.log(`Added Handles Cost: £22`);
   }
 
   console.log(`Final Room Cost: £${totalCost}`);
@@ -552,7 +585,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   console.log(`!!!Planning Permission: ${job.planningPermission}`);
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
-    adminFee = 50;
+    adminFee = 0;
     planningFee = 100;
   } else if (
     [
@@ -561,8 +594,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
       "Planning Permission: Conservation Area, Category C",
     ].includes(job.planningPermission)
   ) {
-    adminFee = 50;
-    planningFee = 300;
+    adminFee = 0;
+    planningFee = 400;
   }
   console.log(`!!!Admin fee: £${adminFee}`);
   console.log(`!!!Planning fee: £${adminFee}`);

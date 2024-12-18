@@ -425,8 +425,10 @@ const calculateRoomCost = (room: Room): {
   if (room.easyClean || room.eC) costBreakdown["• Fit new simplex easy-clean system"] = 80;
   if (room.outsidePatch) costBreakdown["• Carry out outside facing patch repairs"] = 50;
   if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
+  if (room.trickleVent) costBreakdown["• Fit trickle vent"] = 32;
+  if (room.handles) costBreakdown["• Refurbish customers handles"] = 22;
   if (room.shutters) costBreakdown["• Repair shutters"] = 120;
-  if (room.customItem) costBreakdown["• Custom Item"] = 1;
+ 
 
 
   // Cill costs
@@ -480,6 +482,8 @@ const calculateRoomCost = (room: Room): {
     costBreakdown[stainRepairsStr] = stainRepairs * 45;
     }
   }
+
+  if (room.customItem) costBreakdown["• Custom Item"] = 1;
 
   // Glass type costs
   if (room.glassType) {

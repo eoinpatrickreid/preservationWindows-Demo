@@ -56,6 +56,8 @@ type Room struct {
     MasticPatch      bool    `json:"masticPatch" bson:"masticPatch"`
     OutsidePatch     bool    `json:"outsidePatch" bson:"outsidePatch"`
     ConcealedVent    bool    `json:"concealedVent" bson:"concealedVent"`
+    TrickleVent      bool    `json:"trickleVent" bson:"trickleVent"`
+    Handles          bool    `json:"handles" bson:"handles"`
     Shutters         bool    `json:"shutters" bson:"shutters"`
     CustomItem       bool    `json:"customItem" bson:"customItem"`
 
