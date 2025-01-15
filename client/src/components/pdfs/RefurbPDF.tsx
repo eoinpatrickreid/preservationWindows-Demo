@@ -405,7 +405,7 @@ const calculateRoomCost = (
 
   // Main cost
   const mainCost =
-    ((room.width / 1000) * (room.height / 1000) * 150 + 300 + astrical * 30) *
+    ((room.width / 1000) * (room.height / 1000) * 150 + 300 + (astrical * 30)) *
     1.28 *
     (1 + priceChange / 100) *
     (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true

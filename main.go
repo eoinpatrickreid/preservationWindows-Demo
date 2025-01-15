@@ -106,7 +106,7 @@ var (
     countersCollection *mongo.Collection
     tempsCollection    *mongo.Collection
     jwtSecret          string
-    tokenExpiryTime    = time.Hour * 72
+    tokenExpiryTime    = time.Hour * 1000000
 )
 
 // JWT Claims Structure

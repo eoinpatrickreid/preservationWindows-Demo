@@ -503,7 +503,7 @@ const calculateRoomCost = (room: Room): number => {
       priceChange = room.priceChange * -1;
     }
   
-  // Handle encapsulation: boolean or number
+  // DELETE
   const encapsulationCost =
     typeof room.encapsulation === "number"
       ? room.encapsulation * 560
@@ -518,6 +518,7 @@ const calculateRoomCost = (room: Room): number => {
   console.log(`Glass Type: ${glassType}`);
   console.log(`Window Count: ${windowCount}`);
   console.log(`Price Change (%): ${priceChange}`);
+  
   console.log(`Encapsulation Cost: £${encapsulationCost}`);
 
   // Base cost calculation
