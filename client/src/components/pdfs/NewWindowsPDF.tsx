@@ -607,8 +607,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
       "Planning Permission: Conservation Area, Category C",
     ].includes(job.planningPermission)
   ) {
-    adminFee = 200;
-    planningFee = 0;
+    adminFee = 0;
+    planningFee = 200;
   }
   console.log(`!!!Admin fee: £${adminFee}`);
   console.log(`!!!Planning fee: £${adminFee}`);
