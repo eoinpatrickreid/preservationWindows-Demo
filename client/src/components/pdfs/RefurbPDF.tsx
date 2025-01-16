@@ -675,6 +675,10 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.footerText}>
               All curtains to be removed by customer prior to the refurbishment.
             </Text>
+            <Text style={styles.footerText}>
+              We hope this quotation is of interest to you and look forward to
+              hearing from you in the future. This quotation will be valid for 3 months from the issue date.
+            </Text>
             <Text
               style={[
                 styles.footerText,
