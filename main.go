@@ -77,6 +77,7 @@ type Job struct {
     Rooms              []Room             `json:"rooms" bson:"rooms"`
     Options            []string           `json:"options" bson:"options"`
     PlanningPermission string             `json:"planningPermission" bson:"planningPermission"`
+    SiteNotes          string             `json:"siteNotes" bson:"siteNotes"`
 }
 
 type User struct {

@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   },
   // Adjusted Column widths for Detailed Summary
   detailedColRef: {
-    flex: 0.5,
+    flex: 0.8,
   },
   detailedColRoomName: {
     flex: 1.5,
@@ -599,7 +599,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
 
   if (job.planningPermission === "Planning Permission: Conservation Area") {
     adminFee = 0;
-    planningFee = 400;
+    planningFee = 0;
   } else if (
     [
       "Planning Permission: Conservation Area, Category A",
@@ -607,8 +607,8 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
       "Planning Permission: Conservation Area, Category C",
     ].includes(job.planningPermission)
   ) {
-    adminFee = 0;
-    planningFee = 400;
+    adminFee = 200;
+    planningFee = 0;
   }
   console.log(`!!!Admin fee: £${adminFee}`);
   console.log(`!!!Planning fee: £${adminFee}`);

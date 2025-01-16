@@ -52,6 +52,7 @@ export interface Room {
     rooms: Room[];
     options: string[];
     planningPermission: string; // Add this field
+    siteNotes: string; // Add this field
   }
   
   export interface Calculations {

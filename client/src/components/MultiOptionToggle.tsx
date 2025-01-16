@@ -34,6 +34,7 @@ const MultiOptionToggle: React.FC<Props> = ({ options, value, onChange, bg }) =>
             _last={{ borderRightWidth: '0' }}
             borderLeftRadius={index === 0 ? 'md' : '0'}
             borderRightRadius={index === options.length - 1 ? 'md' : '0'}
+            size-="sm"
           >
             {option.label}
           </Button>
