@@ -145,15 +145,15 @@ const Create: React.FC = () => {
     },
     {
       label: "Category A",
-      value: "Planning Permission: Concervation Area, Category A",
+      value: "Planning Permission: Conservation Area, Category A",
     },
     {
       label: "Category B",
-      value: "Planning Permission: Concervation Area, Category B",
+      value: "Planning Permission: Conservation Area, Category B",
     },
     {
       label: "Category C",
-      value: "Planning Permission: Concervation Area, Category C",
+      value: "Planning Permission: Conservation Area, Category C",
     },
   ];
 
