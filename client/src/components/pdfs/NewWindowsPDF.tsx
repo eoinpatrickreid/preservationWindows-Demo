@@ -749,12 +749,11 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               and all exterior mastic pointing is included in the quotation.
             </Text>
             <Text style={styles.footerText}>
-              All curtains to be removed by customer prior to the installation.
+              All curtains/blinds to be removed by customer prior to the installation.
             </Text>
             <Text style={styles.footerText}>
               We hope this quotation is of interest to you and look forward to
-              hearing from you in the future. Planning applications include a
-              £50 admin fee which is subject to VAT.
+              hearing from you in the future. This quotation will be valid for 3 months from the issue date.
             </Text>
             <Text
               style={[
