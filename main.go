@@ -61,7 +61,9 @@ type Room struct {
     Handles          bool    `json:"handles" bson:"handles"`
     Shutters         bool    `json:"shutters" bson:"shutters"`
     CustomItem       bool    `json:"customItem" bson:"customItem"`
-
+    CustomItem2      int     `json:"customItem2" bson:"customItem2"`
+    QuoteNotes       string  `json:"quoteNotes" bson:"quoteNotes"`
+    WindowNotes      string  `json:"windowNotes" bson:"windowNotes"`
 }
 
 type Job struct {
@@ -78,6 +80,9 @@ type Job struct {
     Options            []string           `json:"options" bson:"options"`
     PlanningPermission string             `json:"planningPermission" bson:"planningPermission"`
     SiteNotes          string             `json:"siteNotes" bson:"siteNotes"`
+    AdressLineOne    string  `json:"adressLineOne" bson:"adressLineOne"`
+    AdressLineTwo    string  `json:"adressLineTwo" bson:"adressLineTwo"`
+    AdressLineThree  string  `json:"adressLineThree" bson:"adressLineThree"`
 }
 
 type User struct {

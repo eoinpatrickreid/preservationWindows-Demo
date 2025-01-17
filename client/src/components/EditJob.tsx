@@ -50,6 +50,9 @@ const EditJob: React.FC = () => {
       date: "",
       customerName: "",
       address: "",
+      addressLineOne: "",
+      addressLineTwo: "",
+      addressLineThree: "",
       email: "",
       phone: "",
       postCode: "",
@@ -247,6 +250,9 @@ const EditJob: React.FC = () => {
       handles: false,
       shutters: false,
       customItem: false,
+      customItem2: 0,
+      quoteNotes: "",
+      windowNotes: "",
     });
   };
 

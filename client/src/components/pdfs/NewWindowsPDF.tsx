@@ -389,7 +389,7 @@ const formationImageMap: { [key: string]: string } = {
   "6/6": formation_6_6,
   "6/6_side": formation_6_6_side,
   "7/1": formation_7_1,
-  "placeholder": placeholder,
+  placeholder: placeholder,
 };
 
 const formatRoomDetails = (room: Room): string[][] => {
@@ -406,38 +406,40 @@ const formatRoomDetails = (room: Room): string[][] => {
 
   // const panesNumber = room.panesNumber || 0;
   const stainRepairs = room.stainRepairs || 0;
-//   if (panesNumber > 0) {
-//     if (panesNumber === 1) {
-//       const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane";
-//       detailsArray.push(newPanesStr);
-//     } else {
-//     const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
-//     detailsArray.push(newPanesStr);
-//   }
-// }
+  //   if (panesNumber > 0) {
+  //     if (panesNumber === 1) {
+  //       const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new pane";
+  //       detailsArray.push(newPanesStr);
+  //     } else {
+  //     const newPanesStr = "• Supply and fit " + `${panesNumber}` + " new panes";
+  //     detailsArray.push(newPanesStr);
+  //   }
+  // }
   // Stain repairs
   if (stainRepairs > 0) {
     if (stainRepairs === 1) {
-      const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass pane";
+      const stainRepairsStr =
+        "• Repair " + `${stainRepairs}` + " stained glass pane";
       detailsArray.push(stainRepairsStr);
     } else {
-    const stainRepairsStr = "• Repair " + `${stainRepairs}` + " stained glass panes";
-    detailsArray.push(stainRepairsStr);
+      const stainRepairsStr =
+        "• Repair " + `${stainRepairs}` + " stained glass panes";
+      detailsArray.push(stainRepairsStr);
     }
   }
   if (room.dormer) {
     detailsArray.push("• Dormer Window");
   }
-  if (room.concealedVent){
+  if (room.concealedVent) {
     detailsArray.push("• Supply and fit concealed vent");
   }
-  if (room.trickleVent){
+  if (room.trickleVent) {
     detailsArray.push("• Supply and fit surface hood trickle vent");
   }
   if (room.handles) {
     detailsArray.push("• Carry out refurbishment of handles");
   }
-  if (room.shutters){
+  if (room.shutters) {
     detailsArray.push("• Shutters");
   }
   if (room.easyClean || room.eC) {
@@ -450,10 +452,9 @@ const formatRoomDetails = (room: Room): string[][] => {
   detailsArray.push("• Colour Out: TBC");
   detailsArray.push("• Ironmongery: TBC");
 
-  if (room.customItem) {
+  if (room.customItem || room.customItem2 > 0) {
     detailsArray.push("• Custom Item");
   }
-
 
   // Group the details into pairs
   const pairedDetails: string[][] = [];
@@ -482,8 +483,6 @@ const calculateRoomCost = (room: Room): number => {
     Bottom: 1,
   };
 
-
-
   const panesNumber = room.panesNumber || 0;
   const glassType = room.glassType || "Clear";
   const glassPos = room.glassTypeTopBottom || "Bottom";
@@ -498,11 +497,11 @@ const calculateRoomCost = (room: Room): number => {
     .split("/")
     .map(Number)
     .reduce((a, b) => a + b);
-    let priceChange = room.priceChange || 0;
-    if (room.positiveNegative === "negative") {
-      priceChange = room.priceChange * -1;
-    }
-  
+  let priceChange = room.priceChange || 0;
+  if (room.positiveNegative === "negative") {
+    priceChange = room.priceChange * -1;
+  }
+
   // DELETE
   const encapsulationCost =
     typeof room.encapsulation === "number"
@@ -518,14 +517,15 @@ const calculateRoomCost = (room: Room): number => {
   console.log(`Glass Type: ${glassType}`);
   console.log(`Window Count: ${windowCount}`);
   console.log(`Price Change (%): ${priceChange}`);
-  
+
   console.log(`Encapsulation Cost: £${encapsulationCost}`);
 
   // Base cost calculation
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
-      (30 * formationInt) +
-      (room.encapsulation * 560) + (glassTypeCosts[glassType] * glassPosCosts[glassPos])) *
+      30 * formationInt +
+      room.encapsulation * 560 +
+      glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
       1.28
   );
 
@@ -535,7 +535,7 @@ const calculateRoomCost = (room: Room): number => {
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
   // Apply multipliers
-  const roomChangeCost = baseCost * (1 + (priceChange / 100));
+  const roomChangeCost = baseCost * (1 + priceChange / 100);
   const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true;
 
   let totalCost = withCasementCost;
@@ -569,6 +569,10 @@ const calculateRoomCost = (room: Room): number => {
   if (room.handles) {
     totalCost += 22;
     console.log(`Added Handles Cost: £22`);
+  }
+  if (room.customItem2 > 0) {
+    totalCost += room.customItem2;
+    console.log(`Added Custom Item Cost: £${room.customItem2}`);
   }
 
   console.log(`Final Window Cost: £${totalCost}`);
@@ -623,7 +627,10 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
     });
   }, [job.rooms]);
 
-  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
+  const totalCount = job.rooms.reduce(
+    (sum, room) => sum + (room.count || 1),
+    0
+  );
 
   // Determine adminFee and planningFee based on planningPermission
 
@@ -631,7 +638,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   console.log(`Admin fee: £${adminFee}`);
   let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
   console.log(`Subtotal: £${subtotal}`);
-  let subtotalWithAdmin = subtotal + adminFee;
+  let subtotalWithAdmin = subtotal + adminFee + planningFee;
   console.log(`Subtotal with admin: £${subtotalWithAdmin}`);
   const vatAmount = subtotalWithAdmin * 0.2;
   const total = subtotalWithAdmin + vatAmount + planningFee;
@@ -749,11 +756,13 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
               and all exterior mastic pointing is included in the quotation.
             </Text>
             <Text style={styles.footerText}>
-              All curtains/blinds to be removed by customer prior to the installation.
+              All curtains/blinds to be removed by customer prior to the
+              installation.
             </Text>
             <Text style={styles.footerText}>
               We hope this quotation is of interest to you and look forward to
-              hearing from you in the future. This quotation will be valid for 3 months from the issue date.
+              hearing from you in the future. This quotation will be valid for 3
+              months from the issue date.
             </Text>
             <Text
               style={[
@@ -784,6 +793,15 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{subtotalWithAdmin.toFixed(2)}
               </Text>
             </View>
+            {/* Planning Fee (if applicable) */}
+            {planningFee > 0 && (
+              <View style={styles.footerRightRow}>
+                <Text style={styles.footerRightLabel}>Service Fee</Text>
+                <Text style={styles.footerRightValue}>
+                  £{planningFee.toFixed(2)}
+                </Text>
+              </View>
+            )}
 
             {/* VAT */}
             <View style={styles.footerRightRow}>
@@ -792,16 +810,6 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                 £{vatAmount.toFixed(2)}
               </Text>
             </View>
-
-            {/* Planning Fee (if applicable) */}
-            {planningFee > 0 && (
-              <View style={styles.footerRightRow}>
-                <Text style={styles.footerRightLabel}>Planning Fee</Text>
-                <Text style={styles.footerRightValue}>
-                  £{planningFee.toFixed(2)}
-                </Text>
-              </View>
-            )}
 
             {/* Total */}
             <View style={styles.footerRightRow}>

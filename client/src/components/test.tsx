@@ -58,6 +58,9 @@ const Create: React.FC = () => {
       phone: "",
       postCode: "",
       siteNotes: "",
+      addressLineOne: "",
+      addressLineTwo: "",
+      addressLineThree: "",
       rooms: [
         {
           ref: "",
@@ -94,6 +97,9 @@ const Create: React.FC = () => {
           handles: false,
           shutters: false,
           customItem: false,
+          customItem2: 0,
+          quoteNotes: "",
+          windowNotes: "",
         },
       ],
       options: [],
@@ -148,15 +154,15 @@ const Create: React.FC = () => {
     },
     {
       label: "A",
-      value: "Planning Permission: Concervation Area, Category A",
+      value: "Planning Permission: Conservation Area, Category A",
     },
     {
       label: "B",
-      value: "Planning Permission: Concervation Area, Category B",
+      value: "Planning Permission: Conservation Area, Category B",
     },
     {
       label: "C",
-      value: "Planning Permission: Concervation Area, Category C",
+      value: "Planning Permission: Conservation Area, Category C",
     },
   ];
 
@@ -214,7 +220,6 @@ const Create: React.FC = () => {
     { name: "putty", label: "Putty" },
     { name: "paint", label: "Paint" },
     { name: "tenon", label: "Tenon" },
-    { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
     { name: "pullyWheel", label: "Pully Style" },
     { name: "casement", label: "Casement" },
@@ -248,11 +253,11 @@ const Create: React.FC = () => {
           >
             <Grid
               templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-              gap={3}
+              gap={2}
             >
               {/* Left column with 3 fields */}
               <Box>
-                <Stack spacing={2}>
+                <Stack spacing={1}>
                   <FormControl isRequired>
                     <FormLabel>Date</FormLabel>
                     <Input
@@ -266,7 +271,55 @@ const Create: React.FC = () => {
                       size="sm"
                     />
                   </FormControl>
+                  <FormControl>
+                    <FormLabel>Address</FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineOne")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                                            placeholder="Line 1"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel></FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineTwo")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                                            placeholder="Line 2"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel></FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineThree")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                                            placeholder="Line 3"
+                    />
+                  </FormControl>
+                </Stack>
+              </Box>
 
+              {/* Right column with 4 fields */}
+              <Box>
+                <Stack spacing={1}>
+                  {/* 4th Field */}
                   <FormControl isRequired>
                     <FormLabel>Customer Name</FormLabel>
                     <Input
@@ -280,11 +333,24 @@ const Create: React.FC = () => {
                       size="sm"
                     />
                   </FormControl>
-                  <FormControl isRequired>
-                    <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <FormLabel>Email</FormLabel>
                     <Input
-                      type="text"
-                      {...register("address", { required: true })}
+                      type="email"
+                      {...register("email")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Phone</FormLabel>
+                    <Input
+                      type="tel"
+                      {...register("phone")}
                       bg="white"
                       _focus={{ bg: "white", boxShadow: "outline" }}
                       boxShadow="sm"
@@ -295,12 +361,9 @@ const Create: React.FC = () => {
                   </FormControl>
                 </Stack>
               </Box>
-
-              {/* Right column with 4 fields */}
               <Box>
-                <Stack spacing={2}>
-                  {/* 4th Field */}
-                  <FormControl>
+                <Stack spacing={1}>
+                <FormControl>
                     <FormLabel>Options</FormLabel>
                     <Controller
                       control={control}
@@ -338,36 +401,6 @@ const Create: React.FC = () => {
                       )}
                     />
                   </FormControl>
-                  <FormControl>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                      type="email"
-                      {...register("email")}
-                      bg="white"
-                      _focus={{ bg: "white", boxShadow: "outline" }}
-                      boxShadow="sm"
-                      borderRadius="md"
-                      borderColor="gray.300"
-                      size="sm"
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Phone</FormLabel>
-                    <Input
-                      type="tel"
-                      {...register("phone")}
-                      bg="white"
-                      _focus={{ bg: "white", boxShadow: "outline" }}
-                      boxShadow="sm"
-                      borderRadius="md"
-                      borderColor="gray.300"
-                      size="sm"
-                    />
-                  </FormControl>
-                </Stack>
-              </Box>
-              <Box>
-                <Stack spacing={2}>
                   <FormControl isRequired>
                     <FormLabel>Planning Permission</FormLabel>
                     <Controller
@@ -388,7 +421,7 @@ const Create: React.FC = () => {
                       {...register("siteNotes")}
                       placeholder="Site notes"
                       size="md"
-                      height="105px"
+                      height="50px"
                     />
                   </FormControl>
                 </Stack>
@@ -438,6 +471,7 @@ const Create: React.FC = () => {
                           boxShadow="sm"
                           borderRadius="md"
                           borderColor="gray.300"
+                                                size="sm"
                         />
                       </FormControl>
 
@@ -453,6 +487,7 @@ const Create: React.FC = () => {
                           boxShadow="sm"
                           borderRadius="md"
                           borderColor="gray.300"
+                                                size="sm"
                         />
                       </FormControl>
                       <FormControl isRequired>
@@ -463,6 +498,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={0}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -474,6 +510,7 @@ const Create: React.FC = () => {
                                 boxShadow="sm"
                                 borderRadius="md"
                                 borderColor="gray.300"
+                                                      
                               />
                               <NumberInputStepper>
                                 <NumberIncrementStepper />
@@ -491,6 +528,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={0}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -522,6 +560,7 @@ const Create: React.FC = () => {
                           boxShadow="sm"
                           borderRadius="md"
                           borderColor="gray.300"
+                                                size="sm"
                         >
                           <option value="">Select Formation</option>
                           {formationOptions.map((option) => (
@@ -539,6 +578,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={1}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -568,6 +608,7 @@ const Create: React.FC = () => {
                           boxShadow="sm"
                           borderRadius="md"
                           borderColor="gray.300"
+                                                size="sm"
                         >
                           {glassTypeOptions.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -585,6 +626,7 @@ const Create: React.FC = () => {
                           boxShadow="sm"
                           borderRadius="md"
                           borderColor="gray.300"
+                                                size="sm"
                         >
                           {glassTypeTopBottom.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -641,6 +683,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={0}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -652,6 +695,7 @@ const Create: React.FC = () => {
                                 boxShadow="sm"
                                 borderRadius="md"
                                 borderColor="gray.300"
+                                
                               />
                               <NumberInputStepper>
                                 <NumberIncrementStepper />
@@ -670,6 +714,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={0}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -699,6 +744,7 @@ const Create: React.FC = () => {
                           render={({ field }) => (
                             <NumberInput
                               min={0}
+                              size="sm"
                               value={field.value}
                               onChange={(valueString) =>
                                 field.onChange(Number(valueString))
@@ -719,55 +765,14 @@ const Create: React.FC = () => {
                           )}
                         />
                       </FormControl>
-                    </HStack>
-                  </Box>
-                </GridItem>
-
-                <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
-                    <Heading as="h5" size="sm" mb={2}>
-                      Options
-                    </Heading>
-                    <SimpleGrid columns={{ base: 1, md: 4 }} spacing={1}>
-                      {roomOptionFields.map((option) => (
-                        <Controller<Job, RoomOptionPath>
-                          key={option.name}
-                          control={control}
-                          name={
-                            `rooms.${index}.${option.name}` as RoomOptionPath
-                          }
-                          render={({ field }) => {
-                            const { value, ...rest } = field;
-                            return (
-                              <Checkbox
-                                {...rest}
-                                isChecked={value as boolean}
-                                onChange={(e) =>
-                                  field.onChange(e.target.checked)
-                                }
-                                size="md"
-                                colorScheme="teal"
-                              >
-                                {option.label}
-                              </Checkbox>
-                            );
-                          }}
-                        />
-                      ))}
-                    </SimpleGrid>
-                  </Box>
-                </GridItem>
-                <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={1}>
-                      <FormControl>
+                                            <FormControl>
                         <FormLabel>Price Change (%)</FormLabel>
                         <Controller
                           control={control}
                           name={`rooms.${index}.priceChange`}
                           render={({ field }) => (
                             <NumberInput
-                              min={0}
+                              size="sm"
                               max={100}
                               step={0.05} // Up to you: could be 0.01 or 0.1, etc.
                               precision={2} // Decide how many decimals you allow
@@ -815,36 +820,110 @@ const Create: React.FC = () => {
                           )}
                         />
                       </FormControl>
-                      <FormControl display="flex" alignItems="center">
-                        <FormLabel mb="0" fontWeight="normal">
-                          Custom Item
-                        </FormLabel>
-                        <Controller
-                          name={`rooms.${index}.customItem`}
+
+                    </HStack>
+                  </Box>
+                </GridItem>
+
+                <GridItem>
+                  <Box bg="gray.200" p={4} borderRadius="md">
+                    <Heading as="h5" size="sm" mb={2}>
+                      Options
+                    </Heading>
+                    <SimpleGrid columns={{ base: 1, md: 4 }} spacing={1}>
+                      {roomOptionFields.map((option) => (
+                        <Controller<Job, RoomOptionPath>
+                          key={option.name}
                           control={control}
-                          render={({ field }) => (
-                            <Checkbox
-                              isChecked={field.value}
-                              onChange={(e) => field.onChange(e.target.checked)}
-                            >
-                            </Checkbox>
-                          )}
+                          name={
+                            `rooms.${index}.${option.name}` as RoomOptionPath
+                          }
+                          render={({ field }) => {
+                            const { value, ...rest } = field;
+                            return (
+                              <Checkbox
+                                {...rest}
+                                isChecked={value as boolean}
+                                onChange={(e) =>
+                                  field.onChange(e.target.checked)
+                                }
+                                size="md"
+                                colorScheme="teal"
+                              >
+                                {option.label}
+                              </Checkbox>
+                            );
+                          }}
                         />
-                      </FormControl>
+                      ))}
                     </SimpleGrid>
                   </Box>
                 </GridItem>
                 <GridItem>
                   <Box bg="gray.200" p={4} borderRadius="md">
-                    Bottom Row - Column 3
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={1}>
+                    <FormControl>
+                    <FormLabel>Window Notes</FormLabel>
+                    <Textarea
+                      {...register(`rooms.${index}.windowNotes`)}
+                      placeholder="Window notes"
+                      size="md"
+                      height="105px"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Quote Notes</FormLabel>
+                    <Textarea
+                      {...register(`rooms.${index}.quoteNotes`)}
+                      placeholder="Quote notes"
+                      size="md"
+                      height="105px"
+                    />
+                  </FormControl>
+                    </SimpleGrid>
+                  </Box>
+                </GridItem>
+                <GridItem>
+                  <Box bg="gray.200" p={4} borderRadius="md">
+
+                  <FormControl>
+                        <FormLabel>Custom Item</FormLabel>
+                        <Controller
+                          control={control}
+                          name={`rooms.${index}.customItem2`}
+                          render={({ field }) => (
+                            <NumberInput
+                              min={0}
+                              size="sm"
+                              value={field.value}
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
+                            >
+                              <NumberInputField
+                                bg="white"
+                                _focus={{ bg: "white", boxShadow: "outline" }}
+                                boxShadow="sm"
+                                borderRadius="md"
+                                borderColor="gray.300"
+                              />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          )}
+                        />
+                      </FormControl>
                   </Box>
                 </GridItem>
               </Grid>
             </Box>
           ))}
-
-          {/* Add room Button */}
-          <Button
+        </VStack>
+        <VStack spacing={1} align="center">
+                  {/* Add room Button */}
+                  <Button
             mt={4}
             onClick={() =>
               append({
@@ -883,6 +962,9 @@ const Create: React.FC = () => {
                 handles: false,
                 shutters: false,
                 customItem: false,
+                customItem2: 0,
+                quoteNotes: "",
+                windowNotes: "",
               })
             }
             colorScheme="teal"
@@ -895,7 +977,7 @@ const Create: React.FC = () => {
           <Button type="submit" colorScheme="teal" size="lg" mt={6}>
             Create Job
           </Button>
-        </VStack>
+          </VStack>
       </form>
     </>
   );

@@ -520,6 +520,9 @@ const calculateRoomCost = (
     if (glassCost > 0) {
       costBreakdown[`• Fit ${room.glassType} glass`] = glassCost;
     }
+    if (room.customItem2 > 0) {
+      costBreakdown["• Custom Item"] = room.customItem2;
+    }
     
   }
 

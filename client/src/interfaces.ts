@@ -36,7 +36,9 @@ export interface Room {
     priceChangeNotes: string;
     customFormation: string;
     customItem: boolean;
-  
+    customItem2: number;
+    quoteNotes: string;
+    windowNotes: string;
   }
   
   export interface Job {
@@ -53,6 +55,9 @@ export interface Room {
     options: string[];
     planningPermission: string; // Add this field
     siteNotes: string; // Add this field
+    addressLineOne: string;
+    addressLineTwo: string;
+    addressLineThree: string;
   }
   
   export interface Calculations {

@@ -52,6 +52,9 @@ const Create: React.FC = () => {
       date: getCurrentDate(),
       customerName: "",
       address: "",
+      addressLineOne: "",
+      addressLineTwo: "",
+      addressLineThree: "",
       email: "",
       phone: "",
       postCode: "",
@@ -91,6 +94,9 @@ const Create: React.FC = () => {
           handles: false,
           shutters: false,
           customItem: false,
+          customItem2: 0,
+          quoteNotes: "",
+          windowNotes: "",
         },
       ],
       options: [],
@@ -883,6 +889,9 @@ const Create: React.FC = () => {
                   handles: false,
                   shutters: false,
                   customItem: false,
+                  customItem2: 0,
+                  quoteNotes: "",
+                  windowNotes: "",
                 })
               }
               colorScheme="teal"
