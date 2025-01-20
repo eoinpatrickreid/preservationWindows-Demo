@@ -1,7 +1,8 @@
-// src/components/Create.tsx
+// src/components/EditJob.tsx
 
+import React, { useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
-import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "./NavBar";
 import { Job, Room } from "../interfaces";
 import {
@@ -22,88 +23,44 @@ import {
   GridItem,
   Heading,
   VStack,
+  Spinner,
+  Text,
   useToast,
-  SimpleGrid,
   Select,
-  Center,
+  SimpleGrid,
   HStack,
+  Center,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import MultiOptionToggle from "./MultiOptionToggle";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
-const Create: React.FC = () => {
-  // Initialize the current date in 'YYYY-MM-DD' format
-  const getCurrentDate = () => {
-    const tzoffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
-    return new Date(Date.now() - tzoffset).toISOString().split("T")[0];
-  };
-
-  const toast = useToast();
+const EditJob: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const toast = useToast();
 
   // Use React Hook Form
   const {
     control,
     register,
     handleSubmit,
-    formState: {},
+    reset,
+    formState: { isSubmitting },
   } = useForm<Job>({
     defaultValues: {
       completed: false,
-      date: getCurrentDate(),
+      date: "",
       customerName: "",
       address: "",
-      email: "",
-      phone: "",
-      postCode: "",
-      siteNotes: "",
       addressLineOne: "",
       addressLineTwo: "",
       addressLineThree: "",
-      rooms: [
-        {
-          ref: "",
-          roomName: "",
-          width: 0,
-          height: 0,
-          count: 0,
-          putty: false,
-          mastic: false,
-          paint: false,
-          tenon: false,
-          eC: false,
-          encapsulation: 0,
-          bottomRail: false,
-          dormer: false,
-          easyClean: false,
-          pullyWheel: false,
-          panesNumber: 0,
-          stainRepairs: 0,
-          cill: "",
-          sash: "",
-          notes: "",
-          formation: "",
-          customFormation: "",
-          glassType: "Clear",
-          glassTypeTopBottom: "Bottom",
-          casement: false,
-          priceChange: 0,
-          priceChangeNotes: "",
-          masticPatch: false,
-          outsidePatch: false,
-          concealedVent: false,
-          trickleVent: false,
-          handles: false,
-          shutters: false,
-          customItem: false,
-          customItem2: 0,
-          quoteNotes: "",
-          windowNotes: "",
-        },
-      ],
+      email: "",
+      phone: "",
+      postCode: "",
+      rooms: [],
       options: [],
-      planningPermission: "Conservation Area",
+      planningPermission: "",
     },
   });
 
@@ -112,29 +69,53 @@ const Create: React.FC = () => {
     fields: rooms,
     append,
     remove,
+    replace,
   } = useFieldArray({
     control,
     name: "rooms",
   });
 
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const response = await axiosInstance.get<Job>(`/api/jobs/${id}`);
+        const jobData = response.data;
+
+        // Reset the form with fetched data
+        reset(jobData);
+
+        // Replace the rooms in the field array
+        replace(jobData.rooms);
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch job details.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    };
+
+    fetchJob();
+  }, [id, reset, replace, toast]);
+
   const onSubmit = async (data: Job) => {
     try {
-      const response = await axiosInstance.post("/api/jobs", data);
-      console.log("Job created:", response.data);
-      const createdJob: Job = response.data as Job;
+      await axiosInstance.put(`/api/jobs/${id}`, data);
       toast({
-        title: "Job Created",
-        description: "The job has been successfully created.",
+        title: "Job Updated",
+        description: "The job has been successfully updated.",
         status: "success",
         duration: 5000,
         isClosable: true,
       });
-      navigate(`/viewSingle/${createdJob._id}`);
-    } catch (error) {
-      console.error("Error creating job:", error);
+      navigate(`/viewSingle/${id}`);
+    } catch (err) {
+      console.error("Error updating job:", err);
       toast({
         title: "Error",
-        description: "There was an error creating the job.",
+        description: "Failed to update job.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -142,6 +123,7 @@ const Create: React.FC = () => {
     }
   };
 
+  // Options available for the job options field
   // Options available for the job options field
   const availableOptions = ["New Windows", "Refurb", "PVC"];
 
@@ -196,7 +178,7 @@ const Create: React.FC = () => {
     { label: "Obscured", value: "Obscured" },
     { label: "Laminated", value: "Laminated" },
     { label: "Fineo", value: "Fineo" },
-    { label: "Toughened and Obscured", value: "ToughenedObscured" },
+    { label: "Toughened and Obscured", value: "ToughenedObscured" }, // New option added here
   ];
 
   const glassTypeTopBottom = [
@@ -207,7 +189,7 @@ const Create: React.FC = () => {
 
   // Extract boolean keys from Room
   type RoomBooleanKeys = {
-    [K in keyof Room]: Room[K] extends boolean ? K : never;
+    [K in keyof Room]-?: NonNullable<Room[K]> extends boolean ? K : never;
   }[keyof Room];
 
   type RoomOptionPath = `rooms.${number}.${RoomBooleanKeys}`;
@@ -220,16 +202,71 @@ const Create: React.FC = () => {
     { name: "putty", label: "Putty" },
     { name: "paint", label: "Paint" },
     { name: "tenon", label: "Tenon" },
+    { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
     { name: "pullyWheel", label: "Pully Style" },
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "trickleVent", label: "Trickle Vent" },
     { name: "handles", label: "Handles" },
-    { name: "outsidePatch", label: "Outside Patch" },
+    { name: "outsidePatch", label: "Outside Facing Patch" },
     { name: "shutters", label: "Shutter Repairs" },
     { name: "customItem", label: "Custom Item" },
   ];
+
+  // Function to add a new room
+  const addRoom = () => {
+    append({
+      ref: "",
+      roomName: "",
+      width: 0,
+      height: 0,
+      count: 0,
+      putty: false,
+      mastic: false,
+      paint: false,
+      tenon: false,
+      eC: false,
+      encapsulation: 0,
+      bottomRail: false,
+      dormer: false,
+      easyClean: false,
+      pullyWheel: false,
+      panesNumber: 0,
+      stainRepairs: 0,
+      cill: "",
+      sash: "",
+      notes: "",
+      formation: "",
+      customFormation: "",
+      glassType: "Clear",
+      glassTypeTopBottom: "Bottom",
+      casement: false,
+      priceChange: 0,
+      priceChangeNotes: "",
+      positiveNegative: "positive",
+      masticPatch: false,
+      outsidePatch: false,
+      concealedVent: false,
+      trickleVent: false,
+      handles: false,
+      shutters: false,
+      customItem: false,
+      customItem2: 0,
+      quoteNotes: "",
+      windowNotes: "",
+    });
+  };
+
+  // Loading state
+  if (rooms.length === 0 && !isSubmitting) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Spinner size="xl" />
+        <Text mt={4}>Loading job details...</Text>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -918,65 +955,28 @@ const Create: React.FC = () => {
           ))}
         </VStack>
         <VStack spacing={1} align="center">
-          {/* Add room Button */}
-          <Button
-            mt={4}
-            onClick={() =>
-              append({
-                ref: "",
-                roomName: "",
-                width: 0,
-                height: 0,
-                count: 0,
-                putty: false,
-                mastic: false,
-                paint: false,
-                tenon: false,
-                eC: false,
-                encapsulation: 0,
-                bottomRail: false,
-                dormer: false,
-                easyClean: false,
-                pullyWheel: false,
-                panesNumber: 0,
-                stainRepairs: 0,
-                cill: "",
-                sash: "",
-                notes: "",
-                formation: "",
-                customFormation: "",
-                glassType: "Clear",
-                glassTypeTopBottom: "Bottom",
-                casement: false,
-                priceChange: 0,
-                positiveNegative: "positive",
-                priceChangeNotes: "",
-                masticPatch: false,
-                outsidePatch: false,
-                concealedVent: false,
-                trickleVent: false,
-                handles: false,
-                shutters: false,
-                customItem: false,
-                customItem2: 0,
-                quoteNotes: "",
-                windowNotes: "",
-              })
-            }
-            colorScheme="teal"
-            variant="outline"
-          >
-            Add Room
-          </Button>
-
-          {/* Submit Button */}
-          <Button type="submit" colorScheme="teal" size="lg" mt={6}>
-            Create Job
-          </Button>
-        </VStack>
-      </form>
+              <Button
+                mt={4}
+                onClick={addRoom}
+                colorScheme="teal"
+                variant="outline"
+              >
+                Add Room
+              </Button>
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                colorScheme="teal"
+                size="lg"
+                mt={6}
+                isLoading={isSubmitting}
+              >
+                Update Job
+              </Button>
+            </VStack>
+          </form>
     </>
   );
 };
 
-export default Create;
+export default EditJob;

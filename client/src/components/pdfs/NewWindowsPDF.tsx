@@ -10,7 +10,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { Job, Room } from "../../interfaces";
-import logo from "../assets/logo.png"; // Adjust the path as necessary
+import logo from "../assets/logo.png"; 
 import formation_1_1 from "../assets/1:1.png";
 import formation_1_2 from "../assets/1:2.png";
 import formation_2_1 from "../assets/2:1.png";
