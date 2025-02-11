@@ -681,36 +681,23 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
+        {/* Client Box for Address and Planning Permission */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
             {job.addressLineOne ||
             job.addressLineTwo ||
             job.addressLineThree ? (
-              // If any of addressLineOne, addressLineTwo, or addressLineThree are provided
               <Text style={styles.text}>
-                {/* Only render each line if it has a value */}
-                {job.addressLineOne && (
-                  <>
-                    {job.addressLineOne}
-                    {"\n"}
-                  </>
-                )}
-                {job.addressLineTwo && (
-                  <>
-                    {job.addressLineTwo}
-                    {"\n"}
-                  </>
-                )}
-                {job.addressLineThree && <>{job.addressLineThree}</>}
+                {job.addressLineOne ? `${job.addressLineOne}\n` : ""}
+                {job.addressLineTwo ? `${job.addressLineTwo}\n` : ""}
+                {job.addressLineThree ? job.addressLineThree : ""}
               </Text>
             ) : (
-              // Otherwise, use job.address and job.postCode
               <Text style={styles.text}>
                 Address: {job.address}
                 {"\n"}Postcode: {job.postCode}
               </Text>
             )}
-            {/* Planning permission text remains outside the conditional check */}
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
