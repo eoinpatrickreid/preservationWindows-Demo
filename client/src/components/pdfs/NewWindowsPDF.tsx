@@ -10,7 +10,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { Job, Room } from "../../interfaces";
-import logo from "../assets/logo.png"; 
+import logo from "../assets/logo.png";
 import formation_1_1 from "../assets/1:1.png";
 import formation_1_2 from "../assets/1:2.png";
 import formation_2_1 from "../assets/2:1.png";
@@ -673,22 +673,44 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
- {/* Client Box */}
- <View style={styles.clientBox}>
+        {/* Client Box */}
+        <View style={styles.clientBox}>
           <View style={styles.clientRow}>
             <Text style={styles.text}>Client: {job.customerName}</Text>
             <Text style={styles.text}>Job ID: {job.quoteId}</Text>
           </View>
         </View>
 
-
-        {/* Client Box with Address/Postcode and Planning Permission */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
-            <Text style={styles.text}>
-              Address: {job.address}
-              {"\n"}Postcode: {job.postCode}
-            </Text>
+            {job.addressLineOne ||
+            job.addressLineTwo ||
+            job.addressLineThree ? (
+              // If any of addressLineOne, addressLineTwo, or addressLineThree are provided
+              <Text style={styles.text}>
+                {/* Only render each line if it has a value */}
+                {job.addressLineOne && (
+                  <>
+                    {job.addressLineOne}
+                    {"\n"}
+                  </>
+                )}
+                {job.addressLineTwo && (
+                  <>
+                    {job.addressLineTwo}
+                    {"\n"}
+                  </>
+                )}
+                {job.addressLineThree && <>{job.addressLineThree}</>}
+              </Text>
+            ) : (
+              // Otherwise, use job.address and job.postCode
+              <Text style={styles.text}>
+                Address: {job.address}
+                {"\n"}Postcode: {job.postCode}
+              </Text>
+            )}
+            {/* Planning permission text remains outside the conditional check */}
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
