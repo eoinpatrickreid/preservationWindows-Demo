@@ -80,9 +80,9 @@ type Job struct {
     Options            []string           `json:"options" bson:"options"`
     PlanningPermission string             `json:"planningPermission" bson:"planningPermission"`
     SiteNotes          string             `json:"siteNotes" bson:"siteNotes"`
-    AdressLineOne    string  `json:"adressLineOne" bson:"adressLineOne"`
-    AdressLineTwo    string  `json:"adressLineTwo" bson:"adressLineTwo"`
-    AdressLineThree  string  `json:"adressLineThree" bson:"adressLineThree"`
+    AddressLineOne    string  `json:"addressLineOne" bson:"addressLineOne"`
+    AddressLineTwo    string  `json:"addressLineTwo" bson:"addressLineTwo"`
+    AddressLineThree  string  `json:"addressLineThree" bson:"addressLineThree"`
 }
 
 type User struct {
