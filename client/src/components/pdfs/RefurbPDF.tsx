@@ -405,7 +405,7 @@ const calculateRoomCost = (
 
   // Main cost
   const mainCost =
-    ((room.width / 1000) * (room.height / 1000) * 150 + 300 + (astrical * 30)) *
+    ((room.width / 1000) * (room.height / 1000) * 150 + 300 + astrical * 30) *
     1.28 *
     (1 + priceChange / 100) *
     (room.casement ? 0.8 : 1); // Apply 20% reduction if casement is true
@@ -515,7 +515,7 @@ const calculateRoomCost = (
     const glassType = room.glassType;
     const glassPos = room.glassTypeTopBottom || "Bottom";
     const glassPosMult = glassPosCosts[glassPos];
-    const glassCost = glassTypeCosts[glassType]*glassPosMult || 0;
+    const glassCost = glassTypeCosts[glassType] * glassPosMult || 0;
 
     if (glassCost > 0) {
       costBreakdown[`• Fit ${room.glassType} glass`] = glassCost;
@@ -523,7 +523,6 @@ const calculateRoomCost = (
     if (room.customItem2 > 0) {
       costBreakdown["• Custom Item"] = room.customItem2;
     }
-    
   }
 
   // Sum up all costs per window
@@ -597,6 +596,19 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           <View style={styles.clientRow}>
             <Text style={styles.text}>Client: {job.customerName}</Text>
             <Text style={styles.text}>Job ID: {job.quoteId}</Text>
+
+            {/* Address Logic */}
+            {job.addressLineOne && job.addressLineOne.trim().length > 0 ? (
+              <Text style={styles.text}>
+                {job.addressLineOne}
+                {"\n"}
+                {job.addressLineTwo}
+                {"\n"}
+                {job.addressLineThree}
+              </Text>
+            ) : job.address && job.address.trim().length > 0 ? (
+              <Text style={styles.text}>{job.address}</Text>
+            ) : null}
           </View>
         </View>
 
@@ -680,7 +692,8 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             </Text>
             <Text style={styles.footerText}>
               We hope this quotation is of interest to you and look forward to
-              hearing from you in the future. This quotation will be valid for 3 months from the issue date.
+              hearing from you in the future. This quotation will be valid for 3
+              months from the issue date.
             </Text>
             <Text
               style={[
