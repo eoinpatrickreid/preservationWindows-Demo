@@ -497,6 +497,8 @@ const calculateRoomCost = (room: Room): number => {
     .split("/")
     .map(Number)
     .reduce((a, b) => a + b);
+
+
   let priceChange = room.priceChange || 0;
   if (room.positiveNegative === "negative") {
     priceChange = room.priceChange * -1;
@@ -522,16 +524,17 @@ const calculateRoomCost = (room: Room): number => {
 
   // Base cost calculation
   const windowCost = Math.round(
-    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
-      30 * formationInt +
-      room.encapsulation * 560 +
-      glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
-      1.28
+    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8) * 1.28
   );
-
   console.log(`Cost per window: £${windowCost}`);
-  const baseCost = windowCost;
-
+  const costWithPanes = windowCost + formationInt * 30;
+  console.log(`Cost with panes: £${costWithPanes}`);
+  const costWithEncapsulation = costWithPanes + encapsulationCost;
+  console.log(`Cost with encapsulation: £${costWithEncapsulation}`);
+  const costWithGlasstype = costWithEncapsulation + (glassTypeCosts[glassType]*glassPosCosts[glassPos]);
+  console.log(`Cost with glass type: £${costWithGlasstype}`);
+  const baseCost = costWithGlasstype;
+  console.log(`Base Cost before multipliers: £${baseCost}`);
   console.log(`Base Cost before multipliers: £${baseCost}`);
 
   // Apply multipliers

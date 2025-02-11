@@ -599,17 +599,28 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-        {/* Client Box with Address/Postcode and Planning Permission */}
+
+        {/* Client Box for Address and Planning Permission */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
-            <Text style={styles.text}>
-              Address: {job.address}
-              {"\n"}Postcode: {job.postCode}
-            </Text>
+            {job.addressLineOne ||
+            job.addressLineTwo ||
+            job.addressLineThree ? (
+              <Text style={styles.text}>
+                {job.addressLineOne ? `${job.addressLineOne}\n` : ""}
+                {job.addressLineTwo ? `${job.addressLineTwo}\n` : ""}
+                {job.addressLineThree ? job.addressLineThree : ""}
+              </Text>
+            ) : (
+              <Text style={styles.text}>
+                Address: {job.address}
+                {"\n"}Postcode: {job.postCode}
+              </Text>
+            )}
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
-
+        
         {/* Project Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
