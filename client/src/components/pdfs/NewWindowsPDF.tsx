@@ -673,28 +673,13 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-{/* Client Box */}
-<View style={styles.clientBox}>
-  <View style={styles.clientRow}>
-    <Text style={styles.text}>Client: {job.customerName}</Text>
-    <Text style={styles.text}>Job ID: {job.quoteId}</Text>
-
-    {/* Address Logic */}
-    {job.addressLineOne && job.addressLineOne.trim().length > 0 ? (
-      <Text style={styles.text}>
-        {job.addressLineOne}
-        {'\n'}
-        {job.addressLineTwo}
-        {'\n'}
-        {job.addressLineThree}
-      </Text>
-    ) : job.address && job.address.trim().length > 0 ? (
-      <Text style={styles.text}>
-        {job.address}
-      </Text>
-    ) : null}
-  </View>
-</View>
+ {/* Client Box */}
+ <View style={styles.clientBox}>
+          <View style={styles.clientRow}>
+            <Text style={styles.text}>Client: {job.customerName}</Text>
+            <Text style={styles.text}>Job ID: {job.quoteId}</Text>
+          </View>
+        </View>
 
 
         {/* Client Box with Address/Postcode and Planning Permission */}
