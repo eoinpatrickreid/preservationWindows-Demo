@@ -1,5 +1,3 @@
-// src/components/ViewSingle.tsx
-
 import React, { useEffect, useState } from "react";
 import { PDFViewer, pdf } from "@react-pdf/renderer";
 import Navbar from "./NavBar";
@@ -21,6 +19,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import axiosInstance from "../utils/axiosInstance";
 import NewWindowsPDF from "./pdfs/NewWindowsPDF";
@@ -33,24 +32,20 @@ const pdfComponents: { [key: string]: React.FC<{ job: Job }> } = {
   PVC: PVCPDF,
 };
 
-
 const ViewSingle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // Initialize isDownloading state for each option
+  const toast = useToast();
   const [isDownloadingMap, setIsDownloadingMap] = useState<{ [option: string]: boolean }>({});
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
         const response = await axiosInstance.get<Job>(`/api/jobs/${id}`);
-
         setJob(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch job data.");
@@ -66,7 +61,6 @@ const ViewSingle: React.FC = () => {
   const handleDelete = async () => {
     try {
       const response = await axiosInstance.delete(`/api/jobs/${id}`);
-
       if (response.status === 200) {
         onOpen(); // Open the modal upon successful deletion
       } else {
@@ -74,6 +68,40 @@ const ViewSingle: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
+    }
+  };
+
+  // Duplicate job handler
+  const handleDuplicate = async () => {
+    if (!job) return;
+    try {
+      // Clone the job data and update the date to the current date (YYYY-MM-DD)
+      const duplicateJob = { ...job, date: new Date().toISOString().split("T")[0] };
+      // Remove fields that should not be copied
+      delete duplicateJob._id;
+      delete duplicateJob.quoteId;
+
+      // Specify the type parameter so response.data is recognized as Job
+      const response = await axiosInstance.post<Job>("/api/jobs", duplicateJob);
+      const createdJob = response.data;
+      toast({
+        title: "Job Duplicated",
+        description: "The job has been duplicated successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      // Navigate to the ViewSingle page for the newly duplicated job
+      navigate(`/viewSingle/${createdJob._id}`);
+    } catch (error: any) {
+      console.error("Error duplicating job:", error);
+      toast({
+        title: "Error",
+        description: "There was an error duplicating the job.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -103,13 +131,7 @@ const ViewSingle: React.FC = () => {
     <>
       <Navbar />
       {/* Main Container with Green Background */}
-      <Box
-        maxW="1000px"
-        mx="auto"
-        p={6}
-        bg="#B5C9BD" // Green background
-        minH="100vh"
-      >
+      <Box maxW="1000px" mx="auto" p={6} bg="#B5C9BD" minH="100vh">
         <Heading as="h2" size="lg" mb={6} textAlign="center" color="gray.800">
           View Quote
         </Heading>
@@ -145,12 +167,13 @@ const ViewSingle: React.FC = () => {
         <VStack spacing={4} align="stretch">
           <HStack spacing={4} justify="center">
             {/* Edit Quote Button */}
-            <Button
-              colorScheme="teal"
-              variant="solid"
-              onClick={() => navigate(`/editJob/${id}`)}
-            >
+            <Button colorScheme="teal" variant="solid" onClick={() => navigate(`/editJob/${id}`)}>
               Edit Quote
+            </Button>
+
+            {/* Duplicate Quote Button */}
+            <Button colorScheme="teal" variant="solid" onClick={handleDuplicate}>
+              Duplicate Quote
             </Button>
 
             {/* Download PDF Buttons */}
@@ -162,16 +185,11 @@ const ViewSingle: React.FC = () => {
                 const handleDownload = async () => {
                   setIsDownloadingMap((prev) => ({ ...prev, [option]: true }));
                   try {
-                    const blob = await pdf(
-                      <PDFComponent job={job} />
-                    ).toBlob();
+                    const blob = await pdf(<PDFComponent job={job} />).toBlob();
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement("a");
                     link.href = url;
-                    link.download = `${job.customerName.replace(
-                      / /g,
-                      "_"
-                    )}_${job.date}_${option}_QUOTE.pdf`;
+                    link.download = `${job.customerName.replace(/ /g, "_")}_${job.date}_${option}_QUOTE.pdf`;
                     document.body.appendChild(link);
                     link.click();
                     link.parentNode?.removeChild(link);
@@ -223,7 +241,6 @@ const ViewSingle: React.FC = () => {
           <ModalBody>
             <Text>The job has been successfully deleted.</Text>
           </ModalBody>
-
           <ModalFooter>
             <Button
               colorScheme="teal"

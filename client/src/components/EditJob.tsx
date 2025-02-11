@@ -202,7 +202,6 @@ const EditJob: React.FC = () => {
     { name: "putty", label: "Putty" },
     { name: "paint", label: "Paint" },
     { name: "tenon", label: "Tenon" },
-    { name: "eC", label: "EC" },
     { name: "bottomRail", label: "Bottom Rail" },
     { name: "pullyWheel", label: "Pully Style" },
     { name: "casement", label: "Casement" },
