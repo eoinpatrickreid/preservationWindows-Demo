@@ -123,10 +123,10 @@ const styles = StyleSheet.create({
   },
   // Column widths
   tableColRef: {
-    flex: 0.5,
+    flex: 0.4,
   },
   tableColRoom: {
-    flex: 1,
+    flex: 0.8,
   },
   tableColDescription: {
     flex: 2,
@@ -357,6 +357,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 2,
   },
+  detailedColQuoteNotes: {
+    flex: 2.5, // Increase this value as needed
+  },
 });
 
 const formationImageMap: { [key: string]: string } = {
@@ -461,8 +464,12 @@ const calculateRoomCost = (room: Room): number => {
   const glassType = room.glassType || "Clear";
   const glassPos = room.glassTypeTopBottom || "Bottom";
   const windowCount = room.count || 1;
-  let formationOnly = room.formation === "placeholder" ? "1/1" : room.formation.split("_")[0];
-  const formationInt = formationOnly.split("/").map(Number).reduce((a, b) => a + b);
+  let formationOnly =
+    room.formation === "placeholder" ? "1/1" : room.formation.split("_")[0];
+  const formationInt = formationOnly
+    .split("/")
+    .map(Number)
+    .reduce((a, b) => a + b);
 
   let priceChange = room.priceChange || 0;
   if (room.positiveNegative === "negative") {
@@ -478,7 +485,11 @@ const calculateRoomCost = (room: Room): number => {
 
   // Tidy logging using console groups for clarity
   console.group(`Cost Calculation for Room: ${room.roomName}`);
-  console.log("Dimensions:", `Width: ${room.width} mm`, `Height: ${room.height} mm`);
+  console.log(
+    "Dimensions:",
+    `Width: ${room.width} mm`,
+    `Height: ${room.height} mm`
+  );
   console.log("Panes Number:", panesNumber);
   console.log("Glass Type:", glassType);
   console.log("Window Count:", windowCount);
@@ -486,7 +497,9 @@ const calculateRoomCost = (room: Room): number => {
   console.log("Encapsulation Cost:", `£${encapsulationCost}`);
 
   // Base cost calculation steps
-  const windowCost = Math.round((((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8) * 1.28);
+  const windowCost = Math.round(
+    ((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 * 1.28
+  );
   console.group("Base Cost Calculation");
   console.log("Cost per window:", `£${windowCost}`);
 
@@ -496,7 +509,8 @@ const calculateRoomCost = (room: Room): number => {
   const costWithEncapsulation = costWithPanes + encapsulationCost;
   console.log("Cost with encapsulation:", `£${costWithEncapsulation}`);
 
-  const costWithGlasstype = costWithEncapsulation + (glassTypeCosts[glassType] * glassPosCosts[glassPos]);
+  const costWithGlasstype =
+    costWithEncapsulation + glassTypeCosts[glassType] * glassPosCosts[glassPos];
   console.log("Cost with glass type adjustment:", `£${costWithGlasstype}`);
 
   const baseCost = costWithGlasstype;
@@ -508,7 +522,10 @@ const calculateRoomCost = (room: Room): number => {
   const withCasementCost = roomChangeCost * (room.casement ? 0.8 : 1); // 20% reduction if casement is true
   let totalCost = withCasementCost;
   console.group("After Multipliers");
-  console.log("Room Change Cost (after price change multiplier):", `£${roomChangeCost}`);
+  console.log(
+    "Room Change Cost (after price change multiplier):",
+    `£${roomChangeCost}`
+  );
   console.log("Cost after Casement adjustment:", `£${withCasementCost}`);
   console.groupEnd();
 
@@ -554,7 +571,9 @@ const calculateRoomCost = (room: Room): number => {
 
   const finalCost = totalCost * windowCount;
   if (isNaN(finalCost)) {
-    console.warn(`Warning: Calculated cost for room "${room.roomName}" is NaN. Check input values.`);
+    console.warn(
+      `Warning: Calculated cost for room "${room.roomName}" is NaN. Check input values.`
+    );
     return 0;
   }
   return Math.round(finalCost);
@@ -587,8 +606,14 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
   console.log(`!!!Planning fee: £${planningFee}`);
 
   // Calculate room costs
-  const roomCosts = useMemo(() => job.rooms.map((room) => calculateRoomCost(room)), [job.rooms]);
-  const totalCount = job.rooms.reduce((sum, room) => sum + (room.count || 1), 0);
+  const roomCosts = useMemo(
+    () => job.rooms.map((room) => calculateRoomCost(room)),
+    [job.rooms]
+  );
+  const totalCount = job.rooms.reduce(
+    (sum, room) => sum + (room.count || 1),
+    0
+  );
 
   console.log(`Admin fee: £${adminFee}`);
   let subtotal = roomCosts.reduce((sum, cost) => sum + cost, 0);
@@ -634,7 +659,9 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         {/* Client Box for Address and Planning Permission */}
         <View style={styles.clientBox}>
           <View style={styles.clientRow}>
-            {job.addressLineOne || job.addressLineTwo || job.addressLineThree ? (
+            {job.addressLineOne ||
+            job.addressLineTwo ||
+            job.addressLineThree ? (
               <Text style={styles.text}>
                 {job.addressLineOne ? `${job.addressLineOne}\n` : ""}
                 {job.addressLineTwo ? `${job.addressLineTwo}\n` : ""}
@@ -652,24 +679,36 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
 
         {/* Project Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Project Summary: Replace Windows</Text>
+          <Text style={styles.sectionTitle}>
+            Project Summary: Replace Windows
+          </Text>
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>Location</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
+              Ref
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
+              Location
+            </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
               Description
             </Text>
             <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
               Quantity ({totalCount})
             </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>Cost (£)</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
+              Cost (£)
+            </Text>
           </View>
           {job.rooms.map((room, index) => {
             const roomCost = roomCosts[index];
             return (
               <View key={index} style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.tableColRef]}>{room.ref}</Text>
-                <Text style={[styles.tableCell, styles.tableColRoom]}>{room.roomName}</Text>
+                <Text style={[styles.tableCell, styles.tableColRef]}>
+                  {room.ref}
+                </Text>
+                <Text style={[styles.tableCell, styles.tableColRoom]}>
+                  {room.roomName}
+                </Text>
                 <Text style={[styles.tableCell, styles.tableColDescription]}>
                   {room.width} x {room.height} mm Sash and Case
                 </Text>
@@ -687,26 +726,36 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         {/* Footer Container */}
         <View style={styles.footerContainer}>
           <View style={styles.footerLeft}>
-            <Text style={[styles.footerText, { fontWeight: "bold", fontSize: 12 }]}>
+            <Text
+              style={[styles.footerText, { fontWeight: "bold", fontSize: 12 }]}
+            >
               Notes
             </Text>
             <Text style={styles.footerText}>
-              All new windows will be fully finished in a colour of your choice and all exterior mastic
-              pointing is included in the quotation.
+              All new windows will be fully finished in a colour of your choice
+              and all exterior mastic pointing is included in the quotation.
             </Text>
             <Text style={styles.footerText}>
-              All curtains/blinds to be removed by customer prior to the installation.
+              All curtains/blinds to be removed by customer prior to the
+              installation.
             </Text>
             <Text style={styles.footerText}>
-              We hope this quotation is of interest to you and look forward to hearing from you in the future.
-              This quotation will be valid for 3 months from the issue date.
+              We hope this quotation is of interest to you and look forward to
+              hearing from you in the future. This quotation will be valid for 3
+              months from the issue date.
             </Text>
-            <Text style={[styles.footerText, { fontWeight: "bold", fontSize: 12, marginTop: 10 }]}>
+            <Text
+              style={[
+                styles.footerText,
+                { fontWeight: "bold", fontSize: 12, marginTop: 10 },
+              ]}
+            >
               Payment Terms
             </Text>
             <Text style={styles.footerText}>
-              On the first day of installation we require you to pay 50% of the agreed quote.
-              Once installation is complete the remainder of the balance will be required.
+              On the first day of installation we require you to pay 50% of the
+              agreed quote. Once installation is complete the remainder of the
+              balance will be required.
             </Text>
           </View>
           <View style={styles.footerRight}>
@@ -715,28 +764,39 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>Subtotal</Text>
-              <Text style={styles.footerRightValue}>£{subtotalWithAdmin.toFixed(2)}</Text>
+              <Text style={styles.footerRightValue}>
+                £{subtotalWithAdmin.toFixed(2)}
+              </Text>
             </View>
             {planningFee > 0 && (
               <View style={styles.footerRightRow}>
                 <Text style={styles.footerRightLabel}>Service Fee</Text>
-                <Text style={styles.footerRightValue}>£{planningFee.toFixed(2)}</Text>
+                <Text style={styles.footerRightValue}>
+                  £{planningFee.toFixed(2)}
+                </Text>
               </View>
             )}
             <View style={styles.footerRightRow}>
               <Text style={styles.footerRightLabel}>VAT (20%)</Text>
-              <Text style={styles.footerRightValue}>£{vatAmount.toFixed(2)}</Text>
+              <Text style={styles.footerRightValue}>
+                £{vatAmount.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.footerRightRow}>
-              <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>Total</Text>
-              <Text style={[styles.footerRightValue, { fontWeight: "bold" }]}>£{total.toFixed(2)}</Text>
+              <Text style={[styles.footerRightLabel, { fontWeight: "bold" }]}>
+                Total
+              </Text>
+              <Text style={[styles.footerRightValue, { fontWeight: "bold" }]}>
+                £{total.toFixed(2)}
+              </Text>
             </View>
           </View>
         </View>
 
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99 24 | Mob: 07973 820 855
+            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
+            99 24 | Mob: 07973 820 855
           </Text>
           <View style={styles.footerBox} />
         </View>
@@ -762,16 +822,42 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detailed Summary</Text>
           <View style={styles.detailedTableHeader}>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRef]}>Ref</Text>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRoomName]}>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColRef]}
+            >
+              Ref
+            </Text>
+            <Text
+              style={[
+                styles.detailedTableHeaderCell,
+                styles.detailedColRoomName,
+              ]}
+            >
               Location
             </Text>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColDetails]}>
+            <Text
+              style={[
+                styles.detailedTableHeaderCell,
+                styles.detailedColDetails,
+              ]}
+            >
               Details
             </Text>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColRate]}>Rate (£)</Text>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColQty]}>Qty</Text>
-            <Text style={[styles.detailedTableHeaderCell, styles.detailedColSum]}>Sum (£)</Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColRate]}
+            >
+              Rate (£)
+            </Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColQty]}
+            >
+              Qty
+            </Text>
+            <Text
+              style={[styles.detailedTableHeaderCell, styles.detailedColSum]}
+            >
+              Sum (£)
+            </Text>
           </View>
           {job.rooms.map((room, index) => {
             const roomCost = roomCosts[index];
@@ -799,59 +885,121 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                       </View>
                     </View>
                     <View style={styles.detailedTableHeader}>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColRef]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRef,
+                        ]}
+                      >
                         Ref
                       </Text>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColRoomName]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRoomName,
+                        ]}
+                      >
                         Location
                       </Text>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColDetails]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColDetails,
+                        ]}
+                      >
                         Details
                       </Text>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColRate]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColRate,
+                        ]}
+                      >
                         Rate (£)
                       </Text>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColQty]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColQty,
+                        ]}
+                      >
                         Qty
                       </Text>
-                      <Text style={[styles.detailedTableHeaderCell, styles.detailedColSum]}>
+                      <Text
+                        style={[
+                          styles.detailedTableHeaderCell,
+                          styles.detailedColSum,
+                        ]}
+                      >
                         Sum (£)
                       </Text>
                     </View>
                   </>
                 )}
                 <View style={styles.detailedTableRow}>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRef]}>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColRef]}
+                  >
                     {room.ref}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRoomName]}>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColRoomName,
+                    ]}
+                  >
                     {room.roomName}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRoomName]}>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColQuoteNotes,
+                    ]}
+                  >
                     {room.quoteNotes}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColDetails]}>
+
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColDetails,
+                    ]}
+                  >
                     {room.priceChange < 0
                       ? ` ${room.priceChangeNotes}`
                       : room.priceChange > 0
                       ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRate]}></Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColQty]}></Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColSum]}></Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColRate]}
+                  ></Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColQty]}
+                  ></Text>
+                  <Text
+                    style={[styles.detailedTableCell, styles.detailedColSum]}
+                  ></Text>
                 </View>
                 <View style={styles.imageRow}>
                   <View style={styles.imageCell}>
                     <View style={styles.imageContainer}>
-                      <Image src={formationImageMap[room.formation]} style={styles.imageStyle} />
+                      <Image
+                        src={formationImageMap[room.formation]}
+                        style={styles.imageStyle}
+                      />
                       <Text style={styles.widthLabel}>{room.width} mm</Text>
                     </View>
                     <View style={styles.heightLabelContainer}>
                       <Text style={styles.heightLabel}>{room.height} mm</Text>
                     </View>
                   </View>
-                  <View style={[styles.detailedTableCell, styles.detailedColDetails]}>
+                  <View
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColDetails,
+                    ]}
+                  >
                     {formatRoomDetails(room).map((detailPair, idx) => (
                       <View key={idx} style={styles.detailRow}>
                         <Text style={[styles.detailItem, styles.detailColumn]}>
@@ -863,13 +1011,28 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                       </View>
                     ))}
                   </View>
-                  <Text style={[styles.detailedTableCell, styles.detailedColRateImageRow]}>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColRateImageRow,
+                    ]}
+                  >
                     £{rate.toFixed(2)}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColQtyImageRow]}>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColQtyImageRow,
+                    ]}
+                  >
                     {count}
                   </Text>
-                  <Text style={[styles.detailedTableCell, styles.detailedColSumImageRow]}>
+                  <Text
+                    style={[
+                      styles.detailedTableCell,
+                      styles.detailedColSumImageRow,
+                    ]}
+                  >
                     £{roomCost.toFixed(2)}
                   </Text>
                 </View>
@@ -883,20 +1046,28 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.finalSummaryTitle}>Final Summary</Text>
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>Subtotal</Text>
-              <Text style={styles.finalSummaryValue}>£{subtotalWithAdmin.toFixed(2)}</Text>
+              <Text style={styles.finalSummaryValue}>
+                £{subtotalWithAdmin.toFixed(2)}
+              </Text>
             </View>
             {planningFee > 0 && (
               <View style={styles.finalSummaryRow}>
                 <Text style={styles.finalSummaryLabel}>Planning Fee</Text>
-                <Text style={styles.finalSummaryValue}>£{planningFee.toFixed(2)}</Text>
+                <Text style={styles.finalSummaryValue}>
+                  £{planningFee.toFixed(2)}
+                </Text>
               </View>
             )}
             <View style={styles.finalSummaryRow}>
               <Text style={styles.finalSummaryLabel}>VAT (20%)</Text>
-              <Text style={styles.finalSummaryValue}>£{vatAmount.toFixed(2)}</Text>
+              <Text style={styles.finalSummaryValue}>
+                £{vatAmount.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.finalSummaryRow}>
-              <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>Total</Text>
+              <Text style={[styles.finalSummaryLabel, { fontWeight: "bold" }]}>
+                Total
+              </Text>
               <Text style={[styles.finalSummaryValue, { fontWeight: "bold" }]}>
                 £{total.toFixed(2)}
               </Text>
