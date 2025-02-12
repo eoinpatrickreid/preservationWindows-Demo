@@ -497,23 +497,18 @@ const calculateRoomCost = (room: Room): number => {
   console.log("Encapsulation Cost:", `£${encapsulationCost}`);
 
   // Base cost calculation steps
+
   const windowCost = Math.round(
-    ((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 * 1.28
+    (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
+      30 * formationInt +
+      room.encapsulation * 560 +
+      glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
+      1.28
   );
   console.group("Base Cost Calculation");
   console.log("Cost per window:", `£${windowCost}`);
 
-  const costWithPanes = windowCost + formationInt * 30;
-  console.log("Cost with panes (Formation factor):", `£${costWithPanes}`);
-
-  const costWithEncapsulation = costWithPanes + encapsulationCost;
-  console.log("Cost with encapsulation:", `£${costWithEncapsulation}`);
-
-  const costWithGlasstype =
-    costWithEncapsulation + glassTypeCosts[glassType] * glassPosCosts[glassPos];
-  console.log("Cost with glass type adjustment:", `£${costWithGlasstype}`);
-
-  const baseCost = costWithGlasstype;
+  const baseCost = windowCost;
   console.log("Base Cost before multipliers:", `£${baseCost}`);
   console.groupEnd();
 
