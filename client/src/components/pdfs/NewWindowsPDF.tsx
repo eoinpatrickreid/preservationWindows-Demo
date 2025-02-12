@@ -672,101 +672,80 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
-{/* Project Summary */}
-<View style={styles.section}>
-  <Text style={styles.sectionTitle}>
-    Project Summary: Replace Windows
-  </Text>
-  <View style={styles.tableHeader}>
-    <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
-    <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>Location</Text>
-    <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
-      Description
-    </Text>
-    <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-      Quantity ({totalCount})
-    </Text>
-    <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
-      Cost (£)
-    </Text>
-  </View>
-  {job.rooms.map((room, index) => {
-    const roomCost = roomCosts[index];
-    // If there are more than 10 rooms, insert a page break before the 11th room (index 10)
-    if (index === 10) {
-      return (
-        <React.Fragment key={`page-break-${index}`}>
-          <View style={styles.headerBox} break>
-            <View style={styles.headerRow}>
-              <View style={styles.headerLeft}>
-                <Text style={styles.text}>Date: {job.date}</Text>
-                <Text style={styles.text}>{companyAddress}</Text>
-                <Text style={styles.text}>{companyCity}</Text>
-                <Text style={styles.text}>{stateZip}</Text>
-              </View>
-              <View style={styles.headerCenter}>
-                <Text style={styles.headerText}>{companyName}</Text>
-                <Text style={styles.headerText}>Quotation</Text>
-              </View>
-              <View style={styles.headerRight}>
-                <Image style={styles.logo} src={logo} />
-              </View>
+        {job.rooms.map((room, index) => {
+  const roomCost = roomCosts[index];
+  if (index === 10) {
+    return (
+      <React.Fragment key={`page-break-${index}`}>
+        {/* Force a page break */}
+        <View break />
+
+        {/* Re-render the header for the new page */}
+        <View style={styles.headerBox}>
+          <View style={styles.headerRow}>
+            <View style={styles.headerLeft}>
+              <Text style={styles.text}>Date: {job.date}</Text>
+              <Text style={styles.text}>{companyAddress}</Text>
+              <Text style={styles.text}>{companyCity}</Text>
+              <Text style={styles.text}>{stateZip}</Text>
+            </View>
+            <View style={styles.headerCenter}>
+              <Text style={styles.headerText}>{companyName}</Text>
+              <Text style={styles.headerText}>Quotation</Text>
+            </View>
+            <View style={styles.headerRight}>
+              <Image style={styles.logo} src={logo} />
             </View>
           </View>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>Location</Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
-              Description
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-              Quantity ({totalCount})
-            </Text>
-            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
-              Cost (£)
-            </Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.tableColRef]}>
-              {room.ref}
-            </Text>
-            <Text style={[styles.tableCell, styles.tableColRoom]}>
-              {room.roomName}
-            </Text>
-            <Text style={[styles.tableCell, styles.tableColDescription]}>
-              {room.width} x {room.height} mm Sash and Case
-            </Text>
-            <Text style={[styles.tableCell, styles.tableColQuantity]}>
-              {room.count || 0}
-            </Text>
-            <Text style={[styles.tableCell, styles.tableColCost]}>
-              £{roomCost.toFixed(2)}
-            </Text>
-          </View>
-        </React.Fragment>
-      );
-    }
-    return (
-      <View key={index} style={styles.tableRow}>
-        <Text style={[styles.tableCell, styles.tableColRef]}>
-          {room.ref}
-        </Text>
-        <Text style={[styles.tableCell, styles.tableColRoom]}>
-          {room.roomName}
-        </Text>
-        <Text style={[styles.tableCell, styles.tableColDescription]}>
-          {room.width} x {room.height} mm Sash and Case
-        </Text>
-        <Text style={[styles.tableCell, styles.tableColQuantity]}>
-          {room.count || 0}
-        </Text>
-        <Text style={[styles.tableCell, styles.tableColCost]}>
-          £{roomCost.toFixed(2)}
-        </Text>
-      </View>
+        </View>
+
+        {/* Re-render the table header */}
+        <View style={styles.tableHeader}>
+          <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
+          <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>Location</Text>
+          <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
+            Description
+          </Text>
+          <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
+            Quantity ({totalCount})
+          </Text>
+          <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
+            Cost (£)
+          </Text>
+        </View>
+
+        {/* Render the 11th room */}
+        <View style={styles.tableRow}>
+          <Text style={[styles.tableCell, styles.tableColRef]}>{room.ref}</Text>
+          <Text style={[styles.tableCell, styles.tableColRoom]}>{room.roomName}</Text>
+          <Text style={[styles.tableCell, styles.tableColDescription]}>
+            {room.width} x {room.height} mm Sash and Case
+          </Text>
+          <Text style={[styles.tableCell, styles.tableColQuantity]}>
+            {room.count || 0}
+          </Text>
+          <Text style={[styles.tableCell, styles.tableColCost]}>
+            £{roomCost.toFixed(2)}
+          </Text>
+        </View>
+      </React.Fragment>
     );
-  })}
-</View>
+  }
+  return (
+    <View key={index} style={styles.tableRow}>
+      <Text style={[styles.tableCell, styles.tableColRef]}>{room.ref}</Text>
+      <Text style={[styles.tableCell, styles.tableColRoom]}>{room.roomName}</Text>
+      <Text style={[styles.tableCell, styles.tableColDescription]}>
+        {room.width} x {room.height} mm Sash and Case
+      </Text>
+      <Text style={[styles.tableCell, styles.tableColQuantity]}>{room.count || 0}</Text>
+      <Text style={[styles.tableCell, styles.tableColCost]}>
+        £{roomCost.toFixed(2)}
+      </Text>
+    </View>
+  );
+})}
+
 
 
         {/* Footer Container */}
