@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#000",
     backgroundColor: "#dbdbdb",
-    alignItems: "center",
+    
     paddingVertical: 5,
   },
   detailedTableRow: {
