@@ -671,6 +671,29 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
+                {/* Project Summary */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            Project Summary: Replace Windows
+          </Text>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
+              Ref
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
+              Location
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
+              Description
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
+              Quantity ({totalCount})
+            </Text>
+            <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
+              Cost (£)
+            </Text>
+          </View>
+        </View>
 
         {job.rooms.map((room, index) => {
   const roomCost = roomCosts[index];
