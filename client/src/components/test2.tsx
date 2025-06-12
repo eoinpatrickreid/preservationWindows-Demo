@@ -242,7 +242,7 @@ const EditJob: React.FC = () => {
       glassType: "Clear",
       glassTypeTopBottom: "Bottom",
       casement: false,
-      priceChange: 0,
+      priceChange: "",
       priceChangeNotes: "",
       positiveNegative: "positive",
       masticPatch: false,

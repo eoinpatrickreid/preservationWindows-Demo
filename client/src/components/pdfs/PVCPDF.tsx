@@ -471,9 +471,9 @@ const calculateRoomCost = (room: Room): number => {
     .split("/")
     .map(Number)
     .reduce((a, b) => a + b);
-    let priceChange = room.priceChange || 0;
+    let priceChange = 0;
     if (room.positiveNegative === "negative") {
-      priceChange = room.priceChange * -1;
+      priceChange = priceChange * -1;
     }
   
 
@@ -948,7 +948,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
                     {room.roomName}
                   </Text>
                   {/* Details */}
-                  <Text
+                  {/* <Text
                     style={[
                       styles.detailedTableCell,
                       styles.detailedColDetails,
@@ -959,7 +959,7 @@ const PVCPDF: React.FC<{ job: Job }> = ({ job }) => {
                       : room.priceChange > 0
                       ? `${room.priceChangeNotes}`
                       : room.priceChangeNotes}
-                  </Text>
+                  </Text> */}
                   {/* Empty cells for Rate, Qty, Sum */}
                   <Text
                     style={[styles.detailedTableCell, styles.detailedColRate]}

@@ -233,7 +233,7 @@ const Create: React.FC = () => {
 
   const onValidSubmit = (data: Job) => {
     // Check all rooms for count === 0
-    const invalidRoom = data.rooms.find((room, idx) => room.count === 0);
+    const invalidRoom = data.rooms.find(room => room.count === 0);
     if (invalidRoom) {
       toast({
         title: "Error",
@@ -794,7 +794,7 @@ const Create: React.FC = () => {
                         <Controller
                           control={control}
                           name={`rooms.${index}.priceChange`}
-                          render={({ field }) => (
+                          render={() => (
                             <Input
                           type="text"
                           {...register(`rooms.${index}.priceChange`, {

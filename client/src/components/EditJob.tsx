@@ -804,7 +804,7 @@ const EditJob: React.FC = () => {
                         <Controller
                           control={control}
                           name={`rooms.${index}.priceChange`}
-                          render={({ field }) => (
+                          render={() => (
                             <Input
                             type="text"
                             {...register(`rooms.${index}.priceChange`, {
