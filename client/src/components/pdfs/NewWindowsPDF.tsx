@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#000",
     backgroundColor: "#dbdbdb",
-    
+
     paddingVertical: 5,
   },
   detailedTableRow: {
@@ -395,7 +395,8 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
-  const glassTypeString = "• " + room.glassType + " glass";
+  const glassTypeString =
+    "• " + room.glassType + " glass" + room.glassTypeTopBottom;
   detailsArray.push(glassTypeString);
 
   const stainRepairs = room.stainRepairs || 0;
@@ -405,6 +406,11 @@ const formatRoomDetails = (room: Room): string[][] => {
     } else {
       detailsArray.push(`• Repair ${stainRepairs} stained glass panes`);
     }
+  }
+  if (room.encapsulation != 0) {
+    detailsArray.push(
+      `• Carry out ${room.encapsulation} feature glass encapsulation(s)}`
+    );
   }
   if (room.dormer) {
     detailsArray.push("• Dormer Window");
@@ -416,10 +422,10 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push("• Supply and fit surface hood trickle vent");
   }
   if (room.handles) {
-    detailsArray.push("• Carry out refurbishment of handles");
+    detailsArray.push("• Refurbishment of handles");
   }
   if (room.shutters) {
-    detailsArray.push("• Shutters");
+    detailsArray.push("• Make shutters operational");
   }
   if (room.easyClean || room.eC) {
     detailsArray.push("• Easy Clean Installation");
@@ -470,18 +476,18 @@ const calculateRoomCost = (room: Room): number => {
     .split("/")
     .map(Number)
     .reduce((a, b) => a + b);
-
-  let priceChange = room.priceChange || 0;
-  if (room.positiveNegative === "negative") {
-    priceChange = room.priceChange * -1;
+  let priceChange = 0;
+  if (typeof room.priceChange === "string") {
+    priceChange = parseFloat(room.priceChange.replace("%", ""));
+  } else {
+    priceChange = room.priceChange || 0;
   }
 
-  const encapsulationCost =
-    typeof room.encapsulation === "number"
-      ? room.encapsulation * 560
-      : room.encapsulation
-      ? 560
-      : 0;
+  if (room.positiveNegative === "negative") {
+    priceChange = priceChange * -1;
+  }
+
+  const encapsulationCost = room.encapsulation * 650;
 
   // Tidy logging using console groups for clarity
   console.group(`Cost Calculation for Room: ${room.roomName}`);
@@ -501,7 +507,7 @@ const calculateRoomCost = (room: Room): number => {
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
-      room.encapsulation * 560 +
+      room.encapsulation * 650 +
       glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
       1.28
   );
@@ -671,10 +677,11 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
-                {/* Project Summary */}
+        {/* Project Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            Project Summary: Replace Windows
+            Project Summary: To supply and fit new hardwood double glazed sash
+            and case windows.
           </Text>
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
@@ -696,80 +703,96 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         </View>
 
         {job.rooms.map((room, index) => {
-  const roomCost = roomCosts[index];
-  if (index === 10) {
-    return (
-      <React.Fragment key={`page-break-${index}`}>
-        {/* Force a page break */}
-        <View break />
+          const roomCost = roomCosts[index];
+          if (index === 10) {
+            return (
+              <React.Fragment key={`page-break-${index}`}>
+                {/* Force a page break */}
+                <View break />
 
-        {/* Re-render the header for the new page */}
-        <View style={styles.headerBox}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.text}>Date: {job.date}</Text>
-              <Text style={styles.text}>{companyAddress}</Text>
-              <Text style={styles.text}>{companyCity}</Text>
-              <Text style={styles.text}>{stateZip}</Text>
+                {/* Re-render the header for the new page */}
+                <View style={styles.headerBox}>
+                  <View style={styles.headerRow}>
+                    <View style={styles.headerLeft}>
+                      <Text style={styles.text}>Date: {job.date}</Text>
+                      <Text style={styles.text}>{companyAddress}</Text>
+                      <Text style={styles.text}>{companyCity}</Text>
+                      <Text style={styles.text}>{stateZip}</Text>
+                    </View>
+                    <View style={styles.headerCenter}>
+                      <Text style={styles.headerText}>{companyName}</Text>
+                      <Text style={styles.headerText}>Quotation</Text>
+                    </View>
+                    <View style={styles.headerRight}>
+                      <Image style={styles.logo} src={logo} />
+                    </View>
+                  </View>
+                </View>
+
+                {/* Re-render the table header */}
+                <View style={styles.tableHeader}>
+                  <Text style={[styles.tableHeaderCell, styles.tableColRef]}>
+                    Ref
+                  </Text>
+                  <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>
+                    Location
+                  </Text>
+                  <Text
+                    style={[styles.tableHeaderCell, styles.tableColDescription]}
+                  >
+                    Description
+                  </Text>
+                  <Text
+                    style={[styles.tableHeaderCell, styles.tableColQuantity]}
+                  >
+                    Quantity ({totalCount})
+                  </Text>
+                  <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
+                    Cost (£)
+                  </Text>
+                </View>
+
+                {/* Render the 11th room */}
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, styles.tableColRef]}>
+                    {room.ref}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.tableColRoom]}>
+                    {room.roomName}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.tableColDescription]}>
+                    {room.width} x {room.height} mm Sash and Case
+                  </Text>
+                  <Text style={[styles.tableCell, styles.tableColQuantity]}>
+                    {room.count || 0}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.tableColCost]}>
+                    £{roomCost.toFixed(2)}
+                  </Text>
+                </View>
+              </React.Fragment>
+            );
+          }
+          return (
+            <View key={index} style={styles.tableRow}>
+              <Text style={[styles.tableCell, styles.tableColRef]}>
+                {room.ref}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableColRoom]}>
+                {room.roomName}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableColDescription]}>
+                {room.width} x {room.height} mm Sash and Case
+              </Text>
+              <Text style={[styles.tableCell, styles.tableColQuantity]}>
+                {room.count || 0}
+              </Text>
+              <Text style={[styles.tableCell, styles.tableColCost]}>
+                £{roomCost.toFixed(2)}
+              </Text>
             </View>
-            <View style={styles.headerCenter}>
-              <Text style={styles.headerText}>{companyName}</Text>
-              <Text style={styles.headerText}>Quotation</Text>
-            </View>
-            <View style={styles.headerRight}>
-              <Image style={styles.logo} src={logo} />
-            </View>
-          </View>
-        </View>
-
-        {/* Re-render the table header */}
-        <View style={styles.tableHeader}>
-          <Text style={[styles.tableHeaderCell, styles.tableColRef]}>Ref</Text>
-          <Text style={[styles.tableHeaderCell, styles.tableColRoom]}>Location</Text>
-          <Text style={[styles.tableHeaderCell, styles.tableColDescription]}>
-            Description
-          </Text>
-          <Text style={[styles.tableHeaderCell, styles.tableColQuantity]}>
-            Quantity ({totalCount})
-          </Text>
-          <Text style={[styles.tableHeaderCell, styles.tableColCost]}>
-            Cost (£)
-          </Text>
-        </View>
-
-        {/* Render the 11th room */}
-        <View style={styles.tableRow}>
-          <Text style={[styles.tableCell, styles.tableColRef]}>{room.ref}</Text>
-          <Text style={[styles.tableCell, styles.tableColRoom]}>{room.roomName}</Text>
-          <Text style={[styles.tableCell, styles.tableColDescription]}>
-            {room.width} x {room.height} mm Sash and Case
-          </Text>
-          <Text style={[styles.tableCell, styles.tableColQuantity]}>
-            {room.count || 0}
-          </Text>
-          <Text style={[styles.tableCell, styles.tableColCost]}>
-            £{roomCost.toFixed(2)}
-          </Text>
-        </View>
-      </React.Fragment>
-    );
-  }
-  return (
-    <View key={index} style={styles.tableRow}>
-      <Text style={[styles.tableCell, styles.tableColRef]}>{room.ref}</Text>
-      <Text style={[styles.tableCell, styles.tableColRoom]}>{room.roomName}</Text>
-      <Text style={[styles.tableCell, styles.tableColDescription]}>
-        {room.width} x {room.height} mm Sash and Case
-      </Text>
-      <Text style={[styles.tableCell, styles.tableColQuantity]}>{room.count || 0}</Text>
-      <Text style={[styles.tableCell, styles.tableColCost]}>
-        £{roomCost.toFixed(2)}
-      </Text>
-    </View>
-  );
-})}
-
-
+          );
+        })}
 
         {/* Footer Container */}
         <View style={styles.footerContainer}>
@@ -818,7 +841,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
             {planningFee > 0 && (
               <View style={styles.footerRightRow}>
-                <Text style={styles.footerRightLabel}>Service Fee</Text>
+                <Text style={styles.footerRightLabel}>Planning fee</Text>
                 <Text style={styles.footerRightValue}>
                   £{planningFee.toFixed(2)}
                 </Text>
@@ -843,8 +866,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
 
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
-            99 24 | Mob: 07973 820 855
+            124 Great Western Road | Glasgow G4 9AD | Tel: 0141 352 9910
           </Text>
           <View style={styles.footerBox} />
         </View>
@@ -1013,11 +1035,21 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                       styles.detailedColDetails,
                     ]}
                   >
-                    {room.priceChange < 0
-                      ? ` ${room.priceChangeNotes}`
-                      : room.priceChange > 0
-                      ? `${room.priceChangeNotes}`
-                      : room.priceChangeNotes}
+                    {(() => {
+                      let priceValue: number = 0;
+                      if (typeof room.priceChange === "string") {
+                        // Remove % if present and parse
+                        priceValue = parseFloat(
+                          room.priceChange.replace("%", "")
+                        );
+                      } else if (typeof room.priceChange === "number") {
+                        priceValue = room.priceChange;
+                      }
+
+                      if (priceValue < 0) return ` ${room.priceChangeNotes}`;
+                      if (priceValue > 0) return `${room.priceChangeNotes}`;
+                      return room.priceChangeNotes;
+                    })()}
                   </Text>
                   <Text
                     style={[styles.detailedTableCell, styles.detailedColRate]}

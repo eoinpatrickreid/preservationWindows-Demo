@@ -78,16 +78,29 @@ const Home: React.FC = () => {
                 </Text>
 
                 {/* CTA Button */}
+                <Flex direction="row">
+                <Button
+                  mt={6}
+                  colorScheme="teal"
+                  variant="solid"
+                  marginRight={3}
+                  as={RouterLink}
+                  to="/create"
+                  leftIcon={<AddIcon />}
+                >
+                  Desktop
+                </Button>
                 <Button
                   mt={6}
                   colorScheme="teal"
                   variant="solid"
                   as={RouterLink}
-                  to="/create"
+                  to="/createIpad"
                   leftIcon={<AddIcon />}
                 >
-                  Get Started
+                  Ipad
                 </Button>
+                </Flex>
               </Flex>
             </LinkBox>
 

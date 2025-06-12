@@ -76,11 +76,24 @@ const ViewAll: React.FC = () => {
     }
   });
 
-  const filteredJobs = sortedJobs.filter(
-    (job) =>
-      job.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredJobs = sortedJobs.filter((job) => {
+    const lowerSearch = searchTerm.toLowerCase();
+  
+    // Gather all address fields (old and new)
+    const addressFields = [
+      job.address ?? "",
+      job.addressLineOne ?? "",
+      job.addressLineTwo ?? "",
+      job.addressLineThree ?? "",
+      job.postCode ?? "",
+    ].join(" ");
+  
+    return (
+      job.customerName?.toLowerCase().includes(lowerSearch) ||
+      addressFields.toLowerCase().includes(lowerSearch)
+    );
+  });
+  
 
   if (loading)
     return (
@@ -96,6 +109,25 @@ const ViewAll: React.FC = () => {
         <Text color="red.500">Error: {error}</Text>
       </Box>
     );
+
+    function getJobAddress(job: Job): string {
+      // If legacy address exists and not empty, use it
+      if (job.address && job.address.trim() !== "") {
+        return job.address + (job.postCode ? `, ${job.postCode}` : "");
+      }
+      // Otherwise, combine the new fields
+      const addressLines = [
+        job.addressLineOne,
+        job.addressLineTwo,
+        job.addressLineThree,
+      ].filter(line => line && line.trim() !== "");
+      let joined = addressLines.join(", ");
+      if (job.postCode && job.postCode.trim() !== "") {
+        joined += (joined ? ", " : "") + job.postCode;
+      }
+      return joined;
+    }
+    
 
   return (
     <>
@@ -192,7 +224,7 @@ const ViewAll: React.FC = () => {
                   <Heading as="h3" size="md" color="gray.800">
                     {job.customerName}
                   </Heading>
-                  <Text color="gray.600">{job.address} {", "} {job.postCode}</Text>
+                  <Text color="gray.600">{getJobAddress(job)}</Text>
                   <Text color="gray.600">
                     {new Date(job.date).toLocaleDateString()}
                   </Text>

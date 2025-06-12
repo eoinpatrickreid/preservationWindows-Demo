@@ -10,6 +10,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import TemporaryFormation from "./components/TemporaryFormation";
+import CreateIpad from "./components/CreateIpad";
 //import Test from "./components/Test";
 
 // Inside your Routes
@@ -22,8 +23,10 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={<Create />} />
+        <Route path="/createIpad" element={<CreateIpad />} />
         <Route path="/view" element={<View />} />
         <Route path="/temporaryFormation" element={<TemporaryFormation />} />
+
 
         <Route
           path="/viewAll"

@@ -11,7 +11,7 @@ import (
     "strconv"
     "strings"
     "time"
-
+    "github.com/joho/godotenv"
     "github.com/gofiber/fiber/v2"
     "github.com/gofiber/fiber/v2/middleware/cors"
     jwtware "github.com/gofiber/jwt/v3"
@@ -125,6 +125,7 @@ type Claims struct {
 // Main Function
 
 func main() {
+    _ = godotenv.Load() 
     MONGODB_URI := os.Getenv("MONGODB_URI")
     PORT := os.Getenv("PORT")
     if PORT == "" {

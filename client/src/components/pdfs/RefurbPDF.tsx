@@ -369,6 +369,15 @@ const formationImageMap: { [key: string]: string } = {
   placeholder: placeholder,
 };
 
+const glassTypeCosts: { [key: string]: number } = {
+  Clear: 0,
+  Toughened: 50,
+  Obscured: 100,
+  Laminated: 150,
+  Fineo: 220,
+  ToughenedObscured: 150,
+};
+
 // Function to parse formation and calculate astrical
 const calculateAstrical = (formation: string): number => {
   if (!formation) return 0;
@@ -398,9 +407,15 @@ const calculateRoomCost = (
     formationOnly = room.formation.split("_")[0];
   }
   const astrical = calculateAstrical(formationOnly || "") || 0;
-  let priceChange = room.priceChange || 0;
+  let priceChange = 0;
+  if (typeof room.priceChange === "string") {
+    priceChange = parseFloat(room.priceChange.replace("%", ""));
+  } else {
+    priceChange = room.priceChange || 0;
+  }
+
   if (room.positiveNegative === "negative") {
-    priceChange = room.priceChange * -1;
+    priceChange = priceChange * -1;
   }
 
   // Main cost
@@ -414,12 +429,8 @@ const calculateRoomCost = (
     Math.round(mainCost);
 
   // Additional costs
-  const roomEncapStr =
-    "• Carry out " +
-    `${room.encapsulation}` +
-    " feature glass encapsulation(s)";
-  if (room.encapsulation != 0)
-    costBreakdown[roomEncapStr] = room.encapsulation * 560;
+  if (room.glassType != "Clear")
+    costBreakdown["${room.glasstype} glass"] = glassTypeCosts[room.glassType];
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
   if (room.mastic)
@@ -430,8 +441,8 @@ const calculateRoomCost = (
   if (room.paint)
     costBreakdown["• Paint on completion of works inside and out"] = 160;
 
-  if (room.bottomRail) costBreakdown["• Repair Rail"] = 160;
-  if (room.pullyWheel) costBreakdown["• Carry out pully Style Repair"] = 70;
+  if (room.bottomRail) costBreakdown["• Carry out rail repair"] = 160;
+  if (room.pullyWheel) costBreakdown["• Carry out pulley style repair"] = 70;
   if (room.easyClean || room.eC)
     costBreakdown["• Fit new simplex easy-clean system"] = 80;
   if (room.outsidePatch)
@@ -439,7 +450,6 @@ const calculateRoomCost = (
   if (room.concealedVent) costBreakdown["• Fit concealed trickle vent"] = 45;
   if (room.trickleVent) costBreakdown["• Fit trickle vent"] = 32;
   if (room.handles) costBreakdown["• Refurbish customers handles"] = 22;
-  if (room.shutters) costBreakdown["• Repair shutters"] = 120;
 
   // Cill costs
   if (room.cill) {
@@ -591,14 +601,13 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
           </View>
         </View>
 
- {/* Client Box */}
- <View style={styles.clientBox}>
+        {/* Client Box */}
+        <View style={styles.clientBox}>
           <View style={styles.clientRow}>
             <Text style={styles.text}>Client: {job.customerName}</Text>
             <Text style={styles.text}>Job ID: {job.quoteId}</Text>
           </View>
         </View>
-
 
         {/* Client Box for Address and Planning Permission */}
         <View style={styles.clientBox}>
@@ -620,11 +629,12 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             <Text style={styles.text}>{job.planningPermission}</Text>
           </View>
         </View>
-        
+
         {/* Project Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            Project Summary: Refurbish Windows
+            Project Summary: To carry out the refurbishment and draught proofing
+            of the existing windows.
           </Text>
 
           {/* Table Header */}
@@ -746,8 +756,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72
-            99 24 | Mob: 07973 820 855
+            124 Great Western Road | Glasgow G4 9AD | Tel: 0141 352 9910
           </Text>
           <View style={styles.footerBox} />
         </View>
@@ -941,11 +950,21 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                       styles.detailedColDetails,
                     ]}
                   >
-                    {room.priceChange < 0
-                      ? `${room.priceChangeNotes}`
-                      : room.priceChange > 0
-                      ? `${room.priceChangeNotes}`
-                      : room.priceChangeNotes}
+                    {(() => {
+                      let priceValue: number = 0;
+                      if (typeof room.priceChange === "string") {
+                        // Remove % if present and parse
+                        priceValue = parseFloat(
+                          room.priceChange.replace("%", "")
+                        );
+                      } else if (typeof room.priceChange === "number") {
+                        priceValue = room.priceChange;
+                      }
+
+                      if (priceValue < 0) return ` ${room.priceChangeNotes}`;
+                      if (priceValue > 0) return `${room.priceChangeNotes}`;
+                      return room.priceChangeNotes;
+                    })()}
                   </Text>
                   {/* Empty cells for Rate, Quantity, Sum */}
                   <Text
@@ -1043,15 +1062,6 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
             </View>
           </View>
         </View>
-
-        {/* Footer */}
-        {/* <View style={styles.footer} fixed>
-          <Text style={styles.footerText}>
-            6 Telford Road | Lenzie Mill | Cumbernauld G67 2NH | Tel: 01236 72 99
-            24 | Mob: 07973 820 855
-          </Text>
-          <View style={styles.footerBox} />
-        </View> */}
       </Page>
     </Document>
   );

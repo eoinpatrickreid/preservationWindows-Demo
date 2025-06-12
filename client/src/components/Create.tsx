@@ -88,7 +88,7 @@ const Create: React.FC = () => {
           glassType: "Clear",
           glassTypeTopBottom: "Bottom",
           casement: false,
-          priceChange: 0,
+          priceChange: "",
           priceChangeNotes: "",
           masticPatch: false,
           outsidePatch: false,
@@ -103,7 +103,7 @@ const Create: React.FC = () => {
         },
       ],
       options: [],
-      planningPermission: "Conservation Area",
+      planningPermission: "",
     },
   });
 
@@ -221,7 +221,7 @@ const Create: React.FC = () => {
     { name: "paint", label: "Paint" },
     { name: "tenon", label: "Tenon" },
     { name: "bottomRail", label: "Bottom Rail" },
-    { name: "pullyWheel", label: "Pully Style" },
+    { name: "pullyWheel", label: "Pulley Style" },
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "trickleVent", label: "Trickle Vent" },
@@ -231,6 +231,23 @@ const Create: React.FC = () => {
     { name: "customItem", label: "Custom Item" },
   ];
 
+  const onValidSubmit = (data: Job) => {
+    // Check all rooms for count === 0
+    const invalidRoom = data.rooms.find((room, idx) => room.count === 0);
+    if (invalidRoom) {
+      toast({
+        title: "Error",
+        description: "One or more rooms have a count of 0. Please enter a valid count.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return; // Prevent submit
+    }
+    // Otherwise, call your original onSubmit logic
+    onSubmit(data);
+  };
+
   return (
     <>
       <Navbar />
@@ -239,7 +256,7 @@ const Create: React.FC = () => {
           Create Job
         </Heading>
       </Center>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onValidSubmit)}>
         <VStack spacing={4} align="stretch">
           {/* First box, containing the job details*/}
 
@@ -363,11 +380,12 @@ const Create: React.FC = () => {
               </Box>
               <Box>
                 <Stack spacing={1}>
-                  <FormControl>
+                  <FormControl isRequired>
                     <FormLabel>Options</FormLabel>
                     <Controller
                       control={control}
                       name="options"
+                      rules={{ required: "Please select an option." }} 
                       render={({ field }) => (
                         <Stack direction="row" spacing={2}>
                           {availableOptions.map((option) => (
@@ -406,12 +424,20 @@ const Create: React.FC = () => {
                     <Controller
                       control={control}
                       name="planningPermission"
-                      render={({ field }) => (
-                        <MultiOptionToggle
-                          options={planningPermissionOptions}
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
+                      rules={{ required: "Planning Permission is required" }} 
+                      render={({ field, fieldState: { error } }) => (
+                        <>
+                          <MultiOptionToggle
+                            options={planningPermissionOptions}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          {error && (
+                            <Box color="red.500" fontSize="sm" mt={1}>
+                              {error.message}
+                            </Box>
+                          )}
+                        </>
                       )}
                     />
                   </FormControl>
@@ -769,34 +795,18 @@ const Create: React.FC = () => {
                           control={control}
                           name={`rooms.${index}.priceChange`}
                           render={({ field }) => (
-                            <NumberInput
-                              size="sm"
-                              max={100}
-                              step={0.05} // Up to you: could be 0.01 or 0.1, etc.
-                              precision={2} // Decide how many decimals you allow
-                              clampValueOnBlur={false}
-                              value={field.value ?? ""}
-                              onChange={(_valueString, valueNumber) => {
-                                // If user clears the field or types an invalid number, fallback to 0 or empty
-                                if (isNaN(valueNumber)) {
-                                  field.onChange("");
-                                } else {
-                                  field.onChange(valueNumber);
-                                }
-                              }}
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
+                            <Input
+                          type="text"
+                          {...register(`rooms.${index}.priceChange`, {
+                            required: true,
+                          })}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                          size="sm"
+                        />
                           )}
                         />
                       </FormControl>
@@ -858,26 +868,15 @@ const Create: React.FC = () => {
                 </GridItem>
                 <GridItem>
                   <Box bg="gray.200" p={4} borderRadius="md">
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={1}>
-                      <FormControl>
-                        <FormLabel>Window Notes</FormLabel>
-                        <Textarea
-                          {...register(`rooms.${index}.windowNotes`)}
-                          placeholder="Window notes"
-                          size="md"
-                          height="105px"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Quote Notes</FormLabel>
-                        <Textarea
-                          {...register(`rooms.${index}.quoteNotes`)}
-                          placeholder="Quote notes"
-                          size="md"
-                          height="105px"
-                        />
-                      </FormControl>
-                    </SimpleGrid>
+                    <FormControl>
+                      <FormLabel>Window Notes</FormLabel>
+                      <Textarea
+                        {...register(`rooms.${index}.windowNotes`)}
+                        placeholder="Window notes"
+                        size="md"
+                        height="105px"
+                      />
+                    </FormControl>
                   </Box>
                 </GridItem>
                 <GridItem>
@@ -948,7 +947,7 @@ const Create: React.FC = () => {
                 glassType: "Clear",
                 glassTypeTopBottom: "Bottom",
                 casement: false,
-                priceChange: 0,
+                priceChange: "",
                 positiveNegative: "positive",
                 priceChangeNotes: "",
                 masticPatch: false,

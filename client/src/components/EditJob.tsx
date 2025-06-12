@@ -203,7 +203,7 @@ const EditJob: React.FC = () => {
     { name: "paint", label: "Paint" },
     { name: "tenon", label: "Tenon" },
     { name: "bottomRail", label: "Bottom Rail" },
-    { name: "pullyWheel", label: "Pully Style" },
+    { name: "pullyWheel", label: "Pulley Style" },
     { name: "casement", label: "Casement" },
     { name: "concealedVent", label: "Concealed Vent" },
     { name: "trickleVent", label: "Trickle Vent" },
@@ -241,7 +241,7 @@ const EditJob: React.FC = () => {
       glassType: "Clear",
       glassTypeTopBottom: "Bottom",
       casement: false,
-      priceChange: 0,
+      priceChange: "",
       priceChangeNotes: "",
       positiveNegative: "positive",
       masticPatch: false,
@@ -805,34 +805,18 @@ const EditJob: React.FC = () => {
                           control={control}
                           name={`rooms.${index}.priceChange`}
                           render={({ field }) => (
-                            <NumberInput
-                              size="sm"
-                              max={100}
-                              step={0.05} // Up to you: could be 0.01 or 0.1, etc.
-                              precision={2} // Decide how many decimals you allow
-                              clampValueOnBlur={false}
-                              value={field.value ?? ""}
-                              onChange={(_valueString, valueNumber) => {
-                                // If user clears the field or types an invalid number, fallback to 0 or empty
-                                if (isNaN(valueNumber)) {
-                                  field.onChange("");
-                                } else {
-                                  field.onChange(valueNumber);
-                                }
-                              }}
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
+                            <Input
+                            type="text"
+                            {...register(`rooms.${index}.priceChange`, {
+                              required: true,
+                            })}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          />
                           )}
                         />
                       </FormControl>
@@ -894,7 +878,6 @@ const EditJob: React.FC = () => {
                 </GridItem>
                 <GridItem>
                   <Box bg="gray.200" p={4} borderRadius="md">
-                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={1}>
                       <FormControl>
                         <FormLabel>Window Notes</FormLabel>
                         <Textarea
@@ -904,16 +887,6 @@ const EditJob: React.FC = () => {
                           height="105px"
                         />
                       </FormControl>
-                      <FormControl>
-                        <FormLabel>Quote Notes</FormLabel>
-                        <Textarea
-                          {...register(`rooms.${index}.quoteNotes`)}
-                          placeholder="Quote notes"
-                          size="md"
-                          height="105px"
-                        />
-                      </FormControl>
-                    </SimpleGrid>
                   </Box>
                 </GridItem>
                 <GridItem>
