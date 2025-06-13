@@ -88,7 +88,7 @@ const CreateIpad: React.FC = () => {
           glassType: "Clear",
           glassTypeTopBottom: "Bottom",
           casement: false,
-          priceChange: "",
+          priceChange2: "",
           priceChangeNotes: "",
           positiveNegative: "positive",
           masticPatch: false,
@@ -772,38 +772,24 @@ const CreateIpad: React.FC = () => {
                         <FormLabel>Price Change (%)</FormLabel>
                         <Controller
                           control={control}
-                          name={`rooms.${activePageIdx - 1}.priceChange`}
-                          render={({ field }) => (
-                            <NumberInput
-                              size="sm"
-                              max={100}
-                              step={0.05}
-                              precision={2}
-                              clampValueOnBlur={false}
-                              value={field.value ?? ""}
-                              onChange={(_valueString, valueNumber) => {
-                                if (isNaN(valueNumber)) {
-                                  field.onChange("");
-                                } else {
-                                  field.onChange(valueNumber);
-                                }
-                              }}
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
+                          name={`rooms.${activePageIdx - 1}.priceChange2`}
+                          render={() => (
+                            <Input
+                          type="text"
+                          {...register(`rooms.${activePageIdx - 1}.priceChange2`, {
+                            required: true,
+                          })}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                          size="sm"
+                        />
                           )}
                         />
                       </FormControl>
+
                       <FormControl>
                         <FormLabel>Positive/Negative</FormLabel>
                         <Controller
@@ -981,7 +967,8 @@ const CreateIpad: React.FC = () => {
                   glassType: "Clear",
                   glassTypeTopBottom: "Bottom",
                   casement: false,
-                  priceChange: "",
+                  priceChange2: "",
+                  priceChange: 0,
                   priceChangeNotes: "",
                   positiveNegative: "positive",
                   masticPatch: false,

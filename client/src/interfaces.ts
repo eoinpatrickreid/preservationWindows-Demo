@@ -31,7 +31,8 @@ export interface Room {
     trickleVent: boolean;
     shutters: boolean;
     handles: boolean;
-    priceChange: string;
+    priceChange: number;
+    priceChange2: string;
     positiveNegative: string;
     priceChangeNotes: string;
     customFormation: string;

@@ -92,6 +92,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
+  sectionTitleTop: {
+    fontSize: 13,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
   text: {
     fontSize: 8,
     marginBottom: 3,
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 10,
-    marginBottom: 5,
+    marginBottom: 2,
   },
   footerRightSection: {
     marginBottom: 10,
@@ -395,9 +400,18 @@ const formatRoomDetails = (room: Room): string[][] => {
     detailsArray.push(`• Casement Window`);
   }
   detailsArray.push("• Timber: Meranti Hardwood");
-  const glassTypeString =
-    "• " + room.glassType + " glass" + room.glassTypeTopBottom;
-  detailsArray.push(glassTypeString);
+
+if (room.glassType !== "Clear") {
+  let glassTypeTopBottom = ""
+  if (room.glassTypeTopBottom === "Both") {
+    glassTypeTopBottom = " (top and bottom panes)";
+  } else if (room.glassTypeTopBottom === "Top") {
+    glassTypeTopBottom = " (top pane only)";
+  } else if (room.glassTypeTopBottom === "Bottom") {
+    glassTypeTopBottom = " (bottom pane only)";
+  }
+    detailsArray.push(`• ${room.glassType} glass${glassTypeTopBottom}`);
+}
 
   const stainRepairs = room.stainRepairs || 0;
   if (stainRepairs > 0) {
@@ -477,8 +491,8 @@ const calculateRoomCost = (room: Room): number => {
     .map(Number)
     .reduce((a, b) => a + b);
   let priceChange = 0;
-  if (typeof room.priceChange === "string") {
-    priceChange = parseFloat(room.priceChange.replace("%", ""));
+  if (room.priceChange2 != "") {
+    priceChange = parseFloat(room.priceChange2.replace("%", ""));
   } else {
     priceChange = room.priceChange || 0;
   }
@@ -507,10 +521,10 @@ const calculateRoomCost = (room: Room): number => {
   const windowCost = Math.round(
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
-      room.encapsulation * 650 +
       glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
-      1.28
+      1.28 + room.encapsulation * 650
   );
+
   console.group("Base Cost Calculation");
   console.log("Cost per window:", `£${windowCost}`);
 
@@ -679,7 +693,7 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
         </View>
         {/* Project Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionTitleTop}>
             Project Summary: To supply and fit new hardwood double glazed sash
             and case windows.
           </Text>
@@ -1037,16 +1051,16 @@ const NewWindowsPDF: React.FC<{ job: Job }> = ({ job }) => {
                   >
                     {(() => {
                       let priceValue: number = 0;
-                      if (typeof room.priceChange === "string") {
+                      if (room.priceChange2 != "") {
                         // Remove % if present and parse
                         priceValue = parseFloat(
-                          room.priceChange.replace("%", "")
+                          room.priceChange2.replace("%", "")
                         );
-                      } else if (typeof room.priceChange === "number") {
+                      } else {
                         priceValue = room.priceChange;
                       }
 
-                      if (priceValue < 0) return ` ${room.priceChangeNotes}`;
+                      if (priceValue < 0) return `${room.priceChangeNotes}`;
                       if (priceValue > 0) return `${room.priceChangeNotes}`;
                       return room.priceChangeNotes;
                     })()}

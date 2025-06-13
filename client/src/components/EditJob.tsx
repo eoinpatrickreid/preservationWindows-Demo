@@ -241,7 +241,8 @@ const EditJob: React.FC = () => {
       glassType: "Clear",
       glassTypeTopBottom: "Bottom",
       casement: false,
-      priceChange: "",
+      priceChange2: "",
+      priceChange: 0,
       priceChangeNotes: "",
       positiveNegative: "positive",
       masticPatch: false,
@@ -803,11 +804,11 @@ const EditJob: React.FC = () => {
                         <FormLabel>Price Change (%)</FormLabel>
                         <Controller
                           control={control}
-                          name={`rooms.${index}.priceChange`}
+                          name={`rooms.${index}.priceChange2`}
                           render={() => (
                             <Input
                             type="text"
-                            {...register(`rooms.${index}.priceChange`, {
+                            {...register(`rooms.${index}.priceChange2`, {
                               required: true,
                             })}
                             bg="white"

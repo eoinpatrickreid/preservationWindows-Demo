@@ -123,7 +123,7 @@ const ViewAll: React.FC = () => {
       ].filter(line => line && line.trim() !== "");
       let joined = addressLines.join(", ");
       if (job.postCode && job.postCode.trim() !== "") {
-        joined += (joined ? ", " : "") + job.postCode;
+        joined += (joined ? " " : "") + job.postCode;
       }
       return joined;
     }

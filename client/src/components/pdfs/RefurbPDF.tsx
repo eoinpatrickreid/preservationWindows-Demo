@@ -95,6 +95,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
+  sectionTitleTop: {
+    fontSize: 13,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
   text: {
     fontSize: 8,
     marginBottom: 3,
@@ -408,8 +413,8 @@ const calculateRoomCost = (
   }
   const astrical = calculateAstrical(formationOnly || "") || 0;
   let priceChange = 0;
-  if (typeof room.priceChange === "string") {
-    priceChange = parseFloat(room.priceChange.replace("%", ""));
+  if (room.priceChange2 != "") {
+    priceChange = parseFloat(room.priceChange2.replace("%", ""));
   } else {
     priceChange = room.priceChange || 0;
   }
@@ -428,9 +433,19 @@ const calculateRoomCost = (
   costBreakdown["• Overhaul and draught-proof installation"] =
     Math.round(mainCost);
 
-  // Additional costs
-  if (room.glassType != "Clear")
-    costBreakdown["${room.glasstype} glass"] = glassTypeCosts[room.glassType];
+  // Additional costs  
+
+  if (room.glassType != "Clear"){
+    let glassTypeTopBottom = ""
+    if (room.glassTypeTopBottom === "Both") {
+      glassTypeTopBottom = " (top and bottom panes)";
+    } else if (room.glassTypeTopBottom === "Top") {
+      glassTypeTopBottom = " (top pane only)";
+    } else if (room.glassTypeTopBottom === "Bottom") {
+      glassTypeTopBottom = " (bottom pane only)";
+    }
+    costBreakdown[`• ${room.glassType} glass${glassTypeTopBottom}`] = glassTypeCosts[room.glassType];
+  }
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
   if (room.mastic)
@@ -952,12 +967,12 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
                   >
                     {(() => {
                       let priceValue: number = 0;
-                      if (typeof room.priceChange === "string") {
+                      if (room.priceChange2 != "") {
                         // Remove % if present and parse
                         priceValue = parseFloat(
-                          room.priceChange.replace("%", "")
+                          room.priceChange2.replace("%", "")
                         );
-                      } else if (typeof room.priceChange === "number") {
+                      } else{
                         priceValue = room.priceChange;
                       }
 
