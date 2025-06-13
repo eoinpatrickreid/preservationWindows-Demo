@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitleTop: {
-    fontSize: 13,
+    fontSize: 10,
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#dbdbdb",
     padding: 10,
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 15,
   },
   footerLeft: {
     flex: 2,
@@ -410,7 +410,7 @@ if (room.glassType !== "Clear") {
   } else if (room.glassTypeTopBottom === "Bottom") {
     glassTypeTopBottom = " (bottom pane only)";
   }
-    detailsArray.push(`• ${room.glassType} glass${glassTypeTopBottom}`);
+    detailsArray.push(`• Fit ${room.glassType} glass${glassTypeTopBottom}`);
 }
 
   const stainRepairs = room.stainRepairs || 0;
@@ -423,7 +423,7 @@ if (room.glassType !== "Clear") {
   }
   if (room.encapsulation != 0) {
     detailsArray.push(
-      `• Carry out ${room.encapsulation} feature glass encapsulation(s)}`
+      `• Carry out ${room.encapsulation} feature glass encapsulation(s)`
     );
   }
   if (room.dormer) {

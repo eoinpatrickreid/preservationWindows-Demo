@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitleTop: {
-    fontSize: 13,
+    fontSize: 10,
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -374,15 +374,6 @@ const formationImageMap: { [key: string]: string } = {
   placeholder: placeholder,
 };
 
-const glassTypeCosts: { [key: string]: number } = {
-  Clear: 0,
-  Toughened: 50,
-  Obscured: 100,
-  Laminated: 150,
-  Fineo: 220,
-  ToughenedObscured: 150,
-};
-
 // Function to parse formation and calculate astrical
 const calculateAstrical = (formation: string): number => {
   if (!formation) return 0;
@@ -434,8 +425,25 @@ const calculateRoomCost = (
     Math.round(mainCost);
 
   // Additional costs  
+  if (room.glassType) {
+    const glassTypeCosts: { [key: string]: number } = {
+      Clear: 0,
+      Toughened: 50,
+      Obscured: 100,
+      Laminated: 150,
+      Fineo: 220,
+      ToughenedObscured: 150,
+    };
+    const glassPosCosts: { [key: string]: number } = {
+      Both: 2,
+      Top: 1,
+      Bottom: 1,
+    };
+    const glassType = room.glassType;
+    const glassPos = room.glassTypeTopBottom || "Bottom";
+    const glassPosMult = glassPosCosts[glassPos];
+    const glassCost = glassTypeCosts[glassType] * glassPosMult || 0;
 
-  if (room.glassType != "Clear"){
     let glassTypeTopBottom = ""
     if (room.glassTypeTopBottom === "Both") {
       glassTypeTopBottom = " (top and bottom panes)";
@@ -444,7 +452,13 @@ const calculateRoomCost = (
     } else if (room.glassTypeTopBottom === "Bottom") {
       glassTypeTopBottom = " (bottom pane only)";
     }
-    costBreakdown[`• ${room.glassType} glass${glassTypeTopBottom}`] = glassTypeCosts[room.glassType];
+
+    if (glassCost > 0) {
+      costBreakdown[`• Fit ${room.glassType} glass${glassTypeTopBottom}`] = glassCost;
+    }
+    if (room.customItem2 > 0) {
+      costBreakdown["• Custom Item"] = room.customItem2;
+    }
   }
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
@@ -523,32 +537,7 @@ const calculateRoomCost = (
   if (room.customItem) costBreakdown["• Custom Item"] = 1;
 
   // Glass type costs
-  if (room.glassType) {
-    const glassTypeCosts: { [key: string]: number } = {
-      Clear: 0,
-      Toughened: 50,
-      Obscured: 100,
-      Laminated: 150,
-      Fineo: 220,
-      ToughenedObscured: 150,
-    };
-    const glassPosCosts: { [key: string]: number } = {
-      Both: 2,
-      Top: 1,
-      Bottom: 1,
-    };
-    const glassType = room.glassType;
-    const glassPos = room.glassTypeTopBottom || "Bottom";
-    const glassPosMult = glassPosCosts[glassPos];
-    const glassCost = glassTypeCosts[glassType] * glassPosMult || 0;
 
-    if (glassCost > 0) {
-      costBreakdown[`• Fit ${room.glassType} glass`] = glassCost;
-    }
-    if (room.customItem2 > 0) {
-      costBreakdown["• Custom Item"] = room.customItem2;
-    }
-  }
 
   // Sum up all costs per window
   const totalCostPerWindow = Object.values(costBreakdown).reduce(

@@ -39,7 +39,7 @@ const Home: React.FC = () => {
             textAlign="center"
             color="gray.800"
           >
-            Welcome to Preservation Quotes TEST
+            Welcome to Preservation Quotes
           </Heading>
           <Box
             padding="30px" // Add 20px padding
