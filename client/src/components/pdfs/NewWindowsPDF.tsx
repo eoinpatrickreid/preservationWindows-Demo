@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitleTop: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -522,7 +522,7 @@ const calculateRoomCost = (room: Room): number => {
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
       glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
-      1.28 + room.encapsulation * 650
+      1.28 + (room.encapsulation * 650)
   );
 
   console.group("Base Cost Calculation");

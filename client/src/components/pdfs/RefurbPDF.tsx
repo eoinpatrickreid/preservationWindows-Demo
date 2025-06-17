@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   sectionTitleTop: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 5,
   },
@@ -636,7 +636,7 @@ const RefurbPDF: React.FC<{ job: Job }> = ({ job }) => {
 
         {/* Project Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionTitleTop}>
             Project Summary: To carry out the refurbishment and draught proofing
             of the existing windows.
           </Text>

@@ -121,9 +121,9 @@ const ViewAll: React.FC = () => {
         job.addressLineTwo,
         job.addressLineThree,
       ].filter(line => line && line.trim() !== "");
-      let joined = addressLines.join(", ");
+      let joined = addressLines.join(" ");
       if (job.postCode && job.postCode.trim() !== "") {
-        joined += (joined ? " " : "") + job.postCode;
+        joined += (joined ? ", " : "") + job.postCode;
       }
       return joined;
     }
