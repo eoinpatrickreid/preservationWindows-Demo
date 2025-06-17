@@ -127,6 +127,15 @@ const CreateIpad: React.FC = () => {
     }
   }, [rooms.length, activePageIdx]);
 
+  const [pendingJumpToRoom, setPendingJumpToRoom] = useState(false);
+
+  useEffect(() => {
+    if (pendingJumpToRoom) {
+      setActivePageIdx(rooms.length); // always jump to the latest room
+      setPendingJumpToRoom(false);
+    }
+  }, [rooms.length, pendingJumpToRoom]);
+  
   const goToPage = (idx: number) => setActivePageIdx(idx);
   const goLeft = () => setActivePageIdx((i) => Math.max(i - 1, 0));
   const goRight = () => setActivePageIdx((i) => Math.min(i + 1, rooms.length));
@@ -990,7 +999,7 @@ const CreateIpad: React.FC = () => {
                   quoteNotes: "",
                   windowNotes: "",
                 });
-                setActivePageIdx(rooms.length + 1); // jump to new room
+                setPendingJumpToRoom(true);
               }}
               colorScheme="teal"
               variant="outline"
