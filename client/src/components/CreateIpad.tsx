@@ -108,7 +108,11 @@ const CreateIpad: React.FC = () => {
     },
   });
 
-  const { fields: rooms, append, remove } = useFieldArray({
+  const {
+    fields: rooms,
+    append,
+    remove,
+  } = useFieldArray({
     control,
     name: "rooms",
   });
@@ -248,9 +252,7 @@ const CreateIpad: React.FC = () => {
                 isDisabled={activePageIdx === 0}
               />
               <Heading as="h4" size="sm">
-                {activePageIdx === 0
-                  ? "Job Details"
-                  : `Room ${activePageIdx}`}
+                {activePageIdx === 0 ? "Job Details" : `Room ${activePageIdx}`}
               </Heading>
               <IconButton
                 aria-label="Next"
@@ -478,10 +480,9 @@ const CreateIpad: React.FC = () => {
                         <FormLabel>Location</FormLabel>
                         <Input
                           type="text"
-                          {...register(
-                            `rooms.${activePageIdx - 1}.roomName`,
-                            { required: true }
-                          )}
+                          {...register(`rooms.${activePageIdx - 1}.roomName`, {
+                            required: true,
+                          })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -551,12 +552,9 @@ const CreateIpad: React.FC = () => {
                       <FormControl isRequired>
                         <FormLabel>Formation</FormLabel>
                         <Select
-                          {...register(
-                            `rooms.${activePageIdx - 1}.formation`,
-                            {
-                              required: true,
-                            }
-                          )}
+                          {...register(`rooms.${activePageIdx - 1}.formation`, {
+                            required: true,
+                          })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -604,9 +602,7 @@ const CreateIpad: React.FC = () => {
                       <FormControl>
                         <FormLabel>Glass Type</FormLabel>
                         <Select
-                          {...register(
-                            `rooms.${activePageIdx - 1}.glassType`
-                          )}
+                          {...register(`rooms.${activePageIdx - 1}.glassType`)}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
                           boxShadow="sm"
@@ -775,17 +771,20 @@ const CreateIpad: React.FC = () => {
                           name={`rooms.${activePageIdx - 1}.priceChange2`}
                           render={() => (
                             <Input
-                          type="text"
-                          {...register(`rooms.${activePageIdx - 1}.priceChange2`, {
-                            required: true,
-                          })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
+                              type="text"
+                              {...register(
+                                `rooms.${activePageIdx - 1}.priceChange2`,
+                                {
+                                  required: true,
+                                }
+                              )}
+                              bg="white"
+                              _focus={{ bg: "white", boxShadow: "outline" }}
+                              boxShadow="sm"
+                              borderRadius="md"
+                              borderColor="gray.300"
+                              size="sm"
+                            />
                           )}
                         />
                       </FormControl>
@@ -822,7 +821,9 @@ const CreateIpad: React.FC = () => {
                           key={option.name}
                           control={control}
                           name={
-                            `rooms.${activePageIdx - 1}.${option.name}` as RoomOptionPath
+                            `rooms.${activePageIdx - 1}.${
+                              option.name
+                            }` as RoomOptionPath
                           }
                           render={({ field }) => {
                             const { value, ...rest } = field;
@@ -847,15 +848,15 @@ const CreateIpad: React.FC = () => {
                 </GridItem>
                 <GridItem>
                   <Box bg="gray.200" p={4} borderRadius="md">
-                  <FormControl>
-                        <FormLabel>Window Notes</FormLabel>
-                        <Textarea
-                          {...register(`rooms.${activePageIdx}.windowNotes`)}
-                          placeholder="Window notes"
-                          size="md"
-                          height="105px"
-                        />
-                      </FormControl>
+                    <FormControl>
+                      <FormLabel>Window Notes</FormLabel>
+                      <Textarea
+                        {...register(`rooms.${activePageIdx}.windowNotes`)}
+                        placeholder="Window notes"
+                        size="md"
+                        height="105px"
+                      />
+                    </FormControl>
                   </Box>
                 </GridItem>
                 <GridItem>
@@ -923,10 +924,17 @@ const CreateIpad: React.FC = () => {
                   size="sm"
                   colorScheme="red"
                   onClick={() => {
+                    // Remove the current room
                     remove(activePageIdx - 1);
-                    setActivePageIdx((prev) =>
-                      prev > rooms.length ? Math.max(prev - 1, 0) : prev
-                    );
+                    // After removal, update the page:
+                    setActivePageIdx((prev) => {
+                      // If we just deleted the last room, go to previous room
+                      if (prev > rooms.length - 1) {
+                        return Math.max(rooms.length - 1, 1);
+                      }
+                      // Else, stay at current room (which is now the "next" one)
+                      return prev;
+                    });
                   }}
                   isDisabled={rooms.length === 1}
                 >
