@@ -425,41 +425,10 @@ const calculateRoomCost = (
     Math.round(mainCost);
 
   // Additional costs  
-  if (room.glassType) {
-    const glassTypeCosts: { [key: string]: number } = {
-      Clear: 0,
-      Toughened: 50,
-      Obscured: 100,
-      Laminated: 150,
-      Fineo: 220,
-      ToughenedObscured: 150,
-    };
-    const glassPosCosts: { [key: string]: number } = {
-      Both: 2,
-      Top: 1,
-      Bottom: 1,
-    };
-    const glassType = room.glassType;
-    const glassPos = room.glassTypeTopBottom || "Bottom";
-    const glassPosMult = glassPosCosts[glassPos];
-    const glassCost = glassTypeCosts[glassType] * glassPosMult || 0;
-
-    let glassTypeTopBottom = ""
-    if (room.glassTypeTopBottom === "Both") {
-      glassTypeTopBottom = " (top and bottom panes)";
-    } else if (room.glassTypeTopBottom === "Top") {
-      glassTypeTopBottom = " (top pane only)";
-    } else if (room.glassTypeTopBottom === "Bottom") {
-      glassTypeTopBottom = " (bottom pane only)";
-    }
-
-    if (glassCost > 0) {
-      costBreakdown[`• Fit ${room.glassType} glass${glassTypeTopBottom}`] = glassCost;
-    }
-    if (room.customItem2 > 0) {
-      costBreakdown["• Custom Item"] = room.customItem2;
-    }
+  if (room.customItem2 > 0) {
+    costBreakdown["• Custom Item"] = room.customItem2;
   }
+  
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
   if (room.mastic)
