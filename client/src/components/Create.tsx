@@ -889,7 +889,7 @@ const Create: React.FC = () => {
                         {...register(`rooms.${index}.customItemText`)}
                         placeholder="Custom Item"
                         size="md"
-                        height="20px"
+                        height="10px"
                       />
                     </FormControl>
                   </Box>
