@@ -425,9 +425,8 @@ const calculateRoomCost = (
     Math.round(mainCost);
 
   // Additional costs  
-  if (room.customItem2 > 0) {
-    costBreakdown["• Custom Item"] = room.customItem2;
-  }
+  if (room.customItem2 > 0)  costBreakdown["• Custom Item test"] = room.customItem2;
+
   
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
   if (room.tenon) costBreakdown["• Carry out tenon repairs"] = 30;
@@ -502,9 +501,6 @@ const calculateRoomCost = (
       costBreakdown[stainRepairsStr] = stainRepairs * 45;
     }
   }
-
-  if (room.customItem) costBreakdown["• Custom Item"] = 1;
-
   // Glass type costs
 
 
