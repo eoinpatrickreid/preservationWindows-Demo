@@ -891,21 +891,28 @@ const EditJob: React.FC = () => {
                       </FormControl>
                   </Box>
                 </GridItem>
-                <Stack spacing={1} p={2}>
+                <Stack spacing={1} p={0}>
                 <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
+                  <Box bg="gray.200" p={2} borderRadius="md">
                     <FormControl>
                       <FormLabel>Custom Item Text</FormLabel>
-                      <Textarea
-                        {...register(`rooms.${index}.customItemText`)}
-                        placeholder="Custom Item"
-                        size="sm"
-                      />
+                      <Input
+                          type="text"
+                          {...register(`rooms.${index}.customItemText`, {
+                            required: true,
+                          })}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                          size="sm"
+                        />
                     </FormControl>
                   </Box>
                 </GridItem>
                 <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
+                  <Box bg="gray.200" p={2} borderRadius="md">
                     <FormControl>
                       <FormLabel>Custom Item</FormLabel>
                       <Controller
