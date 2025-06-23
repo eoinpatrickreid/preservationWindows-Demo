@@ -888,7 +888,7 @@ const Create: React.FC = () => {
                       <Textarea
                         {...register(`rooms.${index}.customItemText`)}
                         placeholder="Custom Item"
-                        size="md"
+                        size="sm"
                         height="10px"
                       />
                     </FormControl>
