@@ -425,7 +425,7 @@ const calculateRoomCost = (
     Math.round(mainCost);
 
   // Additional costs  
-  if (room.customItem2 > 0)  costBreakdown["• Custom Item test"] = room.customItem2;
+  if (room.customItem2 > 0)  costBreakdown["• Custom Item"] = room.customItem2;
 
   
   if (room.putty) costBreakdown["• Strip out and replace all loose putty"] = 20;
