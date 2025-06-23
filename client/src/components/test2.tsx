@@ -253,6 +253,7 @@ const EditJob: React.FC = () => {
       handles: false,
       shutters: false,
       customItem: false,
+      customItemText: "",
       customItem2: 0,
       quoteNotes: "",
       windowNotes: "",

@@ -401,17 +401,17 @@ const formatRoomDetails = (room: Room): string[][] => {
   }
   detailsArray.push("• Timber: Meranti Hardwood");
 
-if (room.glassType !== "Clear") {
-  let glassTypeTopBottom = ""
-  if (room.glassTypeTopBottom === "Both") {
-    glassTypeTopBottom = " (top and bottom panes)";
-  } else if (room.glassTypeTopBottom === "Top") {
-    glassTypeTopBottom = " (top pane only)";
-  } else if (room.glassTypeTopBottom === "Bottom") {
-    glassTypeTopBottom = " (bottom pane only)";
-  }
+  if (room.glassType !== "Clear") {
+    let glassTypeTopBottom = "";
+    if (room.glassTypeTopBottom === "Both") {
+      glassTypeTopBottom = " (top and bottom panes)";
+    } else if (room.glassTypeTopBottom === "Top") {
+      glassTypeTopBottom = " (top pane only)";
+    } else if (room.glassTypeTopBottom === "Bottom") {
+      glassTypeTopBottom = " (bottom pane only)";
+    }
     detailsArray.push(`• Fit ${room.glassType} glass${glassTypeTopBottom}`);
-}
+  }
 
   const stainRepairs = room.stainRepairs || 0;
   if (stainRepairs > 0) {
@@ -451,8 +451,13 @@ if (room.glassType !== "Clear") {
   detailsArray.push("• Colour Out: TBC");
   detailsArray.push("• Ironmongery: TBC");
 
+  let customItemText = "Custom Item";
+  if (room.customItemText !== "") {
+    customItemText = room.customItemText;
+  }
+
   if (room.customItem || room.customItem2 > 0) {
-    detailsArray.push("• Custom Item");
+    detailsArray.push(`• ${customItemText}`);
   }
 
   const pairedDetails: string[][] = [];
@@ -522,7 +527,8 @@ const calculateRoomCost = (room: Room): number => {
     (((room.width / 1000) * (room.height / 1000) * 200 + 540) * 1.8 +
       30 * formationInt +
       glassTypeCosts[glassType] * glassPosCosts[glassPos]) *
-      1.28 + (room.encapsulation * 650)
+      1.28 +
+      room.encapsulation * 650
   );
 
   console.group("Base Cost Calculation");

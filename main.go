@@ -62,6 +62,7 @@ type Room struct {
     Handles          bool    `json:"handles" bson:"handles"`
     Shutters         bool    `json:"shutters" bson:"shutters"`
     CustomItem       bool    `json:"customItem" bson:"customItem"`
+    CustomItemText   string  `json:"customItemText" bson:"customItemText"`
     CustomItem2      int     `json:"customItem2" bson:"customItem2"`
     QuoteNotes       string  `json:"quoteNotes" bson:"quoteNotes"`
     WindowNotes      string  `json:"windowNotes" bson:"windowNotes"`

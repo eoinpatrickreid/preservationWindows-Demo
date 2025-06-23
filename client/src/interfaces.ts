@@ -37,6 +37,7 @@ export interface Room {
     priceChangeNotes: string;
     customFormation: string;
     customItem: boolean;
+    customItemText: string;
     customItem2: number;
     quoteNotes: string;
     windowNotes: string;

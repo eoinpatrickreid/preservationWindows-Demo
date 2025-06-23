@@ -252,6 +252,7 @@ const EditJob: React.FC = () => {
       handles: false,
       shutters: false,
       customItem: false,
+      customItemText: "",
       customItem2: 0,
       quoteNotes: "",
       windowNotes: "",
@@ -890,6 +891,20 @@ const EditJob: React.FC = () => {
                       </FormControl>
                   </Box>
                 </GridItem>
+                <Stack spacing={1} p={2}>
+                <GridItem>
+                  <Box bg="gray.200" p={4} borderRadius="md">
+                    <FormControl>
+                      <FormLabel>Custom Item Text</FormLabel>
+                      <Textarea
+                        {...register(`rooms.${index}.customItemText`)}
+                        placeholder="Custom Item"
+                        size="md"
+                        height="20px"
+                      />
+                    </FormControl>
+                  </Box>
+                </GridItem>
                 <GridItem>
                   <Box bg="gray.200" p={4} borderRadius="md">
                     <FormControl>
@@ -923,6 +938,7 @@ const EditJob: React.FC = () => {
                     </FormControl>
                   </Box>
                 </GridItem>
+                </Stack>
               </Grid>
             </Box>
           ))}
