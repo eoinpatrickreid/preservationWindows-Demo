@@ -899,7 +899,7 @@ const EditJob: React.FC = () => {
                       <Input
                           type="text"
                           {...register(`rooms.${index}.customItemText`, {
-                            required: true,
+                            required: false,
                           })}
                           bg="white"
                           _focus={{ bg: "white", boxShadow: "outline" }}
