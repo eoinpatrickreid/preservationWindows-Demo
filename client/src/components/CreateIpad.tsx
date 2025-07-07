@@ -28,11 +28,55 @@ import {
   Center,
   HStack,
   IconButton,
+  Divider,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import MultiOptionToggle from "./MultiOptionToggle";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
+
+const getDefaultRoom = (): Room => ({
+  ref: "",
+  roomName: "",
+  width: 0,
+  height: 0,
+  count: 0,
+  putty: false,
+  mastic: false,
+  paint: false,
+  tenon: false,
+  eC: false,
+  encapsulation: 0,
+  bottomRail: false,
+  dormer: false,
+  easyClean: false,
+  pullyWheel: false,
+  panesNumber: 0,
+  stainRepairs: 0,
+  cill: "",
+  sash: "",
+  notes: "",
+  formation: "",
+  customFormation: "",
+  glassType: "Clear",
+  glassTypeTopBottom: "Bottom",
+  casement: false,
+  priceChange2: "",
+  priceChange: 0,
+  priceChangeNotes: "",
+  positiveNegative: "positive",
+  masticPatch: false,
+  outsidePatch: false,
+  concealedVent: false,
+  trickleVent: false,
+  handles: false,
+  shutters: false,
+  customItem: false,
+  customItemText: "",
+  customItem2: 0,
+  quoteNotes: "",
+  windowNotes: "",
+});
 
 const CreateIpad: React.FC = () => {
   const getCurrentDate = () => {
@@ -47,7 +91,7 @@ const CreateIpad: React.FC = () => {
     control,
     register,
     handleSubmit,
-    formState: {},
+    formState: {  },
   } = useForm<Job>({
     defaultValues: {
       completed: false,
@@ -61,49 +105,7 @@ const CreateIpad: React.FC = () => {
       addressLineOne: "",
       addressLineTwo: "",
       addressLineThree: "",
-      rooms: [
-        {
-          ref: "",
-          roomName: "",
-          width: 0,
-          height: 0,
-          count: 0,
-          putty: false,
-          mastic: false,
-          paint: false,
-          tenon: false,
-          eC: false,
-          encapsulation: 0,
-          bottomRail: false,
-          dormer: false,
-          easyClean: false,
-          pullyWheel: false,
-          panesNumber: 0,
-          stainRepairs: 0,
-          cill: "",
-          sash: "",
-          notes: "",
-          formation: "",
-          customFormation: "",
-          glassType: "Clear",
-          glassTypeTopBottom: "Bottom",
-          casement: false,
-          priceChange2: "",
-          priceChangeNotes: "",
-          positiveNegative: "positive",
-          masticPatch: false,
-          outsidePatch: false,
-          concealedVent: false,
-          trickleVent: false,
-          handles: false,
-          shutters: false,
-          customItem: false,
-          customItemText: "",
-          customItem2: 0,
-          quoteNotes: "",
-          windowNotes: "",
-        },
-      ],
+      rooms: [getDefaultRoom()],
       options: [],
       planningPermission: "",
     },
@@ -118,28 +120,15 @@ const CreateIpad: React.FC = () => {
     name: "rooms",
   });
 
-  // Treat job details as page 0, then rooms as page 1, 2, ...
+  // 0 = first room
   const [activePageIdx, setActivePageIdx] = useState(0);
 
+  // Ensure activePageIdx is valid after add/remove
   useEffect(() => {
-    // If you delete the last room, never go past max
-    if (activePageIdx > rooms.length) {
-      setActivePageIdx(Math.max(rooms.length, 0));
+    if (activePageIdx > rooms.length - 1) {
+      setActivePageIdx(Math.max(rooms.length - 1, 0));
     }
   }, [rooms.length, activePageIdx]);
-
-  const [pendingJumpToRoom, setPendingJumpToRoom] = useState(false);
-
-  useEffect(() => {
-    if (pendingJumpToRoom) {
-      setActivePageIdx(rooms.length); // always jump to the latest room
-      setPendingJumpToRoom(false);
-    }
-  }, [rooms.length, pendingJumpToRoom]);
-  
-  const goToPage = (idx: number) => setActivePageIdx(idx);
-  const goLeft = () => setActivePageIdx((i) => Math.max(i - 1, 0));
-  const goRight = () => setActivePageIdx((i) => Math.min(i + 1, rooms.length));
 
   const availableOptions = ["New Windows", "Refurb", "PVC"];
   const planningPermissionOptions = [
@@ -189,7 +178,6 @@ const CreateIpad: React.FC = () => {
   type RoomBooleanKeys = {
     [K in keyof Room]: Room[K] extends boolean ? K : never;
   }[keyof Room];
-
   type RoomOptionPath = `rooms.${number}.${RoomBooleanKeys}`;
   const roomOptionFields: { name: RoomBooleanKeys; label: string }[] = [
     { name: "easyClean", label: "Easy Clean" },
@@ -213,6 +201,7 @@ const CreateIpad: React.FC = () => {
   const onSubmit = async (data: Job) => {
     try {
       const response = await axiosInstance.post("/api/jobs", data);
+      console.log("Job created:", response.data);
       const createdJob: Job = response.data as Job;
       toast({
         title: "Job Created",
@@ -233,6 +222,22 @@ const CreateIpad: React.FC = () => {
     }
   };
 
+  // Validate that all rooms have count > 0
+  const onValidSubmit = (data: Job) => {
+    const invalidRoom = data.rooms.find((room) => room.count === 0);
+    if (invalidRoom) {
+      toast({
+        title: "Error",
+        description: "One or more rooms have a count of 0. Please enter a valid count.",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+    onSubmit(data);
+  };
+
   return (
     <>
       <Navbar />
@@ -241,8 +246,197 @@ const CreateIpad: React.FC = () => {
           Create Job
         </Heading>
       </Center>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onValidSubmit)}>
         <VStack spacing={4} align="stretch">
+          {/* --- JOB DETAILS BOX --- */}
+          <Box
+            bg="white"
+            borderRadius="md"
+            p={3}
+            boxShadow="md"
+            maxW="1200px"
+            mx="auto"
+            mt={2}
+            position="relative"
+          >
+            <Heading size="md" mb={4}>Job Details</Heading>
+            <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={2}>
+              {/* Left column */}
+              <Box>
+                <Stack spacing={1}>
+                  <FormControl isRequired>
+                    <FormLabel>Date</FormLabel>
+                    <Input
+                      type="date"
+                      {...register("date", { required: true })}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Address</FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineOne")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                      placeholder="Line 1"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel></FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineTwo")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                      placeholder="Line 2"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel></FormLabel>
+                    <Input
+                      type="text"
+                      {...register("addressLineThree")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                      placeholder="Line 3"
+                    />
+                  </FormControl>
+                </Stack>
+              </Box>
+              {/* Center column */}
+              <Box>
+                <Stack spacing={1}>
+                  <FormControl isRequired>
+                    <FormLabel>Customer Name</FormLabel>
+                    <Input
+                      type="text"
+                      {...register("customerName", { required: true })}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                      type="email"
+                      {...register("email")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Phone</FormLabel>
+                    <Input
+                      type="tel"
+                      {...register("phone")}
+                      bg="white"
+                      _focus={{ bg: "white", boxShadow: "outline" }}
+                      boxShadow="sm"
+                      borderRadius="md"
+                      borderColor="gray.300"
+                      size="sm"
+                    />
+                  </FormControl>
+                </Stack>
+              </Box>
+              {/* Right column */}
+              <Box>
+                <Stack spacing={1}>
+                  <FormControl>
+                    <FormLabel>Options</FormLabel>
+                    <Controller
+                      control={control}
+                      name="options"
+                      render={({ field }) => (
+                        <Stack direction="row" spacing={2}>
+                          {availableOptions.map((option) => (
+                            <Button
+                              key={option}
+                              colorScheme="teal"
+                              variant={
+                                field.value.includes(option)
+                                  ? "solid"
+                                  : "outline"
+                              }
+                              onClick={() => {
+                                let newOptions = [...field.value];
+                                if (newOptions.includes(option)) {
+                                  newOptions = newOptions.filter(
+                                    (opt) => opt !== option
+                                  );
+                                } else {
+                                  newOptions.push(option);
+                                }
+                                field.onChange(newOptions);
+                              }}
+                              size="sm"
+                              borderRadius="md"
+                              _focus={{ boxShadow: "outline" }}
+                            >
+                              {option}
+                            </Button>
+                          ))}
+                        </Stack>
+                      )}
+                    />
+                  </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Planning Permission</FormLabel>
+                    <Controller
+                      control={control}
+                      name="planningPermission"
+                      render={({ field }) => (
+                        <MultiOptionToggle
+                          options={planningPermissionOptions}
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Site Notes</FormLabel>
+                    <Textarea
+                      {...register("siteNotes")}
+                      placeholder="Site notes"
+                      size="md"
+                      height="50px"
+                    />
+                  </FormControl>
+                </Stack>
+              </Box>
+            </Grid>
+          </Box>
+
+          <Divider my={2} />
+
+          {/* --- ROOM CAROUSEL --- */}
           <Box
             bg="white"
             borderRadius="md"
@@ -253,698 +447,525 @@ const CreateIpad: React.FC = () => {
             mt={2}
             position="relative"
           >
-            {/* --- Carousel Nav --- */}
+            {/* Carousel Nav */}
             <HStack justify="space-between" p={2}>
               <IconButton
                 aria-label="Previous"
                 icon={<ChevronLeftIcon />}
-                onClick={goLeft}
+                onClick={() => setActivePageIdx((i) => Math.max(i - 1, 0))}
                 isDisabled={activePageIdx === 0}
               />
               <Heading as="h4" size="sm">
-                {activePageIdx === 0 ? "Job Details" : `Room ${activePageIdx}`}
+                {rooms.length === 0
+                  ? "No Rooms"
+                  : `Room ${activePageIdx + 1} of ${rooms.length}`}
               </Heading>
               <IconButton
                 aria-label="Next"
                 icon={<ChevronRightIcon />}
-                onClick={goRight}
-                isDisabled={activePageIdx === rooms.length}
+                onClick={() =>
+                  setActivePageIdx((i) => Math.min(i + 1, rooms.length - 1))
+                }
+                isDisabled={activePageIdx === rooms.length - 1}
               />
             </HStack>
 
-            {/* --- Job Details as Page 0 --- */}
-            {activePageIdx === 0 && (
-              <Box
-                bg="white"
-                borderRadius="md"
-                p={3}
-                boxShadow="md"
-                maxW="1200px"
-                mx="auto"
-              >
+            {/* --- Active Room Page --- */}
+            {rooms[activePageIdx] && (
+              <Box key={rooms[activePageIdx].id}>
                 <Grid
-                  templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
+                  templateRows="auto auto"
+                  templateColumns="3fr 2fr 1fr"
                   gap={2}
                 >
-                  {/* Left column */}
-                  <Box>
-                    <Stack spacing={1}>
-                      <FormControl isRequired>
-                        <FormLabel>Date</FormLabel>
-                        <Input
-                          type="date"
-                          {...register("date", { required: true })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Address</FormLabel>
-                        <Input
-                          type="text"
-                          {...register("addressLineOne")}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                          placeholder="Line 1"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel></FormLabel>
-                        <Input
-                          type="text"
-                          {...register("addressLineTwo")}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                          placeholder="Line 2"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel></FormLabel>
-                        <Input
-                          type="text"
-                          {...register("addressLineThree")}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                          placeholder="Line 3"
-                        />
-                      </FormControl>
-                    </Stack>
-                  </Box>
-                  {/* Center column */}
-                  <Box>
-                    <Stack spacing={1}>
-                      <FormControl isRequired>
-                        <FormLabel>Customer Name</FormLabel>
-                        <Input
-                          type="text"
-                          {...register("customerName", { required: true })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Email</FormLabel>
-                        <Input
-                          type="email"
-                          {...register("email")}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Phone</FormLabel>
-                        <Input
-                          type="tel"
-                          {...register("phone")}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                    </Stack>
-                  </Box>
-                  {/* Right column */}
-                  <Box>
-                    <Stack spacing={1}>
-                      <FormControl>
-                        <FormLabel>Options</FormLabel>
-                        <Controller
-                          control={control}
-                          name="options"
-                          render={({ field }) => (
-                            <Stack direction="row" spacing={2}>
-                              {availableOptions.map((option) => (
-                                <Button
-                                  key={option}
-                                  colorScheme="teal"
-                                  variant={
-                                    field.value.includes(option)
-                                      ? "solid"
-                                      : "outline"
-                                  }
-                                  onClick={() => {
-                                    let newOptions = [...field.value];
-                                    if (newOptions.includes(option)) {
-                                      newOptions = newOptions.filter(
-                                        (opt) => opt !== option
-                                      );
-                                    } else {
-                                      newOptions.push(option);
-                                    }
-                                    field.onChange(newOptions);
-                                  }}
-                                  size="sm"
+                  {/* Top row of job form */}
+                  <GridItem colSpan={3}>
+                    <Box bg="gray.100" p={4} borderRadius="md">
+                      <HStack>
+                        <FormControl isRequired>
+                          <FormLabel>Ref</FormLabel>
+                          <Input
+                            type="text"
+                            {...register(`rooms.${activePageIdx}.ref`, {
+                              required: true,
+                            })}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel>Location</FormLabel>
+                          <Input
+                            type="text"
+                            {...register(`rooms.${activePageIdx}.roomName`, {
+                              required: true,
+                            })}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel>Width</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.width`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={0}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
                                   borderRadius="md"
-                                  _focus={{ boxShadow: "outline" }}
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel>Height</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.height`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={0}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel>Formation</FormLabel>
+                          <Select
+                            {...register(`rooms.${activePageIdx}.formation`, {
+                              required: true,
+                            })}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          >
+                            <option value="">Select Formation</option>
+                            {formationOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel>Count</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.count`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={1}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Glass Type</FormLabel>
+                          <Select
+                            {...register(`rooms.${activePageIdx}.glassType`)}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          >
+                            {glassTypeOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Glass Type T/B</FormLabel>
+                          <Select
+                            {...register(
+                              `rooms.${activePageIdx}.glassTypeTopBottom`
+                            )}
+                            bg="white"
+                            _focus={{ bg: "white", boxShadow: "outline" }}
+                            boxShadow="sm"
+                            borderRadius="md"
+                            borderColor="gray.300"
+                            size="sm"
+                          >
+                            {glassTypeTopBottom.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </HStack>
+                      <HStack p={2}>
+                        <FormControl>
+                          <FormLabel>Cill</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.cill`}
+                            render={({ field }) => (
+                              <MultiOptionToggle
+                                options={[
+                                  { label: "None", value: "" },
+                                  { label: "Full", value: "Full" },
+                                  { label: "Half", value: "Half" },
+                                  { label: "Repairs", value: "Repairs" },
+                                ]}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Sash</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.sash`}
+                            render={({ field }) => (
+                              <MultiOptionToggle
+                                options={[
+                                  { label: "None", value: "" },
+                                  { label: "Top", value: "Top" },
+                                  { label: "Bottom", value: "Bottom" },
+                                  { label: "Both", value: "Both" },
+                                ]}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>New Panes</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.panesNumber`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={0}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Stain Repairs</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.stainRepairs`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={0}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Encapsulation</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.encapsulation`}
+                            render={({ field }) => (
+                              <NumberInput
+                                min={0}
+                                size="sm"
+                                value={field.value}
+                                onChange={(valueString) =>
+                                  field.onChange(Number(valueString))
+                                }
+                              >
+                                <NumberInputField
+                                  bg="white"
+                                  _focus={{ bg: "white", boxShadow: "outline" }}
+                                  boxShadow="sm"
+                                  borderRadius="md"
+                                  borderColor="gray.300"
+                                />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Price Change (%)</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.priceChange2`}
+                            render={() => (
+                              <Input
+                                type="text"
+                                {...register(
+                                  `rooms.${activePageIdx}.priceChange2`,
+                                  {
+                                    required: true,
+                                  }
+                                )}
+                                bg="white"
+                                _focus={{ bg: "white", boxShadow: "outline" }}
+                                boxShadow="sm"
+                                borderRadius="md"
+                                borderColor="gray.300"
+                                size="sm"
+                              />
+                            )}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel>Positive/Negative</FormLabel>
+                          <Controller
+                            control={control}
+                            name={`rooms.${activePageIdx}.positiveNegative`}
+                            render={({ field }) => (
+                              <MultiOptionToggle
+                                options={[
+                                  { label: "Positive", value: "positive" },
+                                  { label: "Negative", value: "negative" },
+                                ]}
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            )}
+                          />
+                        </FormControl>
+                      </HStack>
+                    </Box>
+                  </GridItem>
+
+                  <GridItem>
+                    <Box bg="gray.200" p={4} borderRadius="md">
+                      <Heading as="h5" size="sm" mb={2}>
+                        Options
+                      </Heading>
+                      <SimpleGrid columns={{ base: 1, md: 4 }} spacing={1}>
+                        {roomOptionFields.map((option) => (
+                          <Controller<Job, RoomOptionPath>
+                            key={option.name}
+                            control={control}
+                            name={
+                              `rooms.${activePageIdx}.${option.name}` as RoomOptionPath
+                            }
+                            render={({ field }) => {
+                              const { value, ...rest } = field;
+                              return (
+                                <Checkbox
+                                  {...rest}
+                                  isChecked={value as boolean}
+                                  onChange={(e) =>
+                                    field.onChange(e.target.checked)
+                                  }
+                                  size="md"
+                                  colorScheme="teal"
                                 >
-                                  {option}
-                                </Button>
-                              ))}
-                            </Stack>
-                          )}
+                                  {option.label}
+                                </Checkbox>
+                              );
+                            }}
+                          />
+                        ))}
+                      </SimpleGrid>
+                    </Box>
+                  </GridItem>
+                  <GridItem>
+                    <Box bg="gray.200" p={4} borderRadius="md">
+                      <FormControl>
+                        <FormLabel>Window Notes</FormLabel>
+                        <Textarea
+                          {...register(`rooms.${activePageIdx}.windowNotes`)}
+                          placeholder="Window notes"
+                          size="md"
+                          height="105px"
                         />
                       </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Planning Permission</FormLabel>
+                    </Box>
+                  </GridItem>
+                  <Stack spacing={0.5} p={1} bg="gray.200" borderRadius="md">
+                  <GridItem>
+                    <Box bg="gray.200" p={1} borderRadius="md">
+                      <FormControl>
+                        <FormLabel>Custom Item</FormLabel>
                         <Controller
                           control={control}
-                          name="planningPermission"
+                          name={`rooms.${activePageIdx}.customItem2`}
                           render={({ field }) => (
-                            <MultiOptionToggle
-                              options={planningPermissionOptions}
+                            <NumberInput
+                              min={0}
+                              size="sm"
                               value={field.value}
-                              onChange={field.onChange}
-                            />
+                              onChange={(valueString) =>
+                                field.onChange(Number(valueString))
+                              }
+                            >
+                              <NumberInputField
+                                bg="white"
+                                _focus={{ bg: "white", boxShadow: "outline" }}
+                                boxShadow="sm"
+                                borderRadius="md"
+                                borderColor="gray.300"
+                              />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
                           )}
                         />
                       </FormControl>
+                    </Box>
+                  </GridItem>
+                  <GridItem>
+                    <Box bg="gray.200" p={1} borderRadius="md">
                       <FormControl>
-                        <FormLabel>Site Notes</FormLabel>
-                        <Textarea
-                          {...register("siteNotes")}
-                          placeholder="Site notes"
-                          size="md"
-                          height="50px"
+                        <FormLabel>Custom Item Text</FormLabel>
+                        <Input
+                          type="text"
+                          {...register(
+                            `rooms.${activePageIdx}.customItemText`
+                          )}
+                          bg="white"
+                          _focus={{ bg: "white", boxShadow: "outline" }}
+                          boxShadow="sm"
+                          borderRadius="md"
+                          borderColor="gray.300"
+                          size="sm"
                         />
                       </FormControl>
-                    </Stack>
-                  </Box>
+                    </Box>
+                  </GridItem>
+                  </Stack>
                 </Grid>
               </Box>
             )}
 
-            {/* --- Room Pages (1..n) --- */}
-            {activePageIdx > 0 && rooms[activePageIdx - 1] && (
-              <Grid
-                templateRows="auto auto"
-                templateColumns="3fr 2fr 1fr"
-                gap={2}
-              >
-                {/* Top row of job form */}
-                <GridItem colSpan={3}>
-                  <Box bg="gray.100" p={4} borderRadius="md">
-                    <HStack>
-                      <FormControl isRequired>
-                        <FormLabel>Ref</FormLabel>
-                        <Input
-                          type="text"
-                          {...register(`rooms.${activePageIdx - 1}.ref`, {
-                            required: true,
-                          })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Location</FormLabel>
-                        <Input
-                          type="text"
-                          {...register(`rooms.${activePageIdx - 1}.roomName`, {
-                            required: true,
-                          })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        />
-                      </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Width</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.width`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={0}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Height</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.height`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={0}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Formation</FormLabel>
-                        <Select
-                          {...register(`rooms.${activePageIdx - 1}.formation`, {
-                            required: true,
-                          })}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        >
-                          <option value="">Select Formation</option>
-                          {formationOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl isRequired>
-                        <FormLabel>Count</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.count`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={1}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Glass Type</FormLabel>
-                        <Select
-                          {...register(`rooms.${activePageIdx - 1}.glassType`)}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        >
-                          {glassTypeOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Glass Type T/B</FormLabel>
-                        <Select
-                          {...register(
-                            `rooms.${activePageIdx - 1}.glassTypeTopBottom`
-                          )}
-                          bg="white"
-                          _focus={{ bg: "white", boxShadow: "outline" }}
-                          boxShadow="sm"
-                          borderRadius="md"
-                          borderColor="gray.300"
-                          size="sm"
-                        >
-                          {glassTypeTopBottom.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </HStack>
-                    <HStack p={2}>
-                      <FormControl>
-                        <FormLabel>Cill</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.cill`}
-                          render={({ field }) => (
-                            <MultiOptionToggle
-                              options={[
-                                { label: "None", value: "" },
-                                { label: "Full", value: "Full" },
-                                { label: "Half", value: "Half" },
-                                { label: "Repairs", value: "Repairs" },
-                              ]}
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Sash</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.sash`}
-                          render={({ field }) => (
-                            <MultiOptionToggle
-                              options={[
-                                { label: "None", value: "" },
-                                { label: "Top", value: "Top" },
-                                { label: "Bottom", value: "Bottom" },
-                                { label: "Both", value: "Both" },
-                              ]}
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>New Panes</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.panesNumber`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={0}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Stain Repairs</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.stainRepairs`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={0}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Encapsulation</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.encapsulation`}
-                          render={({ field }) => (
-                            <NumberInput
-                              min={0}
-                              size="sm"
-                              value={field.value}
-                              onChange={(valueString) =>
-                                field.onChange(Number(valueString))
-                              }
-                            >
-                              <NumberInputField
-                                bg="white"
-                                _focus={{ bg: "white", boxShadow: "outline" }}
-                                boxShadow="sm"
-                                borderRadius="md"
-                                borderColor="gray.300"
-                              />
-                              <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
-                              </NumberInputStepper>
-                            </NumberInput>
-                          )}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel>Price Change (%)</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.priceChange2`}
-                          render={() => (
-                            <Input
-                              type="text"
-                              {...register(
-                                `rooms.${activePageIdx - 1}.priceChange2`,
-                                {
-                                  required: true,
-                                }
-                              )}
-                              bg="white"
-                              _focus={{ bg: "white", boxShadow: "outline" }}
-                              boxShadow="sm"
-                              borderRadius="md"
-                              borderColor="gray.300"
-                              size="sm"
-                            />
-                          )}
-                        />
-                      </FormControl>
-
-                      <FormControl>
-                        <FormLabel>Positive/Negative</FormLabel>
-                        <Controller
-                          control={control}
-                          name={`rooms.${activePageIdx - 1}.positiveNegative`}
-                          render={({ field }) => (
-                            <MultiOptionToggle
-                              options={[
-                                { label: "Positive", value: "positive" },
-                                { label: "Negative", value: "negative" },
-                              ]}
-                              value={field.value}
-                              onChange={field.onChange}
-                            />
-                          )}
-                        />
-                      </FormControl>
-                    </HStack>
-                  </Box>
-                </GridItem>
-
-                <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
-                    <Heading as="h5" size="sm" mb={2}>
-                      Options
-                    </Heading>
-                    <SimpleGrid columns={{ base: 1, md: 4 }} spacing={1}>
-                      {roomOptionFields.map((option) => (
-                        <Controller<Job, RoomOptionPath>
-                          key={option.name}
-                          control={control}
-                          name={
-                            `rooms.${activePageIdx - 1}.${
-                              option.name
-                            }` as RoomOptionPath
-                          }
-                          render={({ field }) => {
-                            const { value, ...rest } = field;
-                            return (
-                              <Checkbox
-                                {...rest}
-                                isChecked={value as boolean}
-                                onChange={(e) =>
-                                  field.onChange(e.target.checked)
-                                }
-                                size="md"
-                                colorScheme="teal"
-                              >
-                                {option.label}
-                              </Checkbox>
-                            );
-                          }}
-                        />
-                      ))}
-                    </SimpleGrid>
-                  </Box>
-                </GridItem>
-                <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
-                    <FormControl>
-                      <FormLabel>Window Notes</FormLabel>
-                      <Textarea
-                        {...register(`rooms.${activePageIdx}.windowNotes`)}
-                        placeholder="Window notes"
-                        size="md"
-                        height="105px"
-                      />
-                    </FormControl>
-                  </Box>
-                </GridItem>
-                <GridItem>
-                  <Box bg="gray.200" p={4} borderRadius="md">
-                    <FormControl>
-                      <FormLabel>Custom Item</FormLabel>
-                      <Controller
-                        control={control}
-                        name={`rooms.${activePageIdx - 1}.customItem2`}
-                        render={({ field }) => (
-                          <NumberInput
-                            min={0}
-                            size="sm"
-                            value={field.value}
-                            onChange={(valueString) =>
-                              field.onChange(Number(valueString))
-                            }
-                          >
-                            <NumberInputField
-                              bg="white"
-                              _focus={{ bg: "white", boxShadow: "outline" }}
-                              boxShadow="sm"
-                              borderRadius="md"
-                              borderColor="gray.300"
-                            />
-                            <NumberInputStepper>
-                              <NumberIncrementStepper />
-                              <NumberDecrementStepper />
-                            </NumberInputStepper>
-                          </NumberInput>
-                        )}
-                      />
-                    </FormControl>
-                  </Box>
-                </GridItem>
-              </Grid>
-            )}
-
             {/* ---- Quick nav buttons ---- */}
             <HStack justify="center" spacing={2} mt={4}>
-              <Button
-                size={activePageIdx === 0 ? "md" : "sm"}
-                variant={activePageIdx === 0 ? "solid" : "outline"}
-                colorScheme={activePageIdx === 0 ? "teal" : "gray"}
-                onClick={() => goToPage(0)}
-              >
-                Job
-              </Button>
-              {rooms.map((_, idx) => (
+              {rooms.map((room, idx) => (
                 <Button
-                  key={idx}
-                  size={activePageIdx === idx + 1 ? "md" : "sm"}
-                  variant={activePageIdx === idx + 1 ? "solid" : "outline"}
-                  colorScheme={activePageIdx === idx + 1 ? "teal" : "gray"}
-                  onClick={() => goToPage(idx + 1)}
+                  key={room.id}
+                  size={activePageIdx === idx ? "md" : "sm"}
+                  variant={activePageIdx === idx ? "solid" : "outline"}
+                  colorScheme={activePageIdx === idx ? "teal" : "gray"}
+                  onClick={() => setActivePageIdx(idx)}
                 >
                   {idx + 1}
                 </Button>
               ))}
             </HStack>
-            {/* Only show Delete Room when on a room, not Job details */}
-            {activePageIdx > 0 && (
+
+            {/* Only show Delete Room when more than one room */}
+            {rooms.length > 1 && (
               <HStack justify="flex-end" mt={2}>
                 <Button
                   size="sm"
                   colorScheme="red"
                   onClick={() => {
-                    // Remove the current room
-                    remove(activePageIdx - 1);
-                    // After removal, update the page:
-                    setActivePageIdx((prev) => {
-                      // If we just deleted the last room, go to previous room
-                      if (prev > rooms.length - 1) {
-                        return Math.max(rooms.length - 1, 1);
-                      }
-                      // Else, stay at current room (which is now the "next" one)
-                      return prev;
-                    });
+                    const deletedIdx = activePageIdx;
+                    remove(deletedIdx);
+                    setTimeout(() => {
+                      setActivePageIdx(() => {
+                        if (rooms.length === 1) return 0;
+                        if (deletedIdx >= rooms.length - 1) return rooms.length - 2;
+                        return deletedIdx;
+                      });
+                    }, 0);
                   }}
                   isDisabled={rooms.length === 1}
                 >
@@ -959,49 +980,8 @@ const CreateIpad: React.FC = () => {
             <Button
               mt={4}
               onClick={() => {
-                append({
-                  ref: "",
-                  roomName: "",
-                  width: 0,
-                  height: 0,
-                  count: 0,
-                  putty: false,
-                  mastic: false,
-                  paint: false,
-                  tenon: false,
-                  eC: false,
-                  encapsulation: 0,
-                  bottomRail: false,
-                  dormer: false,
-                  easyClean: false,
-                  pullyWheel: false,
-                  panesNumber: 0,
-                  stainRepairs: 0,
-                  cill: "",
-                  sash: "",
-                  notes: "",
-                  formation: "",
-                  customFormation: "",
-                  glassType: "Clear",
-                  glassTypeTopBottom: "Bottom",
-                  casement: false,
-                  priceChange2: "",
-                  priceChange: 0,
-                  priceChangeNotes: "",
-                  positiveNegative: "positive",
-                  masticPatch: false,
-                  outsidePatch: false,
-                  concealedVent: false,
-                  trickleVent: false,
-                  handles: false,
-                  shutters: false,
-                  customItem: false,
-                  customItemText: "",
-                  customItem2: 0,
-                  quoteNotes: "",
-                  windowNotes: "",
-                });
-                setPendingJumpToRoom(true);
+                append(getDefaultRoom());
+                setActivePageIdx(rooms.length); // Go to new room
               }}
               colorScheme="teal"
               variant="outline"
