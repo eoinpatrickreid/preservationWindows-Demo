@@ -6,11 +6,11 @@ import View from "./components/View";
 import ViewSingle from "./components/ViewSingle";
 import EditJob from "./components/EditJob";
 import ViewAll from "./components/ViewAll";
+import PrivateRoute from "./components/PrivateRoute";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import TemporaryFormation from "./components/TemporaryFormation";
 import CreateIpad from "./components/CreateIpad";
-
 
 
 const App: React.FC = () => {
@@ -25,7 +25,15 @@ const App: React.FC = () => {
         <Route path="/view" element={<View />} />
         <Route path="/temporaryFormation" element={<TemporaryFormation />} />
 
-        <Route path="/viewAll" element={<ViewAll />} />
+
+        <Route
+          path="/viewAll"
+          element={
+            <PrivateRoute>
+              <ViewAll />
+            </PrivateRoute>
+          }
+        />
         <Route path="/viewSingle/:id" element={<ViewSingle />} />
         <Route path="/editJob/:id" element={<EditJob />} />
 
