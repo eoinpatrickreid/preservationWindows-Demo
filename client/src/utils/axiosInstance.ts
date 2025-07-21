@@ -1,20 +1,17 @@
-// src/utils/axiosInstance.ts
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "/", // Relative to the current domain
+  baseURL: import.meta.env.VITE_API_URL || "",
 });
 
-// Add a request interceptor to include the JWT token
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    if (config.headers) {
+        config.headers["Authorization"] = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  }
+  return config;
+});
 
 export default axiosInstance;
