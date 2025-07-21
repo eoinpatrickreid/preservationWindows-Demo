@@ -11,9 +11,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import TemporaryFormation from "./components/TemporaryFormation";
 import CreateIpad from "./components/CreateIpad";
-//import Test from "./components/Test";
 
-// Inside your Routes
 
 const App: React.FC = () => {
   return (

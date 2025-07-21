@@ -161,10 +161,10 @@ func main() {
     }
     fmt.Println("Connected to MongoDB!")
 
-    jobCollection = client.Database("quote_db").Collection("jobs")
-    userCollection = client.Database("quote_db").Collection("users")
-    countersCollection = client.Database("quote_db").Collection("counters")
-    tempsCollection = client.Database("quote_db").Collection("temps")
+    jobCollection = client.Database("quote_db_demo").Collection("jobs")
+    userCollection = client.Database("quote_db_demo").Collection("users")
+    countersCollection = client.Database("quote_db_demo").Collection("counters")
+    tempsCollection = client.Database("quote_db_demo").Collection("temps")
 
     app := fiber.New()
 
