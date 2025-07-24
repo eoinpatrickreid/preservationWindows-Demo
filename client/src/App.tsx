@@ -11,6 +11,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import TemporaryFormation from "./components/TemporaryFormation";
 import CreateIpad from "./components/CreateIpad";
+import ViewSingleDemo from "./components/ViewSingleDemo";
 
 
 const App: React.FC = () => {
@@ -22,6 +23,8 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/create" element={<Create />} />
         <Route path="/createIpad" element={<CreateIpad />} />
+        <Route path="/demoJob" element={<ViewSingleDemo />} />
+
         <Route path="/view" element={<View />} />
         <Route path="/temporaryFormation" element={<TemporaryFormation />} />
 

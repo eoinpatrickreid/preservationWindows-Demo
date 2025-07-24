@@ -17,7 +17,8 @@ const Links = [
   { name: "Home", to: "/" },
   { name: "Create Quote", to: "/create" },
   { name: "Create Quote Ipad", to: "/createIpad" },
-  { name: "View Quotes", to: "/viewAll" },
+  { name: "View PDF Demo", to: "/demoJob" },
+  { name: "View All Jobs", to: "/viewAll" },
 ];
 
 // --- Texture and Gradient Styles ---
