@@ -202,7 +202,7 @@ const Home: React.FC = () => {
               transition="all 0.18s cubic-bezier(.75,0,.2,1.05)"
             >
               <Flex direction="column" align="center" textAlign="center">
-                <LinkOverlay as={RouterLink} to="/viewSingleDemo">
+                <LinkOverlay as={RouterLink} to="/demoJob">
                   <Heading as="h3" size="lg" mb={2} color="#274536" fontFamily="Karrie, Arial, sans-serif">
                     View Example Quotes
                   </Heading>
